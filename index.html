@@ -122,12 +122,12 @@
       const satdik = filterSatdik.value;
       const triwulan = filterTriwulan.value;
     
-      let query = supabase.from('TKGTPG_view').select('*', { count: 'exact' });
+      let query = supabase.from('tkgtpg_view').select('*', { count: 'exact' });
 
     
       if (search) {
         // Fix: Use backticks properly and escape % for ilike pattern
-        query = query.or(`NAMA.ilike.%${search}%,NIP_text.ilike.%${search}%,PEMDA.ilike.%${search}%`);
+        query = query.or(`NAMA.ilike.%${search}%,nip_text.ilike.%${search}%,PEMDA.ilike.%${search}%`);
       }
       if (satdik) query = query.eq('SATDIK', satdik);
       if (triwulan) query = query.eq('TRIWULAN', triwulan);
