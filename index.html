@@ -124,7 +124,10 @@
       const triwulan = filterTriwulan.value;
 
       if (search) {
-        query = query.or(`NAMA.ilike.%${search}%,NIP.ilike.%${search}%,PEMDA.ilike.%${search}%`);
+        query = query.filter('NAMA', 'ilike', `%${search}%`)
+                     .or(`NIP.ilike.%${search}%,PEMDA.ilike.%${search}%`);
+      }
+
       }
       if (satdik) query = query.eq('SATDIK', satdik);
       if (triwulan) query = query.eq('TRIWULAN', triwulan);
