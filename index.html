@@ -123,9 +123,40 @@
       const satdik = filterSatdik.value;
       const triwulan = filterTriwulan.value;
 
-      if (search) {
-        query = query.filter('NAMA', 'ilike', `%${search}%`)
-                     .or(`NIP.ilike.%${search}%,PEMDA.ilike.%${search}%`);
+      let filters = [];
+
+if (search) {
+  filters.push(`or=(NAMA.ilike.*${search}*,NIP.ilike.*${search}*,PEMDA.ilike.*${search}*)`);
+}
+if (satdik) filters.push(`SATDIK=eq.${satdik}`);
+if (triwulan) filters.push(`TRIWULAN=eq.${triwulan}`);
+
+const start = (page - 1) * limit;
+const end = start + limit - 1;
+
+const url = new URL(`${url}/rest/v1/TKGTPG`);
+url.searchParams.set('select', '*');
+url.searchParams.set('offset', start);
+url.searchParams.set('limit', limit);
+if (filters.length) {
+  url.search += `&${filters.join('&')}`;
+}
+
+const response = await fetch(url.toString(), {
+  headers: {
+    apikey: key,
+    Authorization: `Bearer ${key}`,
+    Prefer: 'count=exact'
+  }
+});
+
+const data = await response.json();
+const count = response.headers.get('content-range')?.split('/')?.[1];
+
+if (!response.ok) return alert('Error fetching data');
+
+totalPages = Math.ceil(count / limit);
+
       }
 
       }
