@@ -116,54 +116,48 @@
     filterTriwulan.addEventListener('change', () => { page = 1; fetchData(); });
 
     async function fetchData() {
-  loadingSpinner.style.display = 'block';
-  let query = supabase.from('TKGTPG').select('*', { count: 'exact' });
-
-  const search = searchInput.value.trim();
-  const satdik = filterSatdik.value;
-  const triwulan = filterTriwulan.value;
-
-  // Apply search filter
-  if (search) {
-    query = query.or(`NAMA.ilike.%${search}%,NIP.ilike.%${search}%,PEMDA.ilike.%${search}%`);
-  }
-
-  // Apply dropdown filters
-  if (satdik) query = query.eq('SATDIK', satdik);
-  if (triwulan) query = query.eq('TRIWULAN', triwulan);
-
-  // Pagination
-  const start = (page - 1) * limit;
-  const end = start + limit - 1;
-
-  const { data, count, error } = await query.range(start, end);
-
-  loadingSpinner.style.display = 'none';
-
-  if (error) {
-    console.error(error);
-    return alert('Error fetching data');
-  }
-
-  totalPages = Math.ceil(count / limit);
-  document.getElementById('pageIndicator').textContent = `Page ${page} of ${totalPages}`;
-
-  tableBody.innerHTML = '';
-
-  if (data.length) {
-    if (!tableHeader.innerHTML) {
-      tableHeader.innerHTML = Object.keys(data[0])
-        .map(key => `<th>${key}</th>`).join('');
+      loadingSpinner.style.display = 'block';
+    
+      const search = searchInput.value.trim();
+      const satdik = filterSatdik.value;
+      const triwulan = filterTriwulan.value;
+    
+      let query = supabase.from('TKGTPG').select('*', { count: 'exact' });
+    
+      if (search) {
+        query = query.or(`NAMA.ilike.%${search}%,NIP.ilike.%${search}%,PEMDA.ilike.%${search}%`);
+      }
+      if (satdik) query = query.eq('SATDIK', satdik);
+      if (triwulan) query = query.eq('TRIWULAN', triwulan);
+    
+      const start = (page - 1) * limit;
+      const end = start + limit - 1;
+    
+      const { data, count, error } = await query.range(start, end);
+    
+      loadingSpinner.style.display = 'none';
+    
+      if (error) return alert('Error fetching data: ' + error.message);
+    
+      totalPages = Math.ceil(count / limit);
+      document.getElementById('pageIndicator').textContent = `Page ${page} of ${totalPages}`;
+    
+      tableBody.innerHTML = '';
+      if (data.length) {
+        if (!tableHeader.innerHTML) {
+          tableHeader.innerHTML = Object.keys(data[0])
+            .map(key => `<th>${key}</th>`).join('');
+        }
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = Object.values(row).map(val => `<td>${val ?? ''}</td>`).join('');
+          tableBody.appendChild(tr);
+        });
+      } else {
+        tableBody.innerHTML = '<tr><td colspan="100%">No results found.</td></tr>';
+      }
     }
-    data.forEach(row => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = Object.values(row).map(val => `<td>${val ?? ''}</td>`).join('');
-      tableBody.appendChild(tr);
-    });
-  } else {
-    tableBody.innerHTML = '<tr><td colspan="100%">No results found.</td></tr>';
-  }
-}
+
 
       if (satdik) query = query.eq('SATDIK', satdik);
       if (triwulan) query = query.eq('TRIWULAN', triwulan);
