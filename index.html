@@ -3,188 +3,1005 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supabase Table Viewer</title>
-  <link rel="icon" href="data:," />
-  <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet">
+  <title>TKGTPG Table (Supabase + Old Style)</title>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
   <style>
-    body { font-family: sans-serif; }
-    .loading { display: none; font-style: italic; color: gray; }
-    .sticky-col { position: sticky; left: 0; background: white; z-index: 1; }
-    .search-row, .pagination-controls, .filter-controls { margin-bottom: 10px; }
-    table { width: 100%; overflow-x: auto; border-collapse: collapse; }
-    th, td { padding: 8px; border: 1px solid #ddd; }
-    .sticky-header th { position: sticky; top: 0; background: white; z-index: 2; }
-    .hidden { display: none; }
-  </style>
-  <script>
-    window.SUPABASE_CONFIG = {
-      url: 'https://kntomoredgduvwbovgpx.supabase.co',
-      key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtudG9tb3JlZGdkdXZ3Ym92Z3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MzI0NzcsImV4cCI6MjA3MDIwODQ3N30.Ei7vJ8RQCiz7KPXis6He8dVzL91Euocxzxzg1ptg1_U'
-    };
-  </script>
+      body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 1.5rem;
+  background: #fafafa;
+  color: #222;
+  font-size: 0.9rem;
+  transition: filter 0.3s ease;
+  line-height: 1.4;
+}
+
+/* Header and form styling */
+.header-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.25rem 1rem;
+  border-radius: 12px;
+  /* background: #fff; */
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.05);
+  margin-bottom: 1rem;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+#resetFilters {
+  background: #3b82f6; /* modern blue */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  height: 40px;
+  width: 90px;
+  padding: 0 14px;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+  box-shadow: 0 3px 6px rgb(59 130 246 / 0.3);
+}
+
+#resetFilters:hover,
+#resetFilters:focus {
+  background: #2563eb;
+  outline: none;
+  box-shadow: 0 5px 12px rgb(37 99 235 / 0.5);
+}
+
+.search-reset {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Search input container */
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 862px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.07);
+  border-radius: 10px;
+  background: white;
+}
+
+/* Select2 overrides */
+.select2-container--default .select2-selection--single {
+  height: 42px;
+  border-radius: 10px;
+  border: 1.8px solid #ddd;
+  font-size: 0.9rem;
+  background-color: #fff;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease;
+}
+
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default .select2-selection--single:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgb(59 130 246 / 0.35);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 40px;
+  padding-left: 12px;
+  padding-right: 12px;
+  font-weight: 500;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 40px;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+}
+
+/* Chip filter group */
+.chip-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.chip-filter {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Search input styling */
+.search-input {
+  width: 100%;
+  padding: 0.55rem 2.6rem 0.55rem 0.9rem;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  background: transparent;
+  border-radius: 10px 0 0 10px;
+  transition: box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 6px 2px rgb(59 130 246 / 0.5);
+}
+
+/* Clear button */
+.clear-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: #777;
+  transition: color 0.3s ease;
+}
+
+.clear-btn:hover {
+  color: #3b82f6;
+}
+
+/* Loader overlay */
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  border: 5px solid #e0e0e0;
+  border-top: 5px solid #3b82f6;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 0.9s linear infinite;
+  margin: auto;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
+  transition: box-shadow 0.3s ease-in-out;
+  font-weight: 500;
+}
+
+table td {
+  border-left: 1px solid #e1e1e1;
+  border-right: 1px solid #e1e1e1;
+  padding: 0.7rem 1rem;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 0.51rem;
+  color: #444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+  transition: background-color 0.25s ease;
+}
+
+table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(90deg, #3b83f6 0%, #60a5fa 50%, #3b82f6 100%);
+  color: white;
+  font-weight: 700;
+  border: none;
+  padding: 1rem 1.2rem;
+  font-size: 0.51rem;
+  user-select: none;
+  text-align: center;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+  cursor: default;
+  white-space: nowrap;
+}
+
+table th[aria-sort="ascending"],
+table th[aria-sort="descending"] {
+  box-shadow: 0 0 8px rgb(59 130 246 / 0.7);
+}
+
+/* Compact table layout overrides */
+table.compact th,
+table.compact td {
+  padding: 0.7rem 0.85rem;
+  font-size: 0.78rem;
+}
+
+ /* Text truncation with ellipsis */
+table.compact td {
+  max-width: 150px; /* or any width you prefer */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default; /* to show normal cursor on hover */
+}
+
+/* Row hover effect */
+tbody tr:hover {
+  background-color: #e0f0ff;
+  transition: background-color 0.3s ease;
+}
+
+/* Zebra striping */
+tbody tr:nth-child(even) {
+  background-color: #f7f8fa;
+}
+
+/* Pagination styling */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  background: white;
+  border-top: 1px solid #ddd;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  box-shadow: 0 -2px 6px rgb(59 130 246 / 0.1);
+  border-radius: 0 0 12px 12px;
+}
+
+.pagination-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+  color: #555;
+}
+
+#rowsPerPageSelect {
+  border-radius: 12px; 
+  padding: 7px 10px;
+  font-size: 0.9rem;
+  border: 1.5px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+#rowsPerPageSelect:hover,
+#rowsPerPageSelect:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 8px rgb(59 130 246 / 0.35);
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.pagination-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pagination-controls button {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+.pagination-controls button:hover {
+  background-color: #e0e7ff;
+  box-shadow: 0 4px 12px rgb(59 130 246 / 0.3);
+  color: #2563eb;
+}
+
+.pagination-controls button.active {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 5px 14px rgb(37 99 235 / 0.6);
+}
+
+.pagination-controls button:disabled {
+  background-color: #f9fafb;
+  color: #9ca3af;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* Input and select styling */
+input[type="search"], select {
+  padding: 8px 14px;
+  border: 1.5px solid #ccc;
+  border-radius: 12px;
+  background-color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: border 0.3s ease;
+  cursor: pointer;
+}
+
+input[type="search"]:focus, select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 12px rgb(59 130 246 / 0.5);
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.35s ease-out;
+}
+
+/* No results styling */
+.no-results {
+  margin-top: 1.2rem;
+  padding: 1.2rem;
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* Highlight text */
+.highlight {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+/* Content fade */
+#mainContent {
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+#mainContent.visible {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-bar {
+    flex-direction: column;
+  }
+  
+  .pagination-container {
+    position: static;
+    box-shadow: none;
+  }
+  
+  .pagination-left {
+    justify-content: center;
+  }
+  
+  .pagination-controls {
+    justify-content: center;
+  }
+}
+</style>
 </head>
 <body>
-  <div class="container py-4">
-    <h1 class="mb-4">TKGTPG Table (Supabase)</h1>
+  <div id="mainContent" style="display: none;">
+      <div class="header-bar">
+        <div class="filter-row">
+        <div class="chip-filter-group">
+          <div class="chip-filter">
+            <select id="filterJenisSatdik" style="width: 230px;">
+              <option value="" >[ Pilih Satdik ]</option>
+            </select>
+          </div>
 
-    <div class="search-row">
-      <input id="searchInput" type="text" class="form-control" placeholder="Search anything...">
-    </div>
+          <div class="chip-filter">
+          <select id="filterJenisTriwulan" style="width: 230px;">
+            <option value="" >[ Pilih Triwulan ]</option>
+          </select>
+        </div>
 
-    <div class="filter-controls d-flex gap-2">
-      <select id="filterSatdik" class="form-select w-auto">
-        <option value="">All SATDIK</option>
-      </select>
-      <select id="filterTriwulan" class="form-select w-auto">
-        <option value="">All TRIWULAN</option>
-      </select>
-    </div>
+        <div class="chip-filter">
+          <select id="filterJenisPemda" style="width: 230px;">
+            <option value="" >[ Pilih Pemda ]</option>
+          </select>
+        </div>
 
-    <div class="loading" id="loadingSpinner">Loading...</div>
+        <div class="chip-filter">
+          <select id="filterJenisTunjangan" style="width: 230px;">
+            <option value="" >[ Pilih Tunjangan ]</option>
+          </select>
+        </div>
 
-    <div class="table-responsive">
-      <table id="dataTable">
-        <thead class="sticky-header">
-          <tr id="tableHeader"></tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-    </div>
-
-    <div class="pagination-controls d-flex justify-content-between align-items-center mt-3">
-      <div>
-        <button class="btn btn-sm btn-outline" id="prevPage">&lt;</button>
-        <span id="pageIndicator">Page 1</span>
-        <button class="btn btn-sm btn-outline" id="nextPage">&gt;</button>
+      <div class ="search-reset">
+        <div class="search-container">
+          <input type="text" class="search-input" id="searchInput" placeholder="Search..." oninput="debounceSearch(); toggleClear()">
+          <button class="clear-btn" onclick="clearSearch()" id="clearBtn" style="display: none;">&times;</button>
+        </div>
+          <button id="resetFilters" type="button">Reset</button>
+        </div>
+        </div>
       </div>
+    </div>
+
+    <div id="tableScrollWrapper" style="max-height: 500px; overflow-y: auto;">
+      <div id="tableContainer" class="fade-in"></div>
+    </div>
+
+      <div class="pagination-container">
+        <div class="pagination-left">
+          <label for="rowsPerPageSelect">Tampilkan</label>
+          <select id="rowsPerPageSelect" onchange="changeRowsPerPage()">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="9999">Semua</option>
+          </select>
+          <span id="count-display"></span>
+        </div>
+        <div class="pagination-controls" id="pagination-controls"></div>
+      </div>
+
+      <div id="noResults" class="no-results" style="display:none;">No matching results found.</div>
+    </div>
+
+    <div id="loader" class="loader-overlay" style="display:none;">
       <div>
-        <label>Go to page:</label>
-        <input id="gotoPage" type="number" min="1" class="form-control form-control-sm d-inline-block" style="width: 60px;">
+        <div class="spinner"></div>
+        <p style="text-align:center; font-size: 1.5rem; color:#555;">Loading data...</p>
       </div>
     </div>
-  </div>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+<script src="https://unpkg.com/@supabase/supabase-js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    const { url, key } = window.SUPABASE_CONFIG;
-    const supabase = createClient(url, key);
+// ---------- CONFIG (replace keys if needed) ----------
+const SUPABASE_URL = "https://kntomoredgduvwbovgpx.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtudG9tb3JlZGdkdXZ3Ym92Z3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MzI0NzcsImV4cCI6MjA3MDIwODQ3N30.Ei7vJ8RQCiz7KPXis6He8dVzL91Euocxzxzg1ptg1_U";
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let page = 1;
-    const limit = 20;
-    let totalPages = 1;
-    let debounceTimer;
+// ---------- Column list (exact DB names; spaces quoted) ----------
+const COLUMNS = `
+  ID,
+  NIP,
+  NAMA,
+  "NAMA PEMILIK REKENING",
+  "NO REKENING",
+  SATDIK,
+  "JENIS TUNJANGAN",
+  PEMDA,
+  "SALUR BRUTO",
+  PPH,
+  "POT JKN",
+  "SALUR NETTO",
+  TRIWULAN
+`;
 
-    const searchInput = document.getElementById('searchInput');
-    const filterSatdik = document.getElementById('filterSatdik');
-    const filterTriwulan = document.getElementById('filterTriwulan');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const tableBody = document.getElementById('tableBody');
-    const tableHeader = document.getElementById('tableHeader');
+// ---------- State ----------
+let allData = [];         // full dataset (fetched once)
+let filteredData = [];    // after filters + search + sort
+let currentPage = 1;
+let rowsPerPage = parseInt(document.getElementById("rowsPerPageSelect").value, 10) || 10;
+const debounceMs = 375;
+let debounceTimer = null;
 
-    document.getElementById('prevPage').addEventListener('click', () => {
-      if (page > 1) {
-        page--;
-        fetchData();
-      }
+// Sorting state
+let sortColumn = null; // 'NIP', 'NAMA', or 'SATDIK'
+let sortDirection = null; // 'asc' or 'desc'
+
+// ---------- Utils ----------
+function escapeHTML(s) { return String(s ?? "").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function highlightHTML(text, term){
+  if (!term) return escapeHTML(text ?? "");
+  const t = String(text ?? "");
+  const esc = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  try {
+    return escapeHTML(t).replace(new RegExp(`(${esc})`, 'gi'), `<span class="highlight">$1</span>`);
+  } catch(e) {
+    return escapeHTML(t);
+  }
+}
+
+// Save/load state from localStorage for persistence
+// function saveState() {
+//   const state = {
+//     filters: {
+//       satdik: $("#filterJenisSatdik").val(),
+//       triwulan: $("#filterJenisTriwulan").val(),
+//       pemda: $("#filterJenisPemda").val(),
+//       tunj: $("#filterJenisTunjangan").val(),
+//     },
+//     searchTerm: document.getElementById("searchInput").value.trim(),
+//     sortColumn,
+//     sortDirection,
+//     currentPage,
+//     rowsPerPage,
+//   };
+//   localStorage.setItem("tableState", JSON.stringify(state));
+// }
+
+// function loadState() {
+//   try {
+//     const state = JSON.parse(localStorage.getItem("tableState"));
+//     if (!state) return;
+//     if(state.filters) {
+//       $("#filterJenisSatdik").val(state.filters.satdik).trigger("change");
+//       $("#filterJenisTriwulan").val(state.filters.triwulan).trigger("change");
+//       $("#filterJenisPemda").val(state.filters.pemda).trigger("change");
+//       $("#filterJenisTunjangan").val(state.filters.tunj).trigger("change");
+//     }
+//     if(state.searchTerm) {
+//       document.getElementById("searchInput").value = state.searchTerm;
+//       document.getElementById("clearBtn").style.display = state.searchTerm ? "block" : "none";
+//     }
+//     if(state.sortColumn) {
+//       sortColumn = state.sortColumn;
+//     }
+//     if(state.sortDirection) {
+//       sortDirection = state.sortDirection;
+//     }
+//     if(state.currentPage) {
+//       currentPage = state.currentPage;
+//     }
+//     if(state.rowsPerPage) {
+//       rowsPerPage = state.rowsPerPage;
+//       document.getElementById("rowsPerPageSelect").value = rowsPerPage;
+//     }
+//   } catch (e) {
+//     console.warn("Failed to load saved state", e);
+//   }
+// }
+
+function showMainContent() {
+  const main = document.getElementById("mainContent");
+  main.style.display = "block";
+  setTimeout(()=> main.classList.add("visible"), 40);
+}
+
+// ---------- Fetch ALL rows (batched) ----------
+async function fetchAllRowsBatched(batchSize = 1000) {
+  // Get exact count first
+  const headRes = await supabase
+    .from('TKGTPG')
+    .select('ID', { head: true, count: 'exact' });
+
+  if (headRes.error) throw headRes.error;
+  const total = headRes.count || 0;
+  if (total === 0) return [];
+
+  if (total <= batchSize) {
+    const { data, error } = await supabase
+      .from('TKGTPG')
+      .select(COLUMNS)
+      .order('ID', { ascending: true })
+      .range(0, total - 1);
+    if (error) throw error;
+    return data || [];
+  }
+
+  const batches = Math.ceil(total / batchSize);
+  const all = [];
+  for (let i = 0; i < batches; i++) {
+    const from = i * batchSize;
+    const to = Math.min(from + batchSize - 1, total - 1);
+    const { data, error } = await supabase
+      .from('TKGTPG')
+      .select(COLUMNS)
+      .order('ID', { ascending: true })
+      .range(from, to);
+    if (error) throw error;
+    all.push(...(data || []));
+  }
+  return all;
+}
+
+// ---------- Populate Select2 dropdowns ----------
+function fillSelect(selector, values, placeholderText){
+  const el = document.querySelector(selector);
+  if(!el) return;
+  el.innerHTML = `<option value="">${placeholderText}</option>`;
+  values.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = v;
+    el.appendChild(opt);
+  });
+  // init/refresh select2
+  $(selector).select2({ width: 'resolve' });
+}
+
+// ---------- Apply filters + search + sorting ----------
+function applyFiltersSearchAndSort(){
+  const satdik = $("#filterJenisSatdik").val();
+  const triwulan = $("#filterJenisTriwulan").val();
+  const pemda = $("#filterJenisPemda").val();
+  const tunj = $("#filterJenisTunjangan").val();
+  const searchTerm = (document.getElementById("searchInput").value || "").trim().toLowerCase();
+
+  filteredData = allData.filter(row => {
+    if (satdik && row.SATDIK !== satdik) return false;
+    if (triwulan && row.TRIWULAN !== triwulan) return false;
+    if (pemda && row.PEMDA !== pemda) return false;
+    if (tunj && row["JENIS TUNJANGAN"] !== tunj) return false;
+
+    if (!searchTerm) return true;
+
+    for (const v of Object.values(row)) {
+      if (v == null) continue;
+      if (String(v).toLowerCase().includes(searchTerm)) return true;
+    }
+    return false;
+  });
+
+  // Apply sorting if any
+  if(sortColumn && sortDirection){
+    filteredData.sort((a,b) => {
+      const valA = (a[sortColumn] ?? "").toString().toLowerCase();
+      const valB = (b[sortColumn] ?? "").toString().toLowerCase();
+      if(valA < valB) return sortDirection === "asc" ? -1 : 1;
+      if(valA > valB) return sortDirection === "asc" ? 1 : -1;
+      return 0;
     });
+  }
 
-    document.getElementById('nextPage').addEventListener('click', () => {
-      if (page < totalPages) {
-        page++;
-        fetchData();
+  currentPage = 1;
+  // saveState();
+  renderPaginatedTable();
+}
+
+// ---------- Debounced search ----------
+window.debounceSearch = function(){
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    applyFiltersSearchAndSort();
+  }, debounceMs);
+};
+
+// ---------- Clear search ----------
+window.clearSearch = function(){
+  document.getElementById("searchInput").value = "";
+  document.getElementById("clearBtn").style.display = "none";
+  currentPage = 1;
+  applyFiltersSearchAndSort();
+};
+
+// ---------- Render paginated table ----------
+function renderPaginatedTable(){
+  rowsPerPage = parseInt(document.getElementById("rowsPerPageSelect").value, 10);
+  const total = filteredData.length;
+  const rpp = rowsPerPage === 9999 ? total || 1 : rowsPerPage;
+  const totalPages = rpp === 0 ? 1 : Math.max(1, Math.ceil(total / rpp));
+  if (currentPage > totalPages) currentPage = totalPages;
+
+  const startIndex = (currentPage - 1) * rpp;
+  const pageData = (rowsPerPage === 9999) ? filteredData.slice(0, rpp) : filteredData.slice(startIndex, startIndex + rpp);
+
+  renderTable(pageData);
+
+  const start = total === 0 ? 0 : startIndex + 1;
+  const end = Math.min(startIndex + rpp, total);
+  document.getElementById("count-display").textContent = `${start}–${end} dari ${total} Data`;
+
+  renderPaginationControls(totalPages);
+  // saveState();
+}
+
+// ---------- Renders title if text overflowed ----------
+function setTitleIfOverflowed(cell) {
+  if (cell.scrollWidth > cell.clientWidth) {
+    cell.title = cell.textContent; // or data-fulltext if you prefer
+  } else {
+    cell.title = "";
+  }
+}
+
+// ---------- Render table with clickable sortable headers ----------
+function renderTable(rows){
+  const container = document.getElementById("tableContainer");
+  container.innerHTML = "";
+
+  const table = document.createElement("table");
+  table.className = "compact";
+
+  // Headers with sortable columns (NIP, NAMA, SATDIK)
+  const headers = [
+    { key: "No", label: "No", sortable: false },
+    { key: "NIP", label: "NIP", sortable: true },
+    { key: "NAMA", label: "Nama", sortable: true },
+    { key: "NAMA PEMILIK REKENING", label: "Nama Pemilik Rekening", sortable: true },
+    { key: "NO REKENING", label: "No Rekening", sortable: true },
+    { key: "SATDIK", label: "Satdik", sortable: true },
+    { key: "JENIS TUNJANGAN", label: "Jenis Tunjangan", sortable: true },
+    { key: "PEMDA", label: "Pemda", sortable: true },
+    { key: "SALUR BRUTO", label: "Salur Bruto", sortable: false },
+    { key: "PPH", label: "PPH", sortable: false },
+    { key: "POT JKN", label: "Pot JKN", sortable: false },
+    { key: "SALUR NETTO", label: "Salur Netto", sortable: false },
+    { key: "TRIWULAN", label: "Triwulan", sortable: false },
+  ];
+
+  const thead = document.createElement("thead");
+  const tr = document.createElement("tr");
+
+  headers.forEach(h => {
+    const th = document.createElement("th");
+    th.textContent = h.label;
+    if(h.sortable){
+      th.style.cursor = "pointer";
+      th.tabIndex = 0; // keyboard focus
+      th.setAttribute("aria-sort", "none");
+      th.title = `Sort by ${h.label}`;
+      // show sort arrow if active
+      if(sortColumn === h.key){
+        th.textContent += sortDirection === "asc" ? " ▲" : " ▼";
+        th.setAttribute("aria-sort", sortDirection === "asc" ? "ascending" : "descending");
       }
-    });
-
-    document.getElementById('gotoPage').addEventListener('change', e => {
-      const val = parseInt(e.target.value);
-      if (val >= 1 && val <= totalPages) {
-        page = val;
-        fetchData();
-      }
-    });
-
-    searchInput.addEventListener('input', () => {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        page = 1;
-        fetchData();
-      }, 300);
-    });
-
-    filterSatdik.addEventListener('change', () => { page = 1; fetchData(); });
-    filterTriwulan.addEventListener('change', () => { page = 1; fetchData(); });
-
-    async function fetchData() {
-      loadingSpinner.style.display = 'block';
-    
-      const search = searchInput.value.trim();
-      const satdik = filterSatdik.value;
-      const triwulan = filterTriwulan.value;
-    
-      let query = supabase.from('tkgtpg_view').select('*', { count: 'exact' });
-
-    
-      if (search) {
-        // Fix: Use backticks properly and escape % for ilike pattern
-        query = query.or(`NAMA.ilike.%${search}%,nip_text.ilike.%${search}%,PEMDA.ilike.%${search}%`);
-      }
-      if (satdik) query = query.eq('SATDIK', satdik);
-      if (triwulan) query = query.eq('TRIWULAN', triwulan);
-    
-      const start = (page - 1) * limit;
-      const end = start + limit - 1;
-    
-      const { data, count, error } = await query.range(start, end);
-    
-      loadingSpinner.style.display = 'none';
-    
-      if (error) return alert('Error fetching data: ' + error.message);
-    
-      totalPages = Math.ceil(count / limit);
-      document.getElementById('pageIndicator').textContent = `Page ${page} of ${totalPages}`;
-    
-      tableBody.innerHTML = '';
-      if (data.length) {
-        if (!tableHeader.innerHTML) {
-          tableHeader.innerHTML = Object.keys(data[0])
-            .map(key => `<th>${key}</th>`).join('');
+      th.addEventListener("click", () => {
+        if(sortColumn === h.key){
+          // toggle direction
+          sortDirection = (sortDirection === "asc") ? "desc" : "asc";
+        } else {
+          sortColumn = h.key;
+          sortDirection = "asc";
         }
-        data.forEach(row => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = Object.values(row).map(val => `<td>${val ?? ''}</td>`).join('');
-          tableBody.appendChild(tr);
-        });
-      } else {
-        tableBody.innerHTML = '<tr><td colspan="100%">No results found.</td></tr>';
-      }
-    }
-    
-    
-
-    async function populateFilters() {
-      const [{ data: satdiks }, { data: triwulans }] = await Promise.all([
-        supabase.from('TKGTPG').select('SATDIK').neq('SATDIK', '').order('SATDIK', { ascending: true }),
-        supabase.from('TKGTPG').select('TRIWULAN').neq('TRIWULAN', '').order('TRIWULAN', { ascending: true })
-      ]);
-
-      const uniqueSatdik = [...new Set(satdiks.map(x => x.SATDIK))];
-      uniqueSatdik.forEach(val => {
-        const opt = document.createElement('option');
-        opt.value = opt.textContent = val;
-        filterSatdik.appendChild(opt);
+        applyFiltersSearchAndSort();
       });
-
-      const uniqueTriwulan = [...new Set(triwulans.map(x => x.TRIWULAN))];
-      uniqueTriwulan.forEach(val => {
-        const opt = document.createElement('option');
-        opt.value = opt.textContent = val;
-        filterTriwulan.appendChild(opt);
+      // Keyboard support for sorting
+      th.addEventListener("keydown", (e) => {
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault();
+          th.click();
+        }
       });
     }
+    tr.appendChild(th);
+  });
+  thead.appendChild(tr);
+  table.appendChild(thead);
 
-    await populateFilters();
-    await fetchData();
-  </script>
+  const tbody = document.createElement("tbody");
+
+  if (!rows || rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="14" class="text-center">No matching results found</td></tr>`;
+  } else {
+    const searchTerm = (document.getElementById("searchInput").value || "").trim();
+    rows.forEach((row, idx) => {
+      const tr = document.createElement("tr");
+      const displayIndex = (currentPage - 1) * rowsPerPage + idx + 1;
+      tr.innerHTML = `
+        <td>${displayIndex}</td>
+        <td data-fulltext="${escapeHTML(row.NIP)}">${highlightHTML(row.NIP, searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row.NAMA)}">${highlightHTML(row.NAMA, searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row["NAMA PEMILIK REKENING"])}">${highlightHTML(row["NAMA PEMILIK REKENING"], searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row["NO REKENING"])}">${highlightHTML(row["NO REKENING"], searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row.SATDIK)}">${highlightHTML(row.SATDIK, searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row["JENIS TUNJANGAN"])}">${highlightHTML(row["JENIS TUNJANGAN"], searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row.PEMDA)}">${highlightHTML(row.PEMDA, searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row["SALUR BRUTO"])}">${highlightHTML(row["SALUR BRUTO"], searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row.PPH)}">${highlightHTML(row.PPH, searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row["POT JKN"])}">${highlightHTML(row["POT JKN"], searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row["SALUR NETTO"])}">${highlightHTML(row["SALUR NETTO"], searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row.TRIWULAN)}">${highlightHTML(row.TRIWULAN, searchTerm)}</td>
+      `;
+      tbody.appendChild(tr);
+
+      // After inserting row to tbody:
+      const tds = tr.querySelectorAll("td");
+      tds.forEach(setTitleIfOverflowed);
+
+    });
+  }
+
+  table.appendChild(tbody);
+  container.appendChild(table);
+
+  // subtle animation reflow
+  container.classList.remove("fade-in");
+  void container.offsetWidth;
+  container.classList.add("fade-in");
+}
+
+// ---------- Pagination UI ----------
+function renderPaginationControls(totalPages){
+  const wrapper = document.getElementById("pagination-controls");
+  wrapper.innerHTML = "";
+  if (totalPages <= 1) return;
+
+  function createBtn(label, disabled = false, onClick) {
+    const btn = document.createElement("button");
+    btn.textContent = label;
+    btn.disabled = disabled;
+    btn.className = disabled ? "disabled" : "";
+    btn.addEventListener("click", onClick);
+    return btn;
+  }
+
+  // Prev
+  wrapper.appendChild(createBtn("<", currentPage === 1, () => {
+    if(currentPage > 1){
+      currentPage--;
+      renderPaginatedTable();
+    }
+  }));
+
+  // First page button
+  wrapper.appendChild(createBtn("1", currentPage === 1, () => {
+    currentPage = 1;
+    renderPaginatedTable();
+  }));
+
+  // Window pages
+  const windowSize = 3;
+  let start = Math.max(2, currentPage - 1);
+  let end = Math.min(totalPages - 1, currentPage + 1);
+
+  if (currentPage <= 3) { start = 2; end = Math.min(4, totalPages - 1); }
+  if (currentPage >= totalPages - 2) { start = Math.max(2, totalPages - 3); end = totalPages - 1; }
+
+  if (start > 2) {
+    const span = document.createElement("span");
+    span.textContent = "...";
+    span.style.margin = "0 6px";
+    wrapper.appendChild(span);
+  }
+
+  for(let i = start; i <= end; i++){
+    wrapper.appendChild(createBtn(i.toString(), currentPage === i, () => {
+      currentPage = i;
+      renderPaginatedTable();
+    }));
+  }
+
+  if (end < totalPages - 1) {
+    const span = document.createElement("span");
+    span.textContent = "...";
+    span.style.margin = "0 6px";
+    wrapper.appendChild(span);
+  }
+
+  // Last page
+  if(totalPages > 1){
+    wrapper.appendChild(createBtn(totalPages.toString(), currentPage === totalPages, () => {
+      currentPage = totalPages;
+      renderPaginatedTable();
+    }));
+  }
+
+  // Next
+  wrapper.appendChild(createBtn(">", currentPage === totalPages, () => {
+    if(currentPage < totalPages){
+      currentPage++;
+      renderPaginatedTable();
+    }
+  }));
+}
+
+// ---------- Reset handler ----------
+function resetAll(){
+  ["#filterJenisSatdik", "#filterJenisTriwulan", "#filterJenisPemda", "#filterJenisTunjangan"].forEach(sel => {
+    $(sel).val("").trigger("change");
+  });
+  document.getElementById("searchInput").value = "";
+  document.getElementById("clearBtn").style.display = "none";
+  sortColumn = null;
+  sortDirection = null;
+  currentPage = 1;
+  rowsPerPage = parseInt(document.getElementById("rowsPerPageSelect").value, 10);
+  filteredData = [...allData];
+  // saveState();
+  renderPaginatedTable();
+}
+
+
+// ---------- Wire UI event listeners ----------
+document.getElementById("clearBtn").addEventListener("click", () => {
+  $("#searchInput").val(null).trigger("change"); // clear Select2
+  document.getElementById("clearBtn").style.display = "none";
+  currentPage = 1;
+  applyFiltersSearchAndSort();
+});
+
+document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
+  const val = parseInt(e.target.value, 10);
+  rowsPerPage = isNaN(val) ? 10 : val;
+  currentPage = 1;
+  applyFiltersSearchAndSort();
+});
+
+document.getElementById("resetFilters").addEventListener("click", resetAll);
+
+$("#filterJenisSatdik, #filterJenisTriwulan, #filterJenisPemda, #filterJenisTunjangan").on("change", () => {
+  currentPage = 1;
+  applyFiltersSearchAndSort();
+});
+
+// ---------- Initialization ----------
+(async function init(){
+  try {
+    document.getElementById("loader").style.display = "flex";
+    allData = await fetchAllRowsBatched(1000); // fetch all rows in batches of 1000
+    allData.sort((a,b) => (Number(a.ID) || 0) - (Number(b.ID) || 0));
+    filteredData = [...allData];
+
+    // populate filter dropdowns
+    const satdik = [...new Set(allData.map(r => r.SATDIK).filter(Boolean))].sort();
+    const triw = [...new Set(allData.map(r => r.TRIWULAN).filter(Boolean))].sort();
+    const pem = [...new Set(allData.map(r => r.PEMDA).filter(Boolean))].sort();
+    const tun = [...new Set(allData.map(r => r["JENIS TUNJANGAN"]).filter(Boolean))].sort();
+
+    fillSelect("#filterJenisSatdik", satdik, "[ Pilih Satdik ]");
+    fillSelect("#filterJenisTriwulan", triw, "[ Pilih Triwulan ]");
+    fillSelect("#filterJenisPemda", pem, "[ Pilih Pemda ]");
+    fillSelect("#filterJenisTunjangan", tun, "[ Pilih Tunjangan ]");
+
+    // load persistent UI state
+    // loadState();
+
+    applyFiltersSearchAndSort();
+
+    showMainContent();
+  } catch (err) {
+    console.error("Init error:", err);
+    document.getElementById("tableContainer").innerHTML = `<p style="color:red;">Failed to load data. See console.</p>`;
+    showMainContent();
+  } finally {
+    document.getElementById("loader").style.display = "none";
+  }
+})();
+</script>
 </body>
 </html>
