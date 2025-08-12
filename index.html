@@ -24,7 +24,7 @@
   padding: 1.25rem 1rem;
   border-radius: 12px;
   /* background: #fff; */
-  box-shadow: 0 4px 10px rgb(0 0 0 / 0.05);
+  /* box-shadow: 0 4px 10px rgb(0 0 0 / 0.05); */
   margin-bottom: 1rem;
 }
 
@@ -148,21 +148,29 @@
 
 /* Clear button */
 .clear-btn {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.3rem;
-  color: #777;
-  transition: color 0.3s ease;
-}
+    position: absolute;
+    right: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    color: #aaa;
+    transition: color 0.2s ease, opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
 
-.clear-btn:hover {
-  color: #3b82f6;
-}
+.clear-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .clear-btn:hover,
+  .clear-btn:focus {
+    color: #333;
+    outline: none;
+  }
 
 /* Loader overlay */
 .loader-overlay {
@@ -183,6 +191,10 @@
   height: 60px;
   animation: spin 0.9s linear infinite;
   margin: auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Table styling */
@@ -241,6 +253,10 @@ table.compact th,
 table.compact td {
   padding: 0.7rem 0.85rem;
   font-size: 0.78rem;
+}
+table.compact th {
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
  /* Text truncation with ellipsis */
@@ -432,6 +448,93 @@ input[type="search"]:focus, select:focus {
     justify-content: center;
   }
 }
+
+/* Toast notification */
+  #toast {
+    position: fixed;
+    bottom: 40px;
+    left: 39%;
+    max-width: 90vw;
+    background: #3b82f6;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 6px 12px rgba(59,130,246,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(50%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 10500;
+  }
+
+  #toast.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+/* Scroll container with shadow overlays */
+  #tableScrollWrapper {
+    position: relative;
+    max-height: 500px;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  #tableScrollWrapper::before,
+  #tableScrollWrapper::after {
+    content: "";
+    position: sticky;
+    top: 0;
+    width: 20px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity 0.3s ease;
+  }
+  
+  #tableScrollWrapper::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
+    opacity: 0;
+  }
+  
+  #tableScrollWrapper::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
+    opacity: 0;
+  }
+
+  /* Show shadows when needed */
+  #tableScrollWrapper.scrolling-left::before {
+    opacity: 1;
+  }
+  #tableScrollWrapper.scrolling-right::after {
+    opacity: 1;
+  }
+  
+/* Resizer handle */
+.resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  cursor: col-resize;
+  user-select: none;
+  height: 100%;
+  z-index: 10;
+}
+
+/* Dragging visual */
+th.dragging {
+  opacity: 0.5;
+}
+
+th.drag-over {
+  border-left: 3px solid #007bff;
+}
+
 </style>
 </head>
 <body>
@@ -466,7 +569,7 @@ input[type="search"]:focus, select:focus {
       <div class ="search-reset">
         <div class="search-container">
           <input type="text" class="search-input" id="searchInput" placeholder="Search..." oninput="debounceSearch(); toggleClear()">
-          <button class="clear-btn" onclick="clearSearch()" id="clearBtn" style="display: none;">&times;</button>
+          <button class="clear-btn" onclick="clearSearch()" id="clearBtn">&times;</button>
         </div>
           <button id="resetFilters" type="button">Reset</button>
         </div>
@@ -502,6 +605,8 @@ input[type="search"]:focus, select:focus {
         <p style="text-align:center; font-size: 1.5rem; color:#555;">Loading data...</p>
       </div>
     </div>
+
+    <div id="toast" role="alert" aria-live="polite" aria-atomic="true"></div>
 
 <script src="https://unpkg.com/@supabase/supabase-js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -556,6 +661,22 @@ function highlightHTML(text, term){
   }
 }
 
+// Table scroll shadow effect
+const scrollWrapper = document.getElementById("tableScrollWrapper");
+scrollWrapper.addEventListener("scroll", () => {
+  if (scrollWrapper.scrollLeft > 0) {
+    scrollWrapper.classList.add("scrolling-left");
+  } else {
+    scrollWrapper.classList.remove("scrolling-left");
+  }
+
+  if (scrollWrapper.scrollLeft + scrollWrapper.clientWidth < scrollWrapper.scrollWidth) {
+    scrollWrapper.classList.add("scrolling-right");
+  } else {
+    scrollWrapper.classList.remove("scrolling-right");
+  }
+});
+
 // Save/load state from localStorage for persistence
 // function saveState() {
 //   const state = {
@@ -605,6 +726,15 @@ function highlightHTML(text, term){
 //     console.warn("Failed to load saved state", e);
 //   }
 // }
+
+function capitalizeWords(str) {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
 function showMainContent() {
   const main = document.getElementById("mainContent");
@@ -657,7 +787,7 @@ function fillSelect(selector, values, placeholderText){
   values.forEach(v => {
     const opt = document.createElement('option');
     opt.value = v;
-    opt.textContent = v;
+    opt.textContent = capitalizeWords(v);
     el.appendChild(opt);
   });
   // init/refresh select2
@@ -714,10 +844,21 @@ window.debounceSearch = function(){
 // ---------- Clear search ----------
 window.clearSearch = function(){
   document.getElementById("searchInput").value = "";
-  document.getElementById("clearBtn").style.display = "none";
+  toggleClear();
   currentPage = 1;
   applyFiltersSearchAndSort();
 };
+
+// ---------- Toggle clear ----------
+window.toggleClear = function(){
+  const val = document.getElementById("searchInput").value;
+  const btn = document.getElementById("clearBtn");
+  if(val && val.trim().length > 0){
+    btn.classList.add("visible");
+  } else {
+    btn.classList.remove("visible");
+  }
+}
 
 // ---------- Render paginated table ----------
 function renderPaginatedTable(){
@@ -737,13 +878,14 @@ function renderPaginatedTable(){
   document.getElementById("count-display").textContent = `${start}–${end} dari ${total} Data`;
 
   renderPaginationControls(totalPages);
+  toggleClear();
   // saveState();
 }
 
 // ---------- Renders title if text overflowed ----------
 function setTitleIfOverflowed(cell) {
   if (cell.scrollWidth > cell.clientWidth) {
-    cell.title = cell.textContent; // or data-fulltext if you prefer
+    cell.title = cell.getAttribute('data-fulltext') || cell.textContent;
   } else {
     cell.title = "";
   }
@@ -825,12 +967,12 @@ function renderTable(rows){
       tr.innerHTML = `
         <td>${displayIndex}</td>
         <td data-fulltext="${escapeHTML(row.NIP)}">${highlightHTML(row.NIP, searchTerm)}</td>
-        <td data-fulltext="${escapeHTML(row.NAMA)}">${highlightHTML(row.NAMA, searchTerm)}</td>
-        <td data-fulltext="${escapeHTML(row["NAMA PEMILIK REKENING"])}">${highlightHTML(row["NAMA PEMILIK REKENING"], searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row.NAMA)}">${highlightHTML(capitalizeWords(row.NAMA), searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row["NAMA PEMILIK REKENING"])}">${highlightHTML(capitalizeWords(row["NAMA PEMILIK REKENING"]), searchTerm)}</td>
         <td data-fulltext="${escapeHTML(row["NO REKENING"])}">${highlightHTML(row["NO REKENING"], searchTerm)}</td>
-        <td data-fulltext="${escapeHTML(row.SATDIK)}">${highlightHTML(row.SATDIK, searchTerm)}</td>
-        <td data-fulltext="${escapeHTML(row["JENIS TUNJANGAN"])}">${highlightHTML(row["JENIS TUNJANGAN"], searchTerm)}</td>
-        <td data-fulltext="${escapeHTML(row.PEMDA)}">${highlightHTML(row.PEMDA, searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row.SATDIK)}">${highlightHTML(capitalizeWords(row.SATDIK), searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row["JENIS TUNJANGAN"])}">${highlightHTML(capitalizeWords(row["JENIS TUNJANGAN"]), searchTerm)}</td>
+        <td data-fulltext="${escapeHTML(row.PEMDA)}">${highlightHTML(capitalizeWords(row.PEMDA), searchTerm)}</td>
         <td data-fulltext="${escapeHTML(row["SALUR BRUTO"])}">${highlightHTML(row["SALUR BRUTO"], searchTerm)}</td>
         <td data-fulltext="${escapeHTML(row.PPH)}">${highlightHTML(row.PPH, searchTerm)}</td>
         <td data-fulltext="${escapeHTML(row["POT JKN"])}">${highlightHTML(row["POT JKN"], searchTerm)}</td>
@@ -844,6 +986,9 @@ function renderTable(rows){
       tds.forEach(setTitleIfOverflowed);
 
     });
+    requestAnimationFrame(() => {
+      tbody.querySelectorAll("td").forEach(setTitleIfOverflowed);
+    });
   }
 
   table.appendChild(tbody);
@@ -853,6 +998,111 @@ function renderTable(rows){
   container.classList.remove("fade-in");
   void container.offsetWidth;
   container.classList.add("fade-in");
+  enableColumnResizing(table);
+  enableColumnDragReorder(table);
+}
+
+// ---------- Enable column drag-and-drop reordering ----------
+// This function allows users to drag and drop table headers to reorder columns
+function enableColumnDragReorder(table) {
+  let draggedTh = null;
+  let dragOverTh = null;
+
+  const ths = table.querySelectorAll("thead th");
+  ths.forEach(th => {
+    th.setAttribute("draggable", true);
+
+    th.addEventListener("dragstart", e => {
+      draggedTh = th;
+      th.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", "");
+    });
+
+    th.addEventListener("dragover", e => {
+      e.preventDefault();
+      if (th !== draggedTh) {
+        dragOverTh = th;
+        clearDragOver();
+        th.classList.add("drag-over");
+      }
+    });
+
+    th.addEventListener("dragleave", e => {
+      th.classList.remove("drag-over");
+    });
+
+    th.addEventListener("drop", e => {
+      e.preventDefault();
+      if (draggedTh && dragOverTh && draggedTh !== dragOverTh) {
+        const fromIndex = Array.from(draggedTh.parentNode.children).indexOf(draggedTh);
+        const toIndex = Array.from(dragOverTh.parentNode.children).indexOf(dragOverTh);
+        reorderColumns(table, fromIndex, toIndex);
+      }
+      clearDragOver();
+    });
+
+    th.addEventListener("dragend", e => {
+      draggedTh.classList.remove("dragging");
+      draggedTh = null;
+      clearDragOver();
+    });
+  });
+
+  function clearDragOver() {
+    table.querySelectorAll("th.drag-over").forEach(el => el.classList.remove("drag-over"));
+  }
+
+  function reorderColumns(table, from, to) {
+    const rows = table.querySelectorAll("tr");
+    rows.forEach(row => {
+      if (to > from) to++;
+      row.insertBefore(row.children[from], row.children[to]);
+    });
+  }
+}
+
+// Call this after your table is rendered inside renderTable()
+function enableColumnResizing(table) {
+  let startX, startWidth, resizerCol;
+  
+  // Add resizer div to each th except last (optional)
+  table.querySelectorAll("thead th").forEach(th => {
+    // Avoid duplicate resizers
+    if (!th.querySelector(".resizer")) {
+      const resizer = document.createElement("div");
+      resizer.className = "resizer";
+      th.style.position = "relative";
+      th.appendChild(resizer);
+      
+      resizer.addEventListener("mousedown", e => {
+        e.preventDefault();
+        resizerCol = th;
+        startX = e.pageX;
+        startWidth = resizerCol.offsetWidth;
+        document.documentElement.addEventListener("mousemove", resizeColumn);
+        document.documentElement.addEventListener("mouseup", stopResize);
+      });
+    }
+  });
+
+  function resizeColumn(e) {
+    if (!resizerCol) return;
+    const newWidth = startWidth + (e.pageX - startX);
+    if (newWidth > 30) { // minimum width
+      resizerCol.style.width = newWidth + "px";
+      const index = Array.from(resizerCol.parentNode.children).indexOf(resizerCol);
+      table.querySelectorAll("tbody tr").forEach(row => {
+        row.children[index].style.width = newWidth + "px";
+      });
+    }
+  }
+
+  function stopResize() {
+    document.documentElement.removeEventListener("mousemove", resizeColumn);
+    document.documentElement.removeEventListener("mouseup", stopResize);
+    resizerCol = null;
+  }
 }
 
 // ---------- Pagination UI ----------
@@ -889,7 +1139,7 @@ function renderPaginationControls(totalPages){
   let start = Math.max(2, currentPage - 1);
   let end = Math.min(totalPages - 1, currentPage + 1);
 
-  if (currentPage <= 3) { start = 2; end = Math.min(4, totalPages - 1); }
+  if (currentPage <= 3  ) { start = 2; end = Math.min(4, totalPages - 1); }
   if (currentPage >= totalPages - 2) { start = Math.max(2, totalPages - 3); end = totalPages - 1; }
 
   if (start > 2) {
@@ -936,7 +1186,7 @@ function resetAll(){
     $(sel).val("").trigger("change");
   });
   document.getElementById("searchInput").value = "";
-  document.getElementById("clearBtn").style.display = "none";
+  toggleClear();
   sortColumn = null;
   sortDirection = null;
   currentPage = 1;
@@ -944,16 +1194,21 @@ function resetAll(){
   filteredData = [...allData];
   // saveState();
   renderPaginatedTable();
+  showToast("Filters and search have been reset!");
 }
 
+// ---------- Reset message popup ----------
+function showToast(msg){
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2325);
+}
 
 // ---------- Wire UI event listeners ----------
-document.getElementById("clearBtn").addEventListener("click", () => {
-  $("#searchInput").val(null).trigger("change"); // clear Select2
-  document.getElementById("clearBtn").style.display = "none";
-  currentPage = 1;
-  applyFiltersSearchAndSort();
-});
+document.getElementById("clearBtn").addEventListener("click", clearSearch);
 
 document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
   const val = parseInt(e.target.value, 10);
