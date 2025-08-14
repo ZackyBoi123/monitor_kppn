@@ -1,0 +1,546 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0.75rem;
+  background: #fafafa;
+  color: #222;
+  font-size: 0.9rem;
+  transition: filter 0.3s ease;
+  line-height: 1.4;
+}
+
+/* Header and form styling */
+.header-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.25rem 1rem;
+  border-radius: 12px;
+  /* background: #fff; */
+  /* box-shadow: 0 4px 10px rgb(0 0 0 / 0.05); */
+  margin-bottom: 1rem;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+#resetFilters {
+  background: #3b82f6; /* modern blue */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  height: 40px;
+  width: 90px;
+  padding: 0 14px;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+  box-shadow: 0 3px 6px rgb(59 130 246 / 0.3);
+}
+
+#resetFilters:hover,
+#resetFilters:focus {
+  background: #2563eb;
+  outline: none;
+  box-shadow: 0 5px 12px rgb(37 99 235 / 0.5);
+}
+
+.search-reset {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Search input container */
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 862px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.07);
+  border-radius: 10px;
+  background: white;
+}
+
+/* Select2 overrides */
+.select2-container--default .select2-selection--single {
+  height: 42px;
+  border-radius: 10px;
+  border: 1.8px solid #ddd;
+  font-size: 0.9rem;
+  background-color: #fff;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease;
+}
+
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default .select2-selection--single:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgb(59 130 246 / 0.35);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 40px;
+  padding-left: 12px;
+  padding-right: 12px;
+  font-weight: 500;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 40px;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+}
+
+/* Chip filter group */
+.chip-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.chip-filter {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Search input styling */
+.search-input {
+  width: 100%;
+  padding: 0.55rem 2.6rem 0.55rem 0.9rem;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  background: transparent;
+  border-radius: 10px 0 0 10px;
+  transition: box-shadow 0.3s ease;
+  
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 6px 2px rgb(59 130 246 / 0.5);
+}
+
+/* Clear button */
+.clear-btn {
+    position: absolute;
+    right: 15px;
+    top: 43%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.6rem;
+    color: #aaa;
+    transition: color 0.2s ease, opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+.clear-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .clear-btn:hover,
+  .clear-btn:focus {
+    color: #333;
+    outline: none;
+  }
+
+/* Loader overlay */
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  border: 5px solid #e0e0e0;
+  border-top: 5px solid #3b82f6;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 0.9s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
+  transition: box-shadow 0.3s ease-in-out;
+  font-weight: 500;
+}
+
+table td {
+  border-left: 1px solid #e1e1e1;
+  border-right: 1px solid #e1e1e1;
+  padding: 0.7rem 1rem;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 0.51rem;
+  color: #444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+  transition: background-color 0.25s ease;
+}
+
+table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(90deg, #3b83f6 0%, #60a5fa 50%, #3b82f6 100%);
+  color: white;
+  font-weight: 700;
+  border: none;
+  padding: 1rem 1.2rem;
+  font-size: 0.51rem;
+  user-select: none;
+  text-align: center;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+  cursor: default;
+  white-space: nowrap;
+}
+
+table th[aria-sort="ascending"],
+table th[aria-sort="descending"] {
+  box-shadow: 0 0 8px rgb(59 130 246 / 0.7);
+}
+
+/* Compact table layout overrides */
+table.compact th,
+table.compact td {
+  padding: 0.7rem 0.85rem;
+  font-size: 0.78rem;
+}
+table.compact th {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+ /* Text truncation with ellipsis */
+table.compact td {
+  max-width: 150px; /* or any width you prefer */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default; /* to show normal cursor on hover */
+}
+
+/* Row hover effect */
+tbody tr:hover {
+  background-color: #e0f0ff;
+  transition: background-color 0.3s ease;
+}
+
+/* Zebra striping */
+tbody tr:nth-child(even) {
+  background-color: #f7f8fa;
+}
+
+/* Pagination styling */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  background: white;
+  border-top: 1px solid #ddd;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  box-shadow: 0 -2px 6px rgb(59 130 246 / 0.1);
+  border-radius: 0 0 12px 12px;
+}
+
+.pagination-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+  color: #555;
+}
+
+#rowsPerPageSelect {
+  border-radius: 12px; 
+  padding: 7px 10px;
+  font-size: 0.9rem;
+  border: 1.5px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+#rowsPerPageSelect:hover,
+#rowsPerPageSelect:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 8px rgb(59 130 246 / 0.35);
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.pagination-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pagination-controls button {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+.pagination-controls button:hover {
+  background-color: #e0e7ff;
+  box-shadow: 0 4px 12px rgb(59 130 246 / 0.3);
+  color: #2563eb;
+}
+
+.pagination-controls button.active {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 5px 14px rgb(37 99 235 / 0.6);
+}
+
+.pagination-controls button:disabled {
+  background-color: #f9fafb;
+  color: #9ca3af;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* Input and select styling */
+input[type="search"], select {
+  padding: 8px 14px;
+  border: 1.5px solid #ccc;
+  border-radius: 12px;
+  background-color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: border 0.3s ease;
+  cursor: pointer;
+}
+
+input[type="search"]:focus, select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 12px rgb(59 130 246 / 0.5);
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.35s ease-out;
+}
+
+/* No results styling */
+.no-results {
+  margin-top: 1.2rem;
+  padding: 1.2rem;
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* Highlight text */
+.highlight {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+/* Content fade */
+#mainContent {
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+#mainContent.visible {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-bar {
+    flex-direction: column;
+  }
+  
+  .pagination-container {
+    position: static;
+    box-shadow: none;
+  }
+  
+  .pagination-left {
+    justify-content: center;
+  }
+  
+  .pagination-controls {
+    justify-content: center;
+  }
+}
+
+/* Toast notification */
+  #toast {
+    position: fixed;
+    bottom: 40px;
+    left: 39%;
+    max-width: 90vw;
+    background: #3b82f6;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 6px 12px rgba(59,130,246,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(50%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 10500;
+  }
+
+  #toast.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+/* Scroll container with shadow overlays */
+  #tableScrollWrapper {
+    position: relative;
+    max-height: 500px;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  #tableScrollWrapper::before,
+  #tableScrollWrapper::after {
+    content: "";
+    position: sticky;
+    top: 0;
+    width: 20px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity 0.3s ease;
+  }
+  
+  #tableScrollWrapper::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
+    opacity: 0;
+  }
+  
+  #tableScrollWrapper::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
+    opacity: 0;
+  }
+
+  /* Show shadows when needed */
+  #tableScrollWrapper.scrolling-left::before {
+    opacity: 1;
+  }
+  #tableScrollWrapper.scrolling-right::after {
+    opacity: 1;
+  }
+  
+/* ------- Styling for each table data cell ------- */
+.nip-cell {
+}
+
+.nama-cell {
+}
+
+.namarek-cell {
+}
+
+.norek-cell {
+}
+
+.satdik-cell {
+}
+
+.jenistunjangan-cell {
+}
+
+.pemda-cell {
+}   
+
+.salurbrut-cell {
+}
+
+.pph-cell {
+}
+
+.jkn-cell {
+}
+
+.salurnet-cell {
+}
+
+.triwulan-cell {
+}
+
