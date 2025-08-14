@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPPN</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">  
+    <link rel="stylesheet" href="/SP2D.css">       
+</head>
+<body>
+<!-- Tailwind Navbar -->
+<nav class="bg-white shadow-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16 items-center">
+      
+      <!-- Left side: Logo + Title -->
+      <a href="#" class="flex items-center space-x-2">
+        <img src="logo-kementerian-keuangan-356.png" alt="Logo" class="h-6 w-6">
+        <span class="font-semibold text-lg text-gray-800">KPPN</span>
+      </a>
+
+      <!-- Right side: Menu -->
+      <div class="hidden md:flex space-x-6">
+        <a href="KPPN.html" class="text-gray-700 hover:text-blue-600 transition">Beranda</a>
+        <a href="BOK.html" class="text-gray-700 hover:text-blue-600 transition">BOK</a>
+        <a href="TKG.html" class="text-gray-700 hover:text-blue-600 transition">TKG & TPG</a>
+        <a href="SP2D.html" class="text-blue-600 font-semibold border-b-2 border-blue-600">SP2D</a>
+        <a href="DDD.html" class="text-gray-700 hover:text-blue-600 transition">DDD</a>
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <button id="mobileMenuButton" class="text-gray-700 hover:text-blue-600 focus:outline-none">
+          <!-- Hamburger Icon -->
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu dropdown -->
+  <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2">
+    <a href="index.html" class="block text-gray-700 hover:text-blue-600 transition">Beranda</a>
+    <a href="BOK.html" class="block text-gray-700 hover:text-blue-600 transition">BOK</a>
+    <a href="TKG.html" class="block text-gray-700 hover:text-blue-600 transition">TKG & TPG</a>
+    <a href="SP2D.html" class="block text-blue-600 font-semibold border-b-2 border-blue-600">SP2D</a>
+    <a href="DDD.html" class="block text-gray-700 hover:text-blue-600 transition">DDD</a>
+  </div>
+</nav>
+<h1 class="text-center my-8 text-2xl font-bold">SP2D</h1>
+  <div id="mainContent" style="display: none;">
+      <div class="header-bar">
+        <div class="filter-row">
+        <div class="chip-filter-group">
+          <div class="chip-filter">
+            <select id="filterJenisSPM" style="width: 230px;">
+              <option value="" >[ Pilih SPM ]</option>
+            </select>
+          </div>
+
+          <div class="chip-filter">
+          <select id="filterJenisSP2D" style="width: 230px;">
+            <option value="" >[ Pilih SP2D ]</option>
+          </select>
+        </div>
+
+      <div class ="search-reset">
+        <div class="search-container">
+          <input type="text" class="search-input" id="searchInput" placeholder="Search..." oninput="debounceSearch(); toggleClear()">
+          <button class="clear-btn" onclick="clearSearch()" id="clearBtn">&times;</button>
+        </div>
+          <button id="resetFilters" type="button">Reset</button>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tableScrollWrapper" class="max-h-[500px] overflow-y-auto">
+      <div id="tableContainer" class="fade-in"></div>
+    </div>
+
+      <div class="pagination-container">
+        <div class="pagination-left">
+          <label for="rowsPerPageSelect">Tampilkan</label>
+          <select id="rowsPerPageSelect" onchange="changeRowsPerPage()">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="9999">Semua</option>
+          </select>
+          <span id="count-display"></span>
+        </div>
+        <div class="pagination-controls" id="pagination-controls"></div>
+      </div>
+
+      <div id="noResults" class="no-results" style="display:none;">No matching results found.</div>
+    </div>
+
+    <div id="loader" class="loader-overlay" style="display:none;">
+      <div>
+        <div class="spinner"></div>
+        <p style="text-align:center; font-size: 1.5rem; color:#555;">Loading data...</p>
+      </div>
+    </div>
+
+    <div id="toast" role="alert" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="https://cdn.tailwindcss.com"></script>     
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="/SP2D.js"></script>
+</body>
+</html>
