@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="logo-kementerian-keuangan-356.png" type="image/x-icon">
-    <title>Document</title>
+    <title>KPPN</title>
+     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>     
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">  
+    <link rel="stylesheet" href="index.css">     
 </head>
 <body>
     <!-- Tailwind Navbar -->
@@ -23,7 +24,7 @@
 
       <!-- Right side: Menu -->
       <div class="hidden md:flex space-x-6">
-        <a href="Dashboard.html" class="text-blue-600 font-semibold border-b-2 border-blue-600">Beranda</a>
+        <a href="index.html" class="text-blue-600 font-semibold border-b-2 border-blue-600">Beranda</a>
         <a href="BOK.html" class="text-gray-700 hover:text-blue-600 transition">BOK</a>
         <a href="TKG.html" class="text-gray-700 hover:text-blue-600 transition">TKG & TPG</a>
         <a href="SP2D.html" class="text-gray-700 hover:text-blue-600 transition">SP2D</a>
@@ -45,20 +46,21 @@
 
   <!-- Mobile menu dropdown -->
   <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2">
-    <a href="Dashboard.html" class="block text-blue-600 font-semibold border-b-2 border-blue-600">Beranda</a>
+    <a href="index.html" class="block text-blue-600 font-semibold border-b-2 border-blue-600">Beranda</a>
     <a href="BOK.html" class="block text-gray-700 hover:text-blue-600 transition">BOK</a>
     <a href="TKG.html" class="block text-gray-700 hover:text-blue-600 transition">TKG & TPG</a>
     <a href="SP2D.html" class="block text-gray-700 hover:text-blue-600 transition">SP2D</a>
     <a href="DDD.html" class="block text-gray-700 hover:text-blue-600 transition">DDD</a>
   </div>
 </nav>
-<!-- Script to toggle mobile menu -->
-<script>
-document.getElementById("mobileMenuButton").addEventListener("click", () => {
-  document.getElementById("mobileMenu").classList.toggle("hidden");
-});
-</script>
-<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+<h1 class="text-center my-8 text-2xl font-bold">Selamat Datang di KPPN!</h1>
+<h1 class="text-center my-8 text-1xl font-bold">Mohon tunggu, kami sedang dalam proses pembuatan website!</h1>
 
+  <script src="https://cdn.tailwindcss.com"></script>     
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="index.js"></script>
+</body>
 </html>
