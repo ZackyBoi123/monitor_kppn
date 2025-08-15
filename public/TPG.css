@@ -2,10 +2,20 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 0.75rem;
   background: #fafafa;
-  color: #222;
-  font-size: 0.9rem;
+  color: #37474f;
   transition: filter 0.3s ease;
   line-height: 1.4;
+}
+
+:root{
+  --blue-50:#eff6ff;
+  --blue-100:#dbeafe;
+  --blue-200:#bfdbfe;
+  --blue-500:#3b82f6;  /* Tailwind blue-500 */
+  --blue-600:#2563eb;  /* Tailwind blue-600 (primary) */
+  --blue-700:#1d4ed8;  /* Tailwind blue-700 */
+  --slate-800:#1e293b;
+  --gray-200:#e5e7eb;
 }
 
 /* Header and form styling */
@@ -15,8 +25,6 @@ body {
   justify-content: center;
   padding: 1.25rem 1rem;
   border-radius: 12px;
-  /* background: #fff; */
-  /* box-shadow: 0 4px 10px rgb(0 0 0 / 0.05); */
   margin-bottom: 1rem;
 }
 
@@ -30,8 +38,8 @@ body {
 }
 
 #resetFilters {
-  background: #3b82f6; /* modern blue */
-  color: white;
+  background: var(--blue-500); /* modern blue */
+  color: #fff;
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -41,14 +49,14 @@ body {
   width: 90px;
   padding: 0 14px;
   transition: background-color 0.3s ease, box-shadow 0.2s ease;
-  box-shadow: 0 3px 6px rgb(59 130 246 / 0.3);
+  box-shadow: 0 3px 6px rgb(59 130 246 / 0.30);
 }
 
 #resetFilters:hover,
 #resetFilters:focus {
-  background: #2563eb;
+  background: var(--blue-600);
+  box-shadow: 0 5px 12px rgb(37 99 235 / 0.50);
   outline: none;
-  box-shadow: 0 5px 12px rgb(37 99 235 / 0.5);
 }
 
 .search-reset {
@@ -67,7 +75,7 @@ body {
   max-width: 862px;
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 5px rgb(0 0 0 / 0.07);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
   border-radius: 10px;
   background: white;
 }
@@ -84,7 +92,7 @@ body {
 
 .select2-container--default .select2-selection--single:focus,
 .select2-container--default .select2-selection--single:hover {
-  border-color: #3b82f6;
+  border-color: var(--blue-500);
   box-shadow: 0 0 8px rgb(59 130 246 / 0.35);
 }
 
@@ -178,7 +186,7 @@ body {
 
 .spinner {
   border: 5px solid #e0e0e0;
-  border-top: 5px solid #3b82f6;
+  border-top: 5px solid var(--blue-500);
   border-radius: 50%;
   width: 60px;
   height: 60px;
@@ -222,7 +230,9 @@ table th {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: linear-gradient(90deg, #3b83f6 0%, #60a5fa 50%, #3b82f6 100%);
+  background: linear-gradient(90deg, var(--blue-600) 0%,
+                                     var(--blue-500) 50%,
+                                     var(--blue-600) 100%);
   color: white;
   font-weight: 700;
   border: none;
@@ -263,13 +273,13 @@ table.compact td {
 
 /* Row hover effect */
 tbody tr:hover {
-  background-color: #e0f0ff;
+  background-color: var(--blue-50);
   transition: background-color 0.3s ease;
 }
 
 /* Zebra striping */
 tbody tr:nth-child(even) {
-  background-color: #f7f8fa;
+  background-color: #f8fafc;
 }
 
 /* Pagination styling */
@@ -339,16 +349,16 @@ tbody tr:nth-child(even) {
 }
 
 .pagination-controls button:hover {
-  background-color: #e0e7ff;
-  box-shadow: 0 4px 12px rgb(59 130 246 / 0.3);
-  color: #2563eb;
+  background-color: var(--blue-100);
+  color: var(--blue-600);
+  box-shadow: 0 4px 12px rgb(59 130 246 / 0.30);
 }
 
 .pagination-controls button.active {
-  background-color: #2563eb;
-  color: white;
+  background-color: var(--blue-600);
+  color:#fff;
+  box-shadow: 0 5px 14px rgb(37 99 235 / 0.60);
   font-weight: 700;
-  box-shadow: 0 5px 14px rgb(37 99 235 / 0.6);
 }
 
 .pagination-controls button:disabled {
@@ -371,9 +381,9 @@ input[type="search"], select {
 }
 
 input[type="search"]:focus, select:focus {
-  border-color: #3b82f6;
-  outline: none;
+  border-color: var(--blue-500);
   box-shadow: 0 0 12px rgb(59 130 246 / 0.5);
+  outline: none;
 }
 
 /* Fade in animation */
@@ -448,7 +458,7 @@ input[type="search"]:focus, select:focus {
     bottom: 40px;
     left: 39%;
     max-width: 90vw;
-    background: #3b82f6;
+    background: var(--blue-500);
     color: white;
     padding: 14px 22px;
     border-radius: 12px;
@@ -507,6 +517,9 @@ input[type="search"]:focus, select:focus {
     opacity: 1;
   }
   
+  #link {
+    text-decoration: none;
+  }
 /* ------- Styling for each table data cell ------- */
 .nip-cell {
 }

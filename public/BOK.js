@@ -46,11 +46,6 @@ function highlightHTML(text, term){
   }
 }
 
-// Script to toggle mobile menu 
-document.getElementById("mobileMenuButton").addEventListener("click", () => {
-  document.getElementById("mobileMenu").classList.toggle("hidden");
-});
-
 // Table scroll shadow effect
 const scrollWrapper = document.getElementById("tableScrollWrapper");
 scrollWrapper.addEventListener("scroll", () => {
@@ -505,6 +500,11 @@ document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
   applyFiltersSearchAndSort();
 });
 
+// Script to toggle mobile menu 
+document.getElementById("mobileMenuButton").addEventListener("click", () => {
+  document.getElementById("mobileMenu").classList.toggle("hidden");
+});
+
 document.getElementById("resetFilters").addEventListener("click", resetAll);
 
 $("#filterJenisPemda, #filterJenisTahap, #filterJenisGelombang, #filterJenisPuskesmas").on("change", () => {
@@ -515,7 +515,7 @@ $("#filterJenisPemda, #filterJenisTahap, #filterJenisGelombang, #filterJenisPusk
 // ---------- Initialization ----------
 (async function init(){
   try {
-    document.getElementById("loader").style.display = "flex";
+    // document.getElementById("loader").style.display = "flex";
     allData = await fetchAllRowsBatched(1000); // fetch all rows in batches of 1000
     allData.sort((a,b) => (Number(a.ID) || 0) - (Number(b.ID) || 0));
     filteredData = [...allData];
@@ -542,6 +542,6 @@ $("#filterJenisPemda, #filterJenisTahap, #filterJenisGelombang, #filterJenisPusk
     document.getElementById("tableContainer").innerHTML = `<p style="color:red;">Failed to load data. See console.</p>`;
     showMainContent();
   } finally {
-    document.getElementById("loader").style.display = "none";
+    // document.getElementById("loader").style.display = "none";
   }
 })();

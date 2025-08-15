@@ -498,7 +498,7 @@ $("#filterJenisSPM, #filterJenisSP2D").on("change", () => {
 // ---------- Initialization ----------
 (async function init(){
   try {
-    document.getElementById("loader").style.display = "flex";
+    // document.getElementById("loader").style.display = "flex";
     allData = await fetchAllRowsBatched(1000); // fetch all rows in batches of 1000
     allData.sort((a,b) => (Number(a.ID) || 0) - (Number(b.ID) || 0));
     filteredData = [...allData];
@@ -521,6 +521,6 @@ $("#filterJenisSPM, #filterJenisSP2D").on("change", () => {
     document.getElementById("tableContainer").innerHTML = `<p style="color:red;">Failed to load data. See console.</p>`;
     showMainContent();
   } finally {
-    document.getElementById("loader").style.display = "none";
+    // document.getElementById("loader").style.display = "none";
   }
 })();
