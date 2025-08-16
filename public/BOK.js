@@ -10,7 +10,6 @@ const COLUMNS = `
   "NAMA TAHAP",  
   GELOMBANG,
   PUSKESMAS,
-  "NAMA REKENING",
   "TOTAL PAGU",
   "PAGU PER TAHAP",
   "NILAI PENGURANG",
@@ -129,6 +128,26 @@ function showMainContent() {
 }
 
 // ---------- Fetch ALL rows (batched) ----------
+async function getLastUpdated() {
+  const { data, error } = await supabase
+    .from('BOK')
+    .select('updated_at')
+    .order('updated_at', { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (data.length > 0) {
+    const lastUpdated = new Date(data[0].updated_at);
+    document.getElementById("last-updated").textContent = "Last Updated: " + lastUpdated.toLocaleString();
+  }
+}
+
+getLastUpdated();
+
 async function fetchAllRowsBatched(batchSize = 1000) {
   // Get exact count first
   const headRes = await supabase
@@ -292,7 +311,6 @@ function renderTable(rows){
     { key: "NAMA TAHAP", label: "Tahap", sortable: true },
     { key: "GELOMBANG", label: "Gelombang", sortable: true },
     { key: "PUSKESMAS", label: "Puskesmas", sortable: true },
-    { key: "NAMA REKENING", label: "Nama Rekening", sortable: true },
     { key: "TOTAL PAGU", label: "Total Pagu", sortable: false },
     { key: "PAGU PER TAHAP", label: "Pagu Per Tahap", sortable: false },
     { key: "NILAI PENGURANG", label: "Nilai Pengurang", sortable: false },
@@ -357,7 +375,6 @@ function renderTable(rows){
         <td class="tahap-cell" data-fulltext="${escapeHTML(row["NAMA TAHAP"])}">${highlightHTML(capitalizeWords(row["NAMA TAHAP"]), searchTerm)}</td>
         <td class="gelombang-cell" data-fulltext="${escapeHTML(row.GELOMBANG)}">${highlightHTML(row.GELOMBANG, searchTerm)}</td>
         <td class="puskesmas-cell" data-fulltext="${escapeHTML(row.PUSKESMAS)}">${highlightHTML(capitalizeWords(row.PUSKESMAS), searchTerm)}</td>
-        <td class="namarek-cell" data-fulltext="${escapeHTML(row["NAMA REKENING"])}">${highlightHTML(row["NAMA REKENING"], searchTerm)}</td>
         <td class="totalpagu-cell" data-fulltext="${escapeHTML(row["TOTAL PAGU"])}">${highlightHTML(row["TOTAL PAGU"], searchTerm)}</td>
         <td class="pagupertahap-cell" data-fulltext="${escapeHTML(row["PAGU PER TAHAP"])}">${highlightHTML(row["PAGU PER TAHAP"], searchTerm)}</td>
         <td class="nilaipeng-cell" data-fulltext="${escapeHTML(row["NILAI PENGURANG"])}">${highlightHTML(row["NILAI PENGURANG"], searchTerm)}</td>

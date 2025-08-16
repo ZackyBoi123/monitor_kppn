@@ -127,6 +127,26 @@ function showMainContent() {
 }
 
 // ---------- Fetch ALL rows (batched) ----------
+async function getLastUpdated() {
+  const { data, error } = await supabase
+    .from('SP2D')
+    .select('updated_at')
+    .order('updated_at', { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (data.length > 0) {
+    const lastUpdated = new Date(data[0].updated_at);
+    document.getElementById("last-updated").textContent = "Last Updated: " + lastUpdated.toLocaleString();
+  }
+}
+
+getLastUpdated();
+
 async function fetchAllRowsBatched(batchSize = 1000) {
   // Get exact count first
   const headRes = await supabase

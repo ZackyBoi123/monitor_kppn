@@ -520,6 +520,13 @@ input[type="search"]:focus, select:focus {
   #link {
     text-decoration: none;
   }
+
+  #last-updated {
+    font-size: 14px;
+    color: #6b7280; /* Tailwind's gray-500 */
+    margin-bottom: 1.5rem;
+}
+
 /* ------- Styling for each table data cell ------- */
 .nip-cell {
 }
