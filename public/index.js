@@ -12,12 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check if libraries are loaded
     if (typeof Chart === 'undefined') {
         console.error('Chart.js not loaded');
-        document.getElementById('loadingIndicator').innerHTML = 'Error: Chart.js library failed to load';
+        showAlert('Error: Chart.js library failed to load', 'error');
         return;
     }
     if (typeof supabase === 'undefined') {
         console.error('Supabase not loaded');
-        document.getElementById('loadingIndicator').innerHTML = 'Error: Supabase library failed to load';
+        showAlert('Error: Supabase library failed to load', 'error');
         return;
     }
 
@@ -27,10 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Supabase client initialized');
     } catch (error) {
         console.error('Failed to initialize Supabase client:', error);
-        document.getElementById('loadingIndicator').innerHTML = 'Error: Failed to initialize Supabase client. Check your configuration.';
+        showAlert('Error: Failed to initialize Supabase client. Check your configuration.', 'error');
         return;
     }
 
+    // Initialize event listeners
+    initializeEventListeners();
+    
     // Start loading data
     loadDataFromSupabase();
 });
@@ -44,8 +47,8 @@ let comparisonChart = null;
 // Color palette for charts
 const colors = [
     '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
-    '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF',
-    '#4BC0C0', '#FF6384', '#36A2EB', '#FFCE56'
+    '#9966FF', '#FF9F40', '#f097abff', '#C9CBCF',
+    '#4BC0C0', '#d37c8fff', '#36A2EB', '#FFCE56'
 ];
 
 // Chart configuration
@@ -103,9 +106,24 @@ function formatCurrency(amount) {
     }).format(amount);
 }
 
+// Show alert function
+function showAlert(message, type = 'info') {
+    const alertBanner = document.getElementById('alertBanner');
+    const alertMessage = document.getElementById('alertMessage');
+    
+    alertBanner.className = `alert alert-${type} alert-banner`;
+    alertMessage.textContent = message;
+    alertBanner.style.display = 'block';
+    
+    setTimeout(() => {
+        alertBanner.style.display = 'none';
+    }, 5000);
+}
+
 // Load data from Supabase - both tables
 async function loadDataFromSupabase() {
     try {
+        
         // Fetch data from both tables simultaneously
         const [budgetResponse, comparisonResponse] = await Promise.all([
             supabaseClient.from(BUDGET_TABLE_NAME).select('*'),
@@ -202,31 +220,25 @@ async function loadDataFromSupabase() {
         });
         
         populateRegionDropdown();
+        
+        // Hide skeleton and show content
         document.getElementById('skeletonLoader').style.display = 'none';
-            // Fade-in dashboard sections
-            const sections = ['statsContainer', 'chartsContainer', 'tableContainer'];
-            sections.forEach(id => {
-                const el = document.getElementById(id);
-                el.style.display = ''; // remove display:none
-                setTimeout(() => el.classList.add('show'), 50); // slight delay so transition triggers
-            });
+        document.getElementById('controlsPanel').style.display = 'block'; // Show controls
+        
+        // Fade-in dashboard sections
+        const sections = ['statsContainer', 'chartsContainer', 'tableContainer'];
+        sections.forEach(id => {
+            const el = document.getElementById(id);
+            el.style.display = ''; // remove display:none
+            setTimeout(() => el.classList.add('show'), 50); // slight delay so transition triggers
+        });
+        
+        showAlert('Data loaded successfully!', 'success');
 
     } catch (error) {
         console.error('❌ Error:', error);
-        showDebug('❌ ERROR: ' + error.message);
-        document.getElementById('loadingIndicator').innerHTML = `
-            <div style="color: #ff6b6b; font-weight: bold; margin-bottom: 15px;">❌ Error: ${error.message}</div>
-            <div style="font-size: 0.9rem; opacity: 0.9;">
-                <strong>Common fixes:</strong><br>
-                • Check your Supabase URL and API key are correct<br>
-                • Verify your table names are correct:<br>
-                &nbsp;&nbsp;- Budget table: ${BUDGET_TABLE_NAME}<br>
-                &nbsp;&nbsp;- Comparison table: ${COMPARISON_TABLE_NAME}<br>
-                • Make sure both tables have columns: region/Region, category/Category, pagu/Pagu, realisasi/Realisasi<br>
-                • Check Row Level Security (RLS) policies allow public read access for both tables<br>
-                • Check the debug info above for more details
-            </div>
-        `;
+        showAlert(`Error loading data: ${error.message}`, 'error');
+        document.getElementById('skeletonLoader').style.display = 'none';
     }
 }
 
@@ -275,6 +287,185 @@ document.addEventListener("click", e => {
   }
 });
 
+
+// Initialize all event listeners
+function initializeEventListeners() {
+    // Region selector
+    const regionSelector = document.getElementById('regionSelector');
+    if (regionSelector) {
+        regionSelector.addEventListener('change', function() {
+            if (this.value) {
+                updateCharts(this.value);
+            }
+        });
+    }
+
+    // Refresh button
+    document.getElementById('refreshData').addEventListener('click', () => {
+        showAlert('Refreshing data...', 'info');
+        loadDataFromSupabase();
+    });
+
+    // Export buttons
+    const exportPDF = document.getElementById('exportPDF');
+    const exportExcel = document.getElementById('exportExcel');
+    const exportCSV = document.getElementById('exportCSV');
+    const refreshData = document.getElementById('refreshData');
+    
+    if (exportPDF) exportPDF.addEventListener('click', exportToPDF);
+    if (exportExcel) exportExcel.addEventListener('click', exportToExcel);
+    if (exportCSV) exportCSV.addEventListener('click', exportToCSV);
+    if (refreshData) refreshData.addEventListener('click', refreshDataHandler);
+
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById("mobileMenuButton");
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener("click", () => {
+            document.getElementById("mobileMenu").classList.toggle("hidden");
+        });
+    }
+
+    // Auto-hide navbar on scroll
+    let lastScrollTop = 0;
+    const navbar = document.getElementById("navbar");
+
+    if (navbar) {
+        window.addEventListener("scroll", () => {
+            let scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+            if (scrollTop > lastScrollTop) {
+                // Scrolling down → hide navbar
+                navbar.style.transform = "translateY(-100%)";
+            } else {
+                // Scrolling up → show navbar
+                navbar.style.transform = "translateY(0)";
+            }
+
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative
+        });
+    }
+}
+
+// Export functions
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFontSize(20);
+    doc.text('KPPN Budget Report', 20, 20);
+    
+    doc.setFontSize(12);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 40);
+    
+    // Add table data
+    const tableData = comparisonData.map(item => [
+        item.Category,
+        formatCurrency(item.Pagu),
+        formatCurrency(item.Realisasi),
+        `${(item.Pagu > 0 ? (item.Realisasi / item.Pagu * 100) : 0).toFixed(1)}%`
+    ]);
+    
+    doc.autoTable({
+        head: [['Category', 'Pagu', 'Realisasi', 'Rate']],
+        body: tableData,
+        startY: 50
+    });
+    
+    doc.save('budget-report.pdf');
+    showAlert('PDF exported successfully!', 'success');
+}
+
+function exportToExcel() {
+    try {
+        // Get current region data
+        const regionSelector = document.getElementById('regionSelector');
+        const selectedRegion = regionSelector.value;
+        
+        if (!selectedRegion) {
+            showAlert('Please select a region first!', 'error');
+            return;
+        }
+        
+        const regionData = budgetData.filter(item => item.Region === selectedRegion);
+        
+        // Create CSV content
+        let csvContent = "Category,Pagu,Realisasi,Realization Rate\n";
+        regionData.forEach(item => {
+            const realizationRate = item.Pagu > 0 ? ((item.Realisasi / item.Pagu) * 100).toFixed(1) : 0;
+            csvContent += `"${item.Category}",${item.Pagu},${item.Realisasi},${realizationRate}%\n`;
+        });
+        
+        // Download file
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `budget_data_${selectedRegion}_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showAlert('Excel file exported successfully!', 'success');
+    } catch (error) {
+        console.error('Export error:', error);
+        showAlert('Error exporting to Excel', 'error');
+    }
+}
+
+function exportToCSV() {
+    try {
+        // Get current region data
+        const regionSelector = document.getElementById('regionSelector');
+        const selectedRegion = regionSelector.value;
+        
+        if (!selectedRegion) {
+            return;
+        }
+        
+        const regionData = budgetData.filter(item => item.Region === selectedRegion);
+        
+        // Create CSV content
+        let csvContent = "Category,Pagu,Realisasi,Realization Rate\n";
+        regionData.forEach(item => {
+            const realizationRate = item.Pagu > 0 ? ((item.Realisasi / item.Realisasi) * 100).toFixed(1) : 0;
+            csvContent += `"${item.Category}",${item.Pagu},${item.Realisasi},${realizationRate}%\n`;
+        });
+        
+        // Download file
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `budget_data_${selectedRegion}_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showAlert('CSV file exported successfully!', 'success');
+        
+    } catch (error) {
+        console.error('Export error:', error);
+    }
+}
+
+function refreshDataHandler() {
+    
+    // Hide content and show skeleton
+    document.getElementById('statsContainer').style.display = 'none';
+    document.getElementById('chartsContainer').style.display = 'none';
+    document.getElementById('tableContainer').style.display = 'none';
+    document.getElementById('controlsPanel').style.display = 'none';
+    document.getElementById('skeletonLoader').style.display = 'block';
+    
+    // Clear existing data
+    budgetData = [];
+    comparisonData = [];
+    
+    // Reload data
+    loadDataFromSupabase();
+}
+
 // Update charts based on selected region
 function updateCharts(selectedRegion) {
     const regionData = budgetData.filter(item => item.Region === selectedRegion);
@@ -300,7 +491,7 @@ function updateCharts(selectedRegion) {
     updateChart('paguChart', paguCategories, paguValues, 'Pagu');
     updateChart('realisasiChart', realisasiCategories, realisasiValues, 'Realisasi');
     updateBarChart(); // No parameters - shows all categories
-    updateDataTable(); // No parameters - shows all categories
+    updateDataTable(selectedRegion); // Pass selectedRegion parameter
     updateStats(regionData);
 
     // Show charts and table
@@ -311,74 +502,73 @@ function updateCharts(selectedRegion) {
 
 // Update chart function - handles both Pagu and Realisasi charts
 function updateChart(canvasId, labels, data, type) {
-  const ctx = document.getElementById(canvasId).getContext('2d');
+    const ctx = document.getElementById(canvasId).getContext('2d');
 
-  // Destroy existing chart
-  if (canvasId === 'paguChart' && paguChart) {
-    paguChart.destroy();
-  } else if (canvasId === 'realisasiChart' && realisasiChart) {
-    realisasiChart.destroy();
-  }
+    // Destroy existing chart
+    if (canvasId === 'paguChart' && paguChart) {
+        paguChart.destroy();
+    } else if (canvasId === 'realisasiChart' && realisasiChart) {
+        realisasiChart.destroy();
+    }
 
-  // Detect if on mobile
-  const isMobile = window.innerWidth < 768;
+    // Detect if on mobile
+    const isMobile = window.innerWidth < 768;
 
-  // Shared dataset styling
-  const datasetConfig = {
-    data: data,
-    backgroundColor: colors.slice(0, labels.length),
-    borderColor: '#fff',
-    borderWidth: isMobile ? 1 : 2,      // ✅ lighter borders on mobile
-    hoverOffset: isMobile ? 4 : 8       // ✅ smaller offset on mobile
-  };
-
-  // Animation settings
-  const animationConfig = isMobile ? false : {
-    animateRotate: true,
-    animateScale: true,
-    duration: 1000,
-    easing: 'easeOutQuart'
-  };
-
-  let config;
-
-  if (canvasId === 'paguChart') {
-    // Doughnut chart for Pagu
-    config = {
-      type: 'doughnut',
-      data: {
-        labels: labels,
-        datasets: [datasetConfig]
-      },
-      options: {
-        ...chartConfig.options,
-        cutout: '60%',
-        animation: animationConfig   // ✅ optimized
-      }
+    // Shared dataset styling
+    const datasetConfig = {
+        data: data,
+        backgroundColor: colors.slice(0, labels.length),
+        borderColor: '#fff',
+        borderWidth: isMobile ? 1 : 2,      // ✅ lighter borders on mobile
+        hoverOffset: isMobile ? 4 : 8       // ✅ smaller offset on mobile
     };
-  } else {
-    // Pie chart for Realisasi
-    config = {
-      type: 'pie',
-      data: {
-        labels: labels,
-        datasets: [datasetConfig]
-      },
-      options: {
-        ...chartConfig.options,
-        cutout: '0%',
-        animation: animationConfig   // ✅ optimized
-      }
-    };
-  }
 
-  if (canvasId === 'paguChart') {
-    paguChart = new Chart(ctx, config);
-  } else {
-    realisasiChart = new Chart(ctx, config);
-  }
+    // Animation settings
+    const animationConfig = isMobile ? false : {
+        animateRotate: true,
+        animateScale: true,
+        duration: 1000,
+        easing: 'easeOutQuart'
+    };
+
+    let config;
+
+    if (canvasId === 'paguChart') {
+        // Doughnut chart for Pagu
+        config = {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [datasetConfig]
+            },
+            options: {
+                ...chartConfig.options,
+                cutout: '60%',
+                animation: animationConfig   
+            }
+        };
+    } else {
+        // Pie chart for Realisasi
+        config = {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [datasetConfig]
+            },
+            options: {
+                ...chartConfig.options,
+                cutout: '0%',
+                animation: animationConfig   
+            }
+        };
+    }
+
+    if (canvasId === 'paguChart') {
+        paguChart = new Chart(ctx, config);
+    } else {
+        realisasiChart = new Chart(ctx, config);
+    }
 }
-
 
 // Updated function for bar chart - now shows all categories without region filter
 function updateBarChart() {
@@ -487,15 +677,15 @@ function updateBarChart() {
     comparisonChart = new Chart(ctx, config);
 }
 
-// Updated function for data table - now uses comparison data
+// Fixed data table function - now uses budget data filtered by region
 function updateDataTable(selectedRegion) {
     const tableBody = document.querySelector('#budgetTable tbody');
     tableBody.innerHTML = '';
 
-    // Get data from the comparison table for selected region
-    const regionComparisonData = comparisonData.filter(item => item.Region === selectedRegion);
+    // Get data from the budget table for selected region
+    const regionData = budgetData.filter(item => item.Region === selectedRegion);
 
-    regionComparisonData.forEach(item => {
+    regionData.forEach(item => {
         const row = document.createElement('tr');
         const realizationRate = item.Pagu > 0 ? ((item.Realisasi / item.Pagu) * 100).toFixed(1) : 0;
         
@@ -523,38 +713,3 @@ function updateStats(regionData) {
     document.getElementById('totalRealisasi').textContent = formatCurrency(totalRealisasi);
     document.getElementById('realizationRate').textContent = `${realizationRate}%`;
 }
-
-// Event listener for region selection
-document.addEventListener('DOMContentLoaded', function() {
-    const regionSelector = document.getElementById('regionSelector');
-    if (regionSelector) {
-        regionSelector.addEventListener('change', function() {
-            if (this.value) {
-                updateCharts(this.value);
-            }
-        });
-    }
-});
-
-// auto-hide navbar on scroll > re-appear on scroll up
-  let lastScrollTop = 0;
-  const navbar = document.getElementById("navbar");
-
-  window.addEventListener("scroll", () => {
-    let scrollTop = window.scrollY || document.documentElement.scrollTop;
-
-    if (scrollTop > lastScrollTop) {
-      // Scrolling down → hide navbar
-      navbar.style.transform = "translateY(-100%)";
-    } else {
-      // Scrolling up → show navbar
-      navbar.style.transform = "translateY(0)";
-    }
-
-    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative
-  });
-
-  // Script to toggle mobile menu 
-document.getElementById("mobileMenuButton").addEventListener("click", () => {
-  document.getElementById("mobileMenu").classList.toggle("hidden");
-});

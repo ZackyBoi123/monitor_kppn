@@ -1,6 +1,5 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 0.75rem;
   background: #fafafa;
   color: #37474f;
   transition: filter 0.3s ease;
@@ -432,7 +431,7 @@ input[type="search"]:focus, select:focus {
   opacity: 1;
 }
 
-/* Responsive */
+  /* Responsive */
 @media (max-width: 768px) {
   .header-bar {
     flex-direction: column;
@@ -450,14 +449,35 @@ input[type="search"]:focus, select:focus {
   .pagination-controls {
     justify-content: center;
   }
+
+  #toast {
+    left: 50%;
+    transform: translateX(-50%) translateY(50%);
+    width: auto;
+    min-width: 200px;
+    max-width: 90vw;
+    right: auto;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  #toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
 }
 
 /* Toast notification */
   #toast {
     position: fixed;
-    bottom: 40px;
-    left: 39%;
+    bottom: 13px;
+    left: 50%;
+    min-width: 200px;
     max-width: 90vw;
+    width: auto;
+    right: auto;
+    margin: 0 auto;
+    text-align: center;
     background: var(--blue-500);
     color: white;
     padding: 14px 22px;
@@ -466,7 +486,7 @@ input[type="search"]:focus, select:focus {
     box-shadow: 0 6px 12px rgba(59,130,246,0.4);
     opacity: 0;
     pointer-events: none;
-    transform: translateY(50%);
+    transform: translateX(-50%) translateY(50%);
     transition: opacity 0.3s ease, transform 0.3s ease;
     z-index: 10500;
   }
@@ -474,7 +494,7 @@ input[type="search"]:focus, select:focus {
   #toast.show {
     opacity: 1;
     pointer-events: auto;
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
   }
 
 /* Scroll container with shadow overlays */

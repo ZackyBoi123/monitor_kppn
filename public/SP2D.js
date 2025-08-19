@@ -501,6 +501,7 @@ function showToast(msg){
 // ---------- Wire UI event listeners ----------
 document.getElementById("clearBtn").addEventListener("click", clearSearch);
 
+// rows per page select
 document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
   const val = parseInt(e.target.value, 10);
   rowsPerPage = isNaN(val) ? 10 : val;
@@ -508,12 +509,32 @@ document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
   applyFiltersSearchAndSort();
 });
 
+// Reset filters button
 document.getElementById("resetFilters").addEventListener("click", resetAll);
 
+// Apply filters on change
 $("#filterJenisSPM, #filterJenisSP2D").on("change", () => {
   currentPage = 1;
   applyFiltersSearchAndSort();
 });
+
+// auto-hide navbar on scroll > re-appear on scroll up
+  let lastScrollTop = 0;
+  const navbar = document.getElementById("navbar");
+
+  window.addEventListener("scroll", () => {
+    let scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+    if (scrollTop > lastScrollTop) {
+      // Scrolling down → hide navbar
+      navbar.style.transform = "translateY(-100%)";
+    } else {
+      // Scrolling up → show navbar
+      navbar.style.transform = "translateY(0)";
+    }
+
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative
+  });
 
 // ---------- Initialization ----------
 (async function init(){
