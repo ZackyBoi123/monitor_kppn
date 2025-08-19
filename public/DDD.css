@@ -10,9 +10,12 @@ body {
   --blue-50:#eff6ff;
   --blue-100:#dbeafe;
   --blue-200:#bfdbfe;
-  --blue-500:#3b82f6;  /* Tailwind blue-500 */
-  --blue-600:#2563eb;  /* Tailwind blue-600 (primary) */
-  --blue-700:#1d4ed8;  /* Tailwind blue-700 */
+  --blue-500:#3b82f6;   /* Tailwind blue-500 */
+  --blue-600:#2563eb;   /* Tailwind blue-600 (primary) */
+  --blue-700:#1d4ed8;   /* Tailwind blue-700 */
+  --sky-400: #38bdf8;   /* Tailwind sky-400 */
+  --sky-500: #0ea5e9;   /* Tailwind sky-500 */
+  --sky-600: #0284c7;   /* Tailwind sky-600 */
   --slate-800:#1e293b;
   --gray-200:#e5e7eb;
 }
@@ -203,7 +206,6 @@ table {
   border-collapse: separate;
   border-spacing: 0;
   background: #fff;
-  border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
   transition: box-shadow 0.3s ease-in-out;
@@ -211,10 +213,9 @@ table {
 }
 
 table td {
-  border-left: 1px solid #e1e1e1;
-  border-right: 1px solid #e1e1e1;
+  border-bottom: 1px solid #e1e1e1;
+  border-top: 1px solid #e1e1e1;
   padding: 0.7rem 1rem;
-  text-align: center;
   vertical-align: middle;
   font-size: 0.51rem;
   color: #444;
@@ -229,16 +230,17 @@ table th {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: linear-gradient(90deg, var(--blue-600) 0%,
-                                     var(--blue-500) 50%,
-                                     var(--blue-600) 100%);
+  background: linear-gradient(90deg, var(--sky-500) 0%,
+                                     var(--sky-500) 50%,
+                                     var(--sky-500) 100%);
   color: white;
   font-weight: 700;
   border: none;
   padding: 1rem 1.2rem;
-  font-size: 0.51rem;
+  font-size: 0.9rem;
   user-select: none;
-  text-align: center;
+  text-align: left;
+  border-bottom: 1px solid #383434;
   letter-spacing: 0.02em;
   box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
   cursor: default;
