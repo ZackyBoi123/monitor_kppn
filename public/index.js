@@ -552,3 +552,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative
   });
+
+  // Script to toggle mobile menu 
+document.getElementById("mobileMenuButton").addEventListener("click", () => {
+  document.getElementById("mobileMenu").classList.toggle("hidden");
+});
