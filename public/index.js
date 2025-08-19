@@ -311,73 +311,74 @@ function updateCharts(selectedRegion) {
 
 // Update chart function - handles both Pagu and Realisasi charts
 function updateChart(canvasId, labels, data, type) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    
-    // Destroy existing chart
-    if (canvasId === 'paguChart' && paguChart) {
-        paguChart.destroy();
-    } else if (canvasId === 'realisasiChart' && realisasiChart) {
-        realisasiChart.destroy();
-    }
+  const ctx = document.getElementById(canvasId).getContext('2d');
 
-    // Create different chart configurations
-    let config;
-    
-    if (canvasId === 'paguChart') {
-        // Doughnut chart for Pagu
-        config = {
-            ...chartConfig,
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: colors.slice(0, labels.length),
-                    borderColor: '#fff',
-                    borderWidth: 3,
-                    hoverOffset: 10
-                }]
-            },
-            options: {
-                ...chartConfig.options,
-                cutout: '60%' // This makes it a doughnut
-            }
-        };
-    } else {
-        // Pie chart for Realisasi
-        config = {
-            ...chartConfig,
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: colors.slice(0, labels.length),
-                    borderColor: '#fff',
-                    borderWidth: 3,
-                    hoverOffset: 10
-                }]
-            },
-            options: {
-                ...chartConfig.options,
-                cutout: '0%',
-                animation: {
-                animateRotate: true,
-                animateScale: true,
-                duration: 1000,
-                easing: 'easeOutQuart'
-                }
-            }
-        };
-    }
+  // Destroy existing chart
+  if (canvasId === 'paguChart' && paguChart) {
+    paguChart.destroy();
+  } else if (canvasId === 'realisasiChart' && realisasiChart) {
+    realisasiChart.destroy();
+  }
 
-    // Create new chart
-    if (canvasId === 'paguChart') {
-        paguChart = new Chart(ctx, config);
-    } else {
-        realisasiChart = new Chart(ctx, config);
-    }
+  // Detect if on mobile
+  const isMobile = window.innerWidth < 768;
+
+  // Shared dataset styling
+  const datasetConfig = {
+    data: data,
+    backgroundColor: colors.slice(0, labels.length),
+    borderColor: '#fff',
+    borderWidth: isMobile ? 1 : 2,      // ✅ lighter borders on mobile
+    hoverOffset: isMobile ? 4 : 8       // ✅ smaller offset on mobile
+  };
+
+  // Animation settings
+  const animationConfig = isMobile ? false : {
+    animateRotate: true,
+    animateScale: true,
+    duration: 1000,
+    easing: 'easeOutQuart'
+  };
+
+  let config;
+
+  if (canvasId === 'paguChart') {
+    // Doughnut chart for Pagu
+    config = {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [datasetConfig]
+      },
+      options: {
+        ...chartConfig.options,
+        cutout: '60%',
+        animation: animationConfig   // ✅ optimized
+      }
+    };
+  } else {
+    // Pie chart for Realisasi
+    config = {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [datasetConfig]
+      },
+      options: {
+        ...chartConfig.options,
+        cutout: '0%',
+        animation: animationConfig   // ✅ optimized
+      }
+    };
+  }
+
+  if (canvasId === 'paguChart') {
+    paguChart = new Chart(ctx, config);
+  } else {
+    realisasiChart = new Chart(ctx, config);
+  }
 }
+
 
 // Updated function for bar chart - now shows all categories without region filter
 function updateBarChart() {
