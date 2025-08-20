@@ -206,9 +206,7 @@ table {
   border-collapse: separate;
   border-spacing: 0;
   background: #fff;
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
-  transition: box-shadow 0.3s ease-in-out;
+  overflow: visible; /* Important */
   font-weight: 500;
 }
 
@@ -224,28 +222,6 @@ table td {
   text-overflow: ellipsis;
   cursor: default;
   transition: background-color 0.25s ease;
-}
-
-table th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  /* background: linear-gradient(90deg, var(--sky-500) 0%,
-                                     var(--sky-500) 50%,
-                                     var(--sky-500) 100%); */
-  background-color: #f8fafc;
-  color: black;
-  font-weight: 700;
-  border: none;
-  padding: 1rem 1.2rem;
-  font-size: 0.9rem;
-  user-select: none;
-  text-align: center;
-  border-bottom: 1px solid #383434;
-  letter-spacing: 0.02em;
-  /* box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); */
-  cursor: default;
-  white-space: nowrap;
 }
 
 /* table th[aria-sort="ascending"],
@@ -505,14 +481,31 @@ input[type="search"]:focus, select:focus {
 
 /* Scroll container with shadow overlays */
   #tableScrollWrapper {
-    position: relative;
-    max-height: 500px;
-    overflow-x: auto;
-    overflow-y: auto;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
+  position: relative;
+  max-height: 500px;
+  overflow: auto; /* Single overflow property instead of separate x/y */
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+#tableScrollWrapper table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f8fafc;
+  color: black;
+  font-weight: 600;
+  border: none;
+  padding: 1rem 1.2rem;
+  font-size: 1rem;
+  user-select: none;
+  text-align: center;
+  border-bottom: 1px solid #383434;
+  letter-spacing: 0.02em;
+  cursor: default;
+  white-space: nowrap;
+}
 
   #tableScrollWrapper::before,
   #tableScrollWrapper::after {
