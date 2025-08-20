@@ -13,13 +13,13 @@ const COLUMNS = `
   "TOTAL PAGU",
   "PAGU PER TAHAP",
   "NILAI PENGURANG",
-  "NILAI PENGGUNAAN DANA",
   "NILAI PENYALURAN",
   SP2D,
   "TANGGAL SP2D",
   "NILAI SP2D"
-`;
-
+  `;
+  // "NILAI PENGGUNAAN DANA",
+  
 // ---------- State ----------
 let allData = [];         // full dataset (fetched once)
 let filteredData = [];    // after filters + search + sort
@@ -64,17 +64,16 @@ scrollWrapper.addEventListener("scroll", () => {
 // Save/load state from localStorage for persistence
 function saveState() {
   const state = {
-    filters: {
-      pemda: $("#filterJenisPemda").val(),
-      tahap: $("#filterJenisTahap").val(),
-      gelombang: $("#filterJenisGelombang").val(),
-      pusk: $("#filterJenisPuskesmas").val(),
-    },
+    // filters: {
+    //   pemda: $("#filterJenisPemda").val(),
+    //   tahap: $("#filterJenisTahap").val(),
+    //   gelombang: $("#filterJenisGelombang").val(),
+    //   pusk: $("#filterJenisPuskesmas").val(),
+    // },
     searchTerm: document.getElementById("searchInput").value.trim(),
     sortColumn,
     sortDirection,
     currentPage,
-    rowsPerPage,
   };
   localStorage.setItem("tableState", JSON.stringify(state));
 }
@@ -101,10 +100,6 @@ function loadState() {
     }
     if(state.currentPage) {
       currentPage = state.currentPage;
-    }
-    if(state.rowsPerPage) {
-      rowsPerPage = state.rowsPerPage;
-      document.getElementById("rowsPerPageSelect").value = rowsPerPage;
     }
   } catch (e) {
     console.warn("Failed to load saved state", e);
@@ -284,7 +279,6 @@ function renderPaginatedTable(){
 
   renderPaginationControls(totalPages);
   toggleClear();
-  saveState();
 }
 
 // ---------- Renders title if text overflowed ----------
@@ -294,6 +288,26 @@ function setTitleIfOverflowed(cell) {
   } else {
     cell.title = "";
   }
+}
+
+// ---------- Format Rupiah with search highlighting ----------
+function formatRupiahWithHighlight(number, searchTerm = '') {
+  if (!number || number === '' || number === '-' || isNaN(number)) {
+    return searchTerm ? highlightHTML('-', searchTerm) : '-';
+  }
+  
+  const num = parseFloat(number);
+  if (num === 0) {
+    const formatted = 'Rp. 0';
+    return searchTerm ? highlightHTML(formatted, searchTerm) : formatted;
+  }
+  
+  const formatted = 'Rp. ' + num.toLocaleString('id-ID', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  
+  return searchTerm ? highlightHTML(formatted, searchTerm) : formatted;
 }
 
 // ---------- Render table with clickable sortable headers ----------
@@ -314,11 +328,11 @@ function renderTable(rows){
     { key: "TOTAL PAGU", label: "Total Pagu", sortable: false },
     { key: "PAGU PER TAHAP", label: "Pagu Per Tahap", sortable: false },
     { key: "NILAI PENGURANG", label: "Nilai Pengurang", sortable: false },
-    { key: "NILAI PENGGUNAAN DANA", label: "Nilai Penggunaan Dana", sortable: false },
+    // { key: "NILAI PENGGUNAAN DANA", label: "Nilai Penggunaan Dana", sortable: false },
     { key: "NILAI PENYALURAN", label: "Nilai Penyaluran", sortable: false },
     { key: "SP2D", label: "SP2D", sortable: false },
-    { key: "TANGGAL SP2D", label: "Tanggal SP2D", sortable: false },
     { key: "NILAI SP2D", label: "Nilai SP2D", sortable: false },
+    { key: "TANGGAL SP2D", label: "Tanggal SP2D", sortable: false },
   ];
 
   const thead = document.createElement("thead");
@@ -375,16 +389,16 @@ function renderTable(rows){
         <td class="tahap-cell" data-fulltext="${escapeHTML(row["NAMA TAHAP"])}">${highlightHTML(capitalizeWords(row["NAMA TAHAP"]), searchTerm)}</td>
         <td class="gelombang-cell" data-fulltext="${escapeHTML(row.GELOMBANG)}">${highlightHTML(row.GELOMBANG, searchTerm)}</td>
         <td class="puskesmas-cell" data-fulltext="${escapeHTML(row.PUSKESMAS)}">${highlightHTML(capitalizeWords(row.PUSKESMAS), searchTerm)}</td>
-        <td class="totalpagu-cell" data-fulltext="${escapeHTML(row["TOTAL PAGU"])}">${highlightHTML(row["TOTAL PAGU"], searchTerm)}</td>
-        <td class="pagupertahap-cell" data-fulltext="${escapeHTML(row["PAGU PER TAHAP"])}">${highlightHTML(row["PAGU PER TAHAP"], searchTerm)}</td>
-        <td class="nilaipeng-cell" data-fulltext="${escapeHTML(row["NILAI PENGURANG"])}">${highlightHTML(row["NILAI PENGURANG"], searchTerm)}</td>
-        <td class="nilaipengg-cell" data-fulltext="${escapeHTML(row["NILAI PENGGUNAAN DANA"])}">${highlightHTML(row["NILAI PENGGUNAAN DANA"], searchTerm)}</td>
-        <td class="nilaipenyaluran-cell" data-fulltext="${escapeHTML(row["NILAI PENYALURAN"])}">${highlightHTML(row["NILAI PENYALURAN"], searchTerm)}</td>
+        <td class="totalpagu-cell currency" data-fulltext="${escapeHTML(row["TOTAL PAGU"])}">${formatRupiahWithHighlight(row["TOTAL PAGU"], searchTerm)}</td>
+        <td class="pagupertahap-cell currency" data-fulltext="${escapeHTML(row["PAGU PER TAHAP"])}">${formatRupiahWithHighlight(row["PAGU PER TAHAP"], searchTerm)}</td>
+        <td class="nilaipeng-cell currency" data-fulltext="${escapeHTML(row["NILAI PENGURANG"])}">${formatRupiahWithHighlight(row["NILAI PENGURANG"], searchTerm)}</td>
+        <td class="nilaipenyaluran-cell currency" data-fulltext="${escapeHTML(row["NILAI PENYALURAN"])}">${formatRupiahWithHighlight(row["NILAI PENYALURAN"], searchTerm)}</td>
         <td class="sp2d-cell" data-fulltext="${escapeHTML(row.SP2D)}">${highlightHTML(row.SP2D, searchTerm)}</td>
-        <td class="tanggal-cell" data-fulltext="${escapeHTML(row["TANGGAL SP2D"])}">${highlightHTML(row["TANGGAL SP2D"], searchTerm)}</td>
         <td class="nilaisp2d-cell" data-fulltext="${escapeHTML(row["NILAI SP2D"])}">${highlightHTML(row["NILAI SP2D"], searchTerm)}</td>
-      `;
-      tbody.appendChild(tr);
+        <td class="tanggal-cell" data-fulltext="${escapeHTML(row["TANGGAL SP2D"])}">${highlightHTML(row["TANGGAL SP2D"], searchTerm)}</td>
+        `;
+        // <td class="nilaipengg-cell" data-fulltext="${escapeHTML(row["NILAI PENGGUNAAN DANA"])}">${highlightHTML(row["NILAI PENGGUNAAN DANA"], searchTerm)}</td>
+        tbody.appendChild(tr);
 
       // After inserting row to tbody:
       const tds = tr.querySelectorAll("td");
@@ -399,10 +413,27 @@ function renderTable(rows){
   table.appendChild(tbody);
   container.appendChild(table);
 
-  container.classList.remove("fade-in");
+  // container.classList.remove("fade-in");
   void container.offsetWidth;
-  container.classList.add("fade-in");
+  // container.classList.add("fade-in");
 
+}
+
+// CSS styles to enhance the currency display
+const currencyStyles = `
+  .currency {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    font-weight: 800;
+    color: #07c526ff; 
+  }
+`;
+
+// Add the styles to your page
+function addCurrencyStyles() {
+  const style = document.createElement('style');
+  style.textContent = currencyStyles;
+  document.head.appendChild(style);
 }
 
 // ---------- Render pagination controls ----------
@@ -573,7 +604,7 @@ $("#filterJenisPemda, #filterJenisTahap, #filterJenisGelombang, #filterJenisPusk
     loadState();
 
     applyFiltersSearchAndSort();
-
+    addCurrencyStyles();
     showMainContent();
   } catch (err) {
     console.error("Init error:", err);

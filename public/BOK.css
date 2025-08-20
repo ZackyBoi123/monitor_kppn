@@ -77,7 +77,7 @@ body {
   max-width: 862px;
   display: flex;
   align-items: center;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25  );
   border-radius: 10px;
   background: white;
 }
@@ -137,16 +137,16 @@ body {
   padding: 0.55rem 2.6rem 0.55rem 0.9rem;
   border: none;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 385;
   background: transparent;
   border-radius: 10px 0 0 10px;
   transition: box-shadow 0.3s ease;
-  
+  color: black;
 }
 
 .search-input:focus {
   outline: none;
-  box-shadow: 0 0 6px 2px rgb(59 130 246 / 0.5);
+  box-shadow: 0 0 5px 2px rgb(59 130 246 / 0.5);
 }
 
 /* Clear button */
@@ -230,42 +230,43 @@ table th {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: linear-gradient(90deg, var(--sky-500) 0%,
+  /* background: linear-gradient(90deg, var(--sky-500) 0%,
                                      var(--sky-500) 50%,
-                                     var(--sky-500) 100%);
-  color: white;
+                                     var(--sky-500) 100%); */
+  background-color: #f8fafc;
+  color: black;
   font-weight: 700;
   border: none;
   padding: 1rem 1.2rem;
   font-size: 0.9rem;
   user-select: none;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid #383434;
   letter-spacing: 0.02em;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+  /* box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); */
   cursor: default;
   white-space: nowrap;
 }
 
-table th[aria-sort="ascending"],
+/* table th[aria-sort="ascending"],
 table th[aria-sort="descending"] {
   box-shadow: 0 0 8px rgb(59 130 246 / 0.7);
-}
+} */
 
 /* Compact table layout overrides */
 table.compact th,
 table.compact td {
   padding: 0.7rem 0.85rem;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
 }
 table.compact th {
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
  /* Text truncation with ellipsis */
 table.compact td {
-  max-width: 150px; /* or any width you prefer */
+  max-width: 250px; /* or any width you prefer */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -275,7 +276,7 @@ table.compact td {
 /* Row hover effect */
 tbody tr:hover {
   background-color: var(--blue-50);
-  transition: background-color 0.3s ease;
+  /* transition: background-color 0.3s ease; */
 }
 
 /* Zebra striping */

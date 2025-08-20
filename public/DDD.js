@@ -17,12 +17,12 @@ const COLUMNS = `
    REALISASI_2_REG,
    REALISASI_1_EARMARK,
    REALISASI_2_EARMARK,
-   REALISASI_TAMBAHAN,
    "TOTAL PENYALURAN",
    PAGU,
    PERSENTASE
-`;
-
+   `;
+  //  REALISASI_TAMBAHAN
+   
 // ---------- State ----------
 let allData = [];         // full dataset (fetched once)
 let filteredData = [];    // after filters + search + sort
@@ -72,16 +72,15 @@ scrollWrapper.addEventListener("scroll", () => {
 // Save/load state from localStorage for persistence
 function saveState() {
   const state = {
-    filters: {
-      desa: $("#filterJenisDesa").val(),
-      kecamatan: $("#filterJenisKecamatan").val(),
-      pemda: $("#filterJenisPemda").val(),
-    },
+    // filters: {
+    //   desa: $("#filterJenisDesa").val(),
+    //   kecamatan: $("#filterJenisKecamatan").val(),
+    //   pemda: $("#filterJenisPemda").val(),
+    // },
     searchTerm: document.getElementById("searchInput").value.trim(),
     sortColumn,
     sortDirection,
     currentPage,
-    rowsPerPage,
   };
   localStorage.setItem("tableState", JSON.stringify(state));
 }
@@ -107,10 +106,6 @@ function loadState() {
     }
     if(state.currentPage) {
       currentPage = state.currentPage;
-    }
-    if(state.rowsPerPage) {
-      rowsPerPage = state.rowsPerPage;
-      document.getElementById("rowsPerPageSelect").value = rowsPerPage;
     }
   } catch (e) {
     console.warn("Failed to load saved state", e);
@@ -288,7 +283,6 @@ function renderPaginatedTable(){
 
   renderPaginationControls(totalPages);
   toggleClear();
-  saveState();
 }
 
 // ---------- Renders title if text overflowed ----------
@@ -300,7 +294,109 @@ function setTitleIfOverflowed(cell) {
   }
 }
 
-// ---------- Render table with clickable sortable headers ----------
+// Function to create progress bar HTML
+function createProgressBar(percentage) {
+  if (!percentage || percentage === '' || percentage === '-') {
+    return `
+      <div class="percentage-text">-</div>
+      <div class="progress-container">
+        <div class="progress-bar low" style="width: 0%"></div>
+      </div>
+    `;
+  }
+
+  // Clean percentage value (remove % symbol if present)
+  let numValue = parseFloat(String(percentage).replace('%', ''));
+  if (isNaN(numValue)) numValue = 0;
+
+  // Determine color class based on thresholds
+  let colorClass = 'low';
+  if (numValue >= 100) {
+    colorClass = 'complete';
+  } else if (numValue >= 81) {
+    colorClass = 'high';
+  } else if (numValue >= 51) {
+    colorClass = 'medium';
+  }
+
+  // Cap the visual width at 100% for display
+  const displayWidth = Math.min(numValue, 100);
+
+  return `
+    <div class="percentage-text">${numValue.toFixed(1)}%</div>
+    <div class="progress-container">
+      <div class="progress-bar ${colorClass}" style="width: ${displayWidth}%"></div>
+    </div>
+  `;
+}
+
+// Format status desa with color coding
+function formatStatusDesa(status, searchTerm = '') {
+  if (!status || status === '' || status === '-') {
+    return '<span class="status-other">-</span>';
+  }
+
+  // Clean and normalize the status text
+  const statusLower = String(status).toLowerCase().trim();
+  const formattedText = capitalizeWords(status);
+  
+  // Define status mapping with their corresponding CSS classes
+  const statusMap = {
+    'mandiri': 'status-mandiri',
+    'berkembang': 'status-berkembang',
+    'maju': 'status-maju',
+    'tertinggal': 'status-tertinggal',
+    'sangat tertinggal': 'status-sangat-tertinggal',
+
+    // Add more status mappings here as needed
+    // 'your_status': 'status-your-css-class',
+  };
+
+  // Find matching status or use default
+  let cssClass = 'status-other'; // default fallback
+  
+  // Check for exact match first
+  if (statusMap[statusLower]) {
+    cssClass = statusMap[statusLower];
+  } else {
+    // Check for partial matches (useful for variations)
+    for (const [key, value] of Object.entries(statusMap)) {
+      if (statusLower.includes(key) || key.includes(statusLower)) {
+        cssClass = value;
+        break;
+      }
+    }
+  }
+  
+  // Apply search highlighting if needed
+  const highlightedText = searchTerm ? 
+    highlightHTML(formattedText, searchTerm) : 
+    escapeHTML(formattedText);
+
+  return `<span class="${cssClass}">${highlightedText}</span>`;
+}
+
+// ---------- Format Rupiah with search highlighting ----------
+function formatRupiahWithHighlight(number, searchTerm = '') {
+  if (!number || number === '' || number === '-' || isNaN(number)) {
+    return searchTerm ? highlightHTML('-', searchTerm) : '-';
+  }
+  
+  const num = parseFloat(number);
+  if (num === 0) {
+    const formatted = 'Rp. 0';
+    return searchTerm ? highlightHTML(formatted, searchTerm) : formatted;
+  }
+  
+  const formatted = 'Rp. ' + num.toLocaleString('id-ID', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  
+  return searchTerm ? highlightHTML(formatted, searchTerm) : formatted;
+}
+
+// ---------- Render table with sorting and filtering ----------
 function renderTable(rows){
   const container = document.getElementById("tableContainer");
   container.innerHTML = "";
@@ -321,7 +417,6 @@ function renderTable(rows){
     { key: "REALISASI_2_REG", label: "Realisasi 2 Reg", sortable: false },
     { key: "REALISASI_1_EARMARK", label: "Realisasi 1 Earmark", sortable: false },
     { key: "REALISASI_2_EARMARK", label: "Realisasi 2 Earmark", sortable: false },
-    { key: "REALISASI_TAMBAHAN", label: "Realisasi Tambahan", sortable: false },
     { key: "TOTAL PENYALURAN", label: "Total Penyaluran", sortable: false },
     { key: "PERSENTASE", label: "Persentase", sortable: false },
   ];
@@ -334,17 +429,15 @@ function renderTable(rows){
     th.textContent = h.label;
     if(h.sortable){
       th.style.cursor = "pointer";
-      th.tabIndex = 0; // keyboard focus
+      th.tabIndex = 0;
       th.setAttribute("aria-sort", "none");
       th.title = `Sort by ${h.label}`;
-      // show sort arrow if active
       if(sortColumn === h.key){
         th.textContent += sortDirection === "asc" ? " ▲" : " ▼";
         th.setAttribute("aria-sort", sortDirection === "asc" ? "ascending" : "descending");
       }
       th.addEventListener("click", () => {
         if(sortColumn === h.key){
-          // toggle direction
           sortDirection = (sortDirection === "asc") ? "desc" : "asc";
         } else {
           sortColumn = h.key;
@@ -352,7 +445,6 @@ function renderTable(rows){
         }
         applyFiltersSearchAndSort();
       });
-      // Keyboard support for sorting
       th.addEventListener("keydown", (e) => {
         if(e.key === "Enter" || e.key === " "){
           e.preventDefault();
@@ -368,35 +460,37 @@ function renderTable(rows){
   const tbody = document.createElement("tbody");
 
   if (!rows || rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="14" class="text-center">No matching results found</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="13" class="text-center">No matching results found</td></tr>`;
   } else {
     const searchTerm = (document.getElementById("searchInput").value || "").trim();
     rows.forEach((row, idx) => {
       const tr = document.createElement("tr");
       const displayIndex = (currentPage - 1) * rowsPerPage + idx + 1;
+      
       tr.innerHTML = `
-        <td>${displayIndex}</td>
+        <td class="numbers">${displayIndex}</td>
         <td class="kode-cell" data-fulltext="${escapeHTML(row["KODE DESA"])}">${highlightHTML(row["KODE DESA"], searchTerm)}</td>
         <td class="nama-cell" data-fulltext="${escapeHTML(row["NAMA DESA"])}">${highlightHTML(capitalizeWords(row["NAMA DESA"]), searchTerm)}</td>
-        <td class="status-cell" data-fulltext="${escapeHTML(row["STATUS DESA"])}">${highlightHTML(capitalizeWords(row["STATUS DESA"]), searchTerm)}</td>
+        <td class="status-cell" data-fulltext="${escapeHTML(row["STATUS DESA"])}">${formatStatusDesa(row["STATUS DESA"], searchTerm)}</td>
         <td class="kecamatan-cell" data-fulltext="${escapeHTML(row.KECAMATAN)}">${highlightHTML(capitalizeWords(row.KECAMATAN), searchTerm)}</td>
         <td class="pemda-cell" data-fulltext="${escapeHTML(row["PEMERINTAH DAERAH"])}">${highlightHTML(capitalizeWords(row["PEMERINTAH DAERAH"]), searchTerm)}</td>
-        <td class="pagu-cell" data-fulltext="${escapeHTML(row.PAGU)}">${highlightHTML(row.PAGU, searchTerm)}</td>
-        <td class="realisasi1reg-cell" data-fulltext="${escapeHTML(row.REALISASI_1_REG)}">${highlightHTML(row.REALISASI_1_REG, searchTerm)}</td>
-        <td class="realisasi2reg-cell" data-fulltext="${escapeHTML(row.REALISASI_2_REG)}">${highlightHTML(row.REALISASI_2_REG, searchTerm)}</td>
-        <td class="realisasi1ear-cell" data-fulltext="${escapeHTML(row.REALISASI_1_EARMARK)}">${highlightHTML(row.REALISASI_1_EARMARK, searchTerm)}</td>
-        <td class="realisasi2ear-cell" data-fulltext="${escapeHTML(row.REALISASI_2_EARMARK)}">${highlightHTML(row.REALISASI_2_EARMARK, searchTerm)}</td>
-        <td class="realisasitambahan-cell" data-fulltext="${escapeHTML(row.REALISASI_TAMBAHAN)}">${highlightHTML(row.REALISASI_TAMBAHAN, searchTerm)}</td>
-        <td class="totalpenyaluran-cell" data-fulltext="${escapeHTML(row["TOTAL PENYALURAN"])}">${highlightHTML(row["TOTAL PENYALURAN"], searchTerm)}</td>
-        <td class="persentase-cell" data-fulltext="${escapeHTML(row.PERSENTASE)}">${highlightHTML(row.PERSENTASE, searchTerm)}</td>
+        <td class="pagu-cell currency" data-fulltext="${escapeHTML(row.PAGU)}">${formatRupiahWithHighlight(row.PAGU, searchTerm)}</td>
+        <td class="realisasi1reg-cell currency" data-fulltext="${escapeHTML(row.REALISASI_1_REG)}">${formatRupiahWithHighlight(row.REALISASI_1_REG, searchTerm)}</td>
+        <td class="realisasi2reg-cell currency" data-fulltext="${escapeHTML(row.REALISASI_2_REG)}">${formatRupiahWithHighlight(row.REALISASI_2_REG, searchTerm)}</td>
+        <td class="realisasi1ear-cell currency" data-fulltext="${escapeHTML(row.REALISASI_1_EARMARK)}">${formatRupiahWithHighlight(row.REALISASI_1_EARMARK, searchTerm)}</td>
+        <td class="realisasi2ear-cell currency" data-fulltext="${escapeHTML(row.REALISASI_2_EARMARK)}">${formatRupiahWithHighlight(row.REALISASI_2_EARMARK, searchTerm)}</td>
+        <td class="totalpenyaluran-cell currency" data-fulltext="${escapeHTML(row["TOTAL PENYALURAN"])}">${formatRupiahWithHighlight(row["TOTAL PENYALURAN"], searchTerm)}</td>
+        <td class="persentase-cell" data-fulltext="${escapeHTML(row.PERSENTASE)}">${createProgressBar(row.PERSENTASE)}</td>
       `;
+      
       tbody.appendChild(tr);
 
-      // After inserting row to tbody:
+      // Set tooltips for overflowed content
       const tds = tr.querySelectorAll("td");
       tds.forEach(setTitleIfOverflowed);
-
     });
+
+    // Update tooltips after render
     requestAnimationFrame(() => {
       tbody.querySelectorAll("td").forEach(setTitleIfOverflowed);
     });
@@ -404,11 +498,23 @@ function renderTable(rows){
 
   table.appendChild(tbody);
   container.appendChild(table);
+}
 
-  container.classList.remove("fade-in");
-  void container.offsetWidth;
-  container.classList.add("fade-in");
+// CSS styles to enhance the currency display
+const currencyStyles = `
+  .currency {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    font-weight: 800;
+    color: #07c526ff; 
+  }
+`;
 
+// Add the styles to your page
+function addCurrencyStyles() {
+  const style = document.createElement('style');
+  style.textContent = currencyStyles;
+  document.head.appendChild(style);
 }
 
 // ---------- Render pagination controls ----------
@@ -570,7 +676,7 @@ $("#filterJenisDesa, #filterJenisKecamatan, #filterJenisPemda").on("change", () 
 
     // load persistent UI state
     loadState();
-
+    addCurrencyStyles();
     applyFiltersSearchAndSort();
 
     showMainContent();

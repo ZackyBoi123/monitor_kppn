@@ -67,15 +67,14 @@ scrollWrapper.addEventListener("scroll", () => {
 // Save/load state from localStorage for persistence
 function saveState() {
   const state = {
-    filters: {
-      spm: $("#filterJenisSPM").val(),
-      sp2d: $("#filterJenisSP2D").val(),
-    },
+    // filters: {
+    //   spm: $("#filterJenisSPM").val(),
+    //   sp2d: $("#filterJenisSP2D").val(),
+    // },
     searchTerm: document.getElementById("searchInput").value.trim(),
     sortColumn,
     sortDirection,
     currentPage,
-    rowsPerPage,
   };
   localStorage.setItem("tableState", JSON.stringify(state));
 }
@@ -100,10 +99,6 @@ function loadState() {
     }
     if(state.currentPage) {
       currentPage = state.currentPage;
-    }
-    if(state.rowsPerPage) {
-      rowsPerPage = state.rowsPerPage;
-      document.getElementById("rowsPerPageSelect").value = rowsPerPage;
     }
   } catch (e) {
     console.warn("Failed to load saved state", e);
@@ -279,7 +274,26 @@ function renderPaginatedTable(){
 
   renderPaginationControls(totalPages);
   toggleClear();
-  saveState();
+}
+
+// ---------- Format Rupiah with search highlighting ----------
+function formatRupiahWithHighlight(number, searchTerm = '') {
+  if (!number || number === '' || number === '-' || isNaN(number)) {
+    return searchTerm ? highlightHTML('-', searchTerm) : '-';
+  }
+  
+  const num = parseFloat(number);
+  if (num === 0) {
+    const formatted = 'Rp. 0';
+    return searchTerm ? highlightHTML(formatted, searchTerm) : formatted;
+  }
+  
+  const formatted = 'Rp. ' + num.toLocaleString('id-ID', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  
+  return searchTerm ? highlightHTML(formatted, searchTerm) : formatted;
 }
 
 // ---------- Renders title if text overflowed ----------
@@ -367,7 +381,7 @@ function renderTable(rows){
         <td class="nomor-cell" data-fulltext="${escapeHTML(row["Nomor SP2D"])}">${highlightHTML(row["Nomor SP2D"], searchTerm)}</td>
         <td class="tanggalselesai-cell" data-fulltext="${escapeHTML(row["Tanggal Selesai SP2D"])}">${highlightHTML(row["Tanggal Selesai SP2D"], searchTerm)}</td>
         <td class="tanggal-cell" data-fulltext="${escapeHTML(row["Tanggal SP2D"])}">${highlightHTML(row["Tanggal SP2D"], searchTerm)}</td>
-        <td class="nilai-cell" data-fulltext="${escapeHTML(row["Nilai SP2D"])}">${highlightHTML(row["Nilai SP2D"], searchTerm)}</td>
+        <td class="nilai-cell currency" data-fulltext="${escapeHTML(row["Nilai SP2D"])}">${formatRupiahWithHighlight(row["Nilai SP2D"], searchTerm)}</td>
         <td class="ninvoice-cell" data-fulltext="${escapeHTML(row["Nomor Invoice"])}">${highlightHTML(row["Nomor Invoice"], searchTerm)}</td>
         <td class="tinvoice-cell" data-fulltext="${escapeHTML(row["Tanggal Invoice"])}">${highlightHTML(row["Tanggal Invoice"], searchTerm)}</td>
         <td class="jenisspm-cell" data-fulltext="${escapeHTML(row["Jenis SPM"])}">${highlightHTML(capitalizeWords(row["Jenis SPM"]), searchTerm)}</td>
@@ -390,10 +404,27 @@ function renderTable(rows){
   table.appendChild(tbody);
   container.appendChild(table);
 
-  container.classList.remove("fade-in");
+  // container.classList.remove("fade-in");
   void container.offsetWidth;
-  container.classList.add("fade-in");
+  // container.classList.add("fade-in");
 
+}
+
+// CSS styles to enhance the currency display
+const currencyStyles = `
+  .currency {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    font-weight: 800;
+    color: #07c526ff; 
+  }
+`;
+
+// Add the styles to your page
+function addCurrencyStyles() {
+  const style = document.createElement('style');
+  style.textContent = currencyStyles;
+  document.head.appendChild(style);
 }
 
 // ---------- Render pagination controls ----------
@@ -555,7 +586,7 @@ $("#filterJenisSPM, #filterJenisSP2D").on("change", () => {
     loadState();
 
     applyFiltersSearchAndSort();
-
+    addCurrencyStyles();
     showMainContent();
   } catch (err) {
     console.error("Init error:", err);

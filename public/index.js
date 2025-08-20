@@ -378,8 +378,8 @@ function exportToPDF() {
 function exportToExcel() {
     try {
         // Get current region data
-        const regionSelector = document.getElementById('regionSelector');
-        const selectedRegion = regionSelector.value;
+        const regionSelector = document.getElementById('regionDropdownLabel');
+        const selectedRegion = regionSelector.textContent.trim();
         
         if (!selectedRegion) {
             showAlert('Please select a region first!', 'error');
@@ -416,10 +416,11 @@ function exportToExcel() {
 function exportToCSV() {
     try {
         // Get current region data
-        const regionSelector = document.getElementById('regionSelector');
-        const selectedRegion = regionSelector.value;
+        const regionSelector = document.getElementById('regionDropdownLabel');
+        const selectedRegion = regionSelector.textContent.trim();
         
         if (!selectedRegion) {
+            showAlert('Please select a region first!', 'error');
             return;
         }
         

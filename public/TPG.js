@@ -69,17 +69,16 @@ scrollWrapper.addEventListener("scroll", () => {
 // Save/load state from localStorage for persistence
 function saveState() {
   const state = {
-    filters: {
-      satdik: $("#filterJenisSatdik").val(),
-      triwulan: $("#filterJenisTriwulan").val(),
-      pemda: $("#filterJenisPemda").val(),
-      tunj: $("#filterJenisTunjangan").val(),
-    },
+    // filters: {
+    //   satdik: $("#filterJenisSatdik").val(),
+    //   triwulan: $("#filterJenisTriwulan").val(),
+    //   pemda: $("#filterJenisPemda").val(),
+    //   tunj: $("#filterJenisTunjangan").val(),
+    // },
     searchTerm: document.getElementById("searchInput").value.trim(),
     sortColumn,
     sortDirection,
     currentPage,
-    rowsPerPage,
   };
   localStorage.setItem("tableState", JSON.stringify(state));
 }
@@ -106,10 +105,6 @@ function loadState() {
     }
     if(state.currentPage) {
       currentPage = state.currentPage;
-    }
-    if(state.rowsPerPage) {
-      rowsPerPage = state.rowsPerPage;
-      document.getElementById("rowsPerPageSelect").value = rowsPerPage;
     }
   } catch (e) {
     console.warn("Failed to load saved state", e);
@@ -288,7 +283,6 @@ function renderPaginatedTable(){
 
   renderPaginationControls(totalPages);
   toggleClear();
-  saveState();
 }
 
 // ---------- Renders title if text overflowed ----------
@@ -299,6 +293,27 @@ function setTitleIfOverflowed(cell) {
     cell.title = "";
   }
 }
+
+// ---------- Format Rupiah with search highlighting ----------
+function formatRupiahWithHighlight(number, searchTerm = '') {
+  if (!number || number === '' || number === '-' || isNaN(number)) {
+    return searchTerm ? highlightHTML('-', searchTerm) : '-';
+  }
+  
+  const num = parseFloat(number);
+  if (num === 0) {
+    const formatted = 'Rp. 0';
+    return searchTerm ? highlightHTML(formatted, searchTerm) : formatted;
+  }
+  
+  const formatted = 'Rp. ' + num.toLocaleString('id-ID', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  
+  return searchTerm ? highlightHTML(formatted, searchTerm) : formatted;
+}
+
 
 // ---------- Render table with clickable sortable headers ----------
 function renderTable(rows){
@@ -382,10 +397,10 @@ function renderTable(rows){
         <td class="satdik-cell" data-fulltext="${escapeHTML(row.SATDIK)}">${highlightHTML(capitalizeWords(row.SATDIK), searchTerm)}</td>
         <td class="jenistunjangan-cell" data-fulltext="${escapeHTML(row["JENIS TUNJANGAN"])}">${highlightHTML(capitalizeWords(row["JENIS TUNJANGAN"]), searchTerm)}</td>
         <td class="pemda-cell" data-fulltext="${escapeHTML(row.PEMDA)}">${highlightHTML(capitalizeWords(row.PEMDA), searchTerm)}</td>
-        <td class="salurbrut-cell" data-fulltext="${escapeHTML(row["SALUR BRUTO"])}">${highlightHTML(row["SALUR BRUTO"], searchTerm)}</td>
-        <td class="pph-cell" data-fulltext="${escapeHTML(row.PPH)}">${highlightHTML(row.PPH, searchTerm)}</td>
-        <td class="jkn-cell" data-fulltext="${escapeHTML(row["POT JKN"])}">${highlightHTML(row["POT JKN"], searchTerm)}</td>
-        <td class="salurnet-cell" data-fulltext="${escapeHTML(row["SALUR NETTO"])}">${highlightHTML(row["SALUR NETTO"], searchTerm)}</td>
+        <td class="salurbrut-cell currency" data-fulltext="${escapeHTML(row["SALUR BRUTO"])}">${formatRupiahWithHighlight(row["SALUR BRUTO"], searchTerm)}</td>
+        <td class="pph-cell currency" data-fulltext="${escapeHTML(row.PPH)}">${formatRupiahWithHighlight(row.PPH, searchTerm)}</td>
+        <td class="jkn-cell currency" data-fulltext="${escapeHTML(row["POT JKN"])}">${formatRupiahWithHighlight(row["POT JKN"], searchTerm)}</td>
+        <td class="salurnet-cell currency" data-fulltext="${escapeHTML(row["SALUR NETTO"])}">${formatRupiahWithHighlight(row["SALUR NETTO"], searchTerm)}</td>
         <td class="triwulan-cell" data-fulltext="${escapeHTML(row.TRIWULAN)}">${highlightHTML(row.TRIWULAN, searchTerm)}</td>
       `;
       tbody.appendChild(tr);
@@ -403,10 +418,27 @@ function renderTable(rows){
   table.appendChild(tbody);
   container.appendChild(table);
 
-  container.classList.remove("fade-in");
+  // container.classList.remove("fade-in");
   void container.offsetWidth;
-  container.classList.add("fade-in");
+  // container.classList.add("fade-in");
 
+}
+
+// CSS styles to enhance the currency display
+const currencyStyles = `
+  .currency {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    font-weight: 800;
+    color: #07c526ff; 
+  }
+`;
+
+// Add the styles to your page
+function addCurrencyStyles() {
+  const style = document.createElement('style');
+  style.textContent = currencyStyles;
+  document.head.appendChild(style);
 }
 
 // ---------- Render pagination controls ----------
@@ -565,14 +597,14 @@ $("#filterJenisSatdik, #filterJenisTriwulan, #filterJenisPemda, #filterJenisTunj
 
     fillSelect("#filterJenisSatdik", satdik, "[ Pilih Satdik ]");
     fillSelect("#filterJenisTriwulan", triw, "[ Pilih Triwulan ]");
-    fillSelect("#filterJenisPemda", pem, "[ Pilih Pemda ]");
+    fillSelect("#filterJenisPemda", pem, "[ Pilih Kab / Kota ]");
     fillSelect("#filterJenisTunjangan", tun, "[ Pilih Tunjangan ]");
 
     // load persistent UI state
     loadState();
 
     applyFiltersSearchAndSort();
-
+    addCurrencyStyles();
     showMainContent();
   } catch (err) {
     console.error("Init error:", err);
