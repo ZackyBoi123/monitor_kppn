@@ -268,7 +268,8 @@ table.compact td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: default; /* to show normal cursor on hover */
+  text-align: center; 
+
 }
 
 /* Row hover effect */
@@ -567,5 +568,41 @@ input[type="search"]:focus, select:focus {
     color: #6b7280; /* Tailwind's gray-500 */
     margin-bottom: 1.5rem;
 }
-
-/* ------- Styling for each table data cell ------- */
+ 
+/* Modal styling */
+.deskripsi-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s ease;
+}
+        
+.deskripsi-btn:hover {
+    background: #0056b3;
+}
+        
+.modal-content {
+    border-radius: 8px;
+}
+        
+.modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #4b98a2 75%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+        
+.modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+        
+.description-text {
+    line-height: 1.6;
+    color: #333;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}

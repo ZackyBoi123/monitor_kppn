@@ -267,6 +267,7 @@ table.compact td {
   max-width: 250px; /* or any width you prefer */
   white-space: nowrap;
   overflow: hidden;
+  text-align: center;
   text-overflow: ellipsis;
   cursor: default; /* to show normal cursor on hover */
 }

@@ -57,7 +57,7 @@
   Last Updated: loading...
 </p>
 
-<h1 class="text-center my-8 text-2xl font-bold">SP2D</h1>
+<h1 class="text-center my-3 text-2xl font-bold"> Surat Perintah Pencairan Dana (SP2D)</h1>
   <div id="mainContent" style="display: none;">
       <div class="header-bar">
         <div class="filter-row">
@@ -115,6 +115,37 @@
     </div>
 
     <div id="toast" role="alert" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Description Modal -->
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descriptionModalLabel">
+                    <i class="bi bi-file-text me-2"></i>Detail Deskripsi
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6 class="text-muted mb-2">Nomor SP2D:</h6>
+                    <p id="modalNomorSP2D" class="fw-bold"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted mb-2">Tanggal SP2D:</h6>
+                    <p id="modalTanggalSP2D"></p>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-2">Deskripsi Lengkap:</h6>
+                    <div id="modalDescription" class="description-text border rounded p-3 bg-light"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 
   <script src="https://cdn.tailwindcss.com"></script>     
   <script src="https://unpkg.com/@supabase/supabase-js"></script>

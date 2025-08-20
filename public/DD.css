@@ -270,6 +270,7 @@ table.compact td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center; 
   cursor: default; /* to show normal cursor on hover */
 }
 

@@ -114,6 +114,20 @@ function capitalizeWords(str) {
     .join(' ');
 }
 
+// Modal functions
+function showDescriptionModal(rowData) {
+    document.getElementById('modalNomorSP2D').textContent = rowData["Nomor SP2D"] || '-';
+    document.getElementById('modalTanggalSP2D').textContent = rowData["Tanggal SP2D"] || '-';
+    document.getElementById('modalDescription').textContent = rowData.Deskripsi || 'Tidak ada deskripsi tersedia';
+    
+    const modal = new bootstrap.Modal(document.getElementById('descriptionModal'));
+    modal.show();
+}
+
+function truncateText(text, maxLength = 30) {
+    if (!text || text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+}
 
 function showMainContent() {
   const main = document.getElementById("mainContent");
@@ -386,9 +400,19 @@ function renderTable(rows){
         <td class="tinvoice-cell" data-fulltext="${escapeHTML(row["Tanggal Invoice"])}">${highlightHTML(row["Tanggal Invoice"], searchTerm)}</td>
         <td class="jenisspm-cell" data-fulltext="${escapeHTML(row["Jenis SPM"])}">${highlightHTML(capitalizeWords(row["Jenis SPM"]), searchTerm)}</td>
         <td class="jenissp2d-cell" data-fulltext="${escapeHTML(row["Jenis SP2D"])}">${highlightHTML(capitalizeWords(row["Jenis SP2D"]), searchTerm)}</td>
-        <td class="deskripsi-cell" data-fulltext="${escapeHTML(row.Deskripsi)}">${highlightHTML(capitalizeWords(row.Deskripsi), searchTerm)}</td>
+        <td style="max-width: 200px;">
+                    <div class="d-flex align-items-center">
+                        <button class="deskripsi-btn" onclick="showDescriptionModal_${idx}()" title="Lihat deskripsi lengkap">
+                            <i class="bi bi-eye"></i> Detail
+                        </button>
+                    </div>
+                </td>
         <td class="cek-cell" data-fulltext="${escapeHTML(row["Cek Detail Akun"])}">${highlightHTML(row["Cek Detail Akun"], searchTerm)}</td>
       `;
+
+      // Create a unique function for each row
+      window[`showDescriptionModal_${idx}`] = () => showDescriptionModal(row);
+
       tbody.appendChild(tr);
 
       // After inserting row to tbody:

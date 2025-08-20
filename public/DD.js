@@ -315,7 +315,7 @@ function createProgressBar(percentage) {
     colorClass = 'complete';
   } else if (numValue >= 81) {
     colorClass = 'high';
-  } else if (numValue >= 51) {
+  } else if (numValue >= 50) {
     colorClass = 'medium';
   }
 
