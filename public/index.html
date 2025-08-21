@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="logo-kementerian-keuangan-356.png" type="image/x-icon">
+    <link rel="shortcut icon" href="images/logo-kementerian-keuangan-356.png" type="image/x-icon">
     <title>KPPN</title>
      <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -267,6 +267,32 @@
             text-decoration: none;
           }
 
+        .table-header {
+            background: white;
+            border-radius: 16px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .table-title-left {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        .table-wrapper table th {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          overflow-x: auto;
+          max-height: 400px;
+          overflow-y: auto;
+        }
+
           /* Skeleton Loading */
         .skeleton {
           background: linear-gradient(90deg, #eee 25%, #ddd 50%, #eee 75%);
@@ -282,6 +308,11 @@
           100% {
             background-position: -200% 0;
           }
+        }
+
+        .skeleton-panel {
+          height: 60px;
+          margin-bottom: 20px;
         }
 
         .skeleton-card {
@@ -320,7 +351,7 @@
 
       <!-- Left side: Logo + Title -->
       <a href="#" class="flex items-center space-x-2">
-        <img src="LOGO_KPPN_JAYAPURA_FIX.png" alt="Logo" class="h-12 w-15">
+        <img src="images/LOGO_KPPN_JAYAPURA_FIX.png" alt="Logo" class="h-12 w-15">
         <!-- <span class="font-semibold text-lg text-gray-800">KPPN</span> -->
       </a>
 
@@ -366,7 +397,7 @@
     </div>
 
     <!-- Controls Panel -->
-        <div class="controls-panel" id="controlsPanel" style="display: none;">
+        <div class="controls-panel fade-in" id="controlsPanel" style="display: none;">
             <div class="control-group">
                 <div>
                     <label class="form-label fw-bold">
@@ -415,6 +446,9 @@
   <!-- Skeleton Loader -->
 <div id="skeletonLoader">
 
+  <!-- controls-panel -->
+  <div class="controls-panel skeleton skeleton-panel"></div>
+
   <!-- KPI Cards -->
   <div class="stats-container">
     <div class="stat-card skeleton skeleton-card"></div>
@@ -450,7 +484,7 @@
                 </div>
                 <div class="stat-value" id="totalPagu">-</div>
                 <div class="stat-label text-muted">
-                    <i class="fas fa-chart-line me-1"></i>Total Budget Allocation
+                    <i class="fas fa-chart-line me-1"></i>Total Budget Allocation (Pagu)
                 </div>
             </div>
           <div class="stat-card warning">
@@ -459,7 +493,7 @@
                 </div>
                 <div class="stat-value" id="totalRealisasi">-</div>
                 <div class="stat-label text-muted">
-                    <i class="fas fa-check-circle me-1"></i>Total Realization
+                    <i class="fas fa-check-circle me-1"></i>Total Realization (Realisasi)
                 </div>
             </div>
             
@@ -496,7 +530,7 @@
     
     <div class="chart-card" style="grid-column: 1 / -1;">
         <h5 class="fw-bold mb-3 text-center">
-            <i class="fas fa-chart-bar text-info me-2"></i>Pagu vs Realisasi Comparison
+            <i class="fas fa-chart-bar text-info me-2"></i>Pagu & Realisasi | 16 Juli 2025
         </h5>
         <div class="chart-wrapper">
             <canvas id="comparisonChart"></canvas>
@@ -507,15 +541,17 @@
         <!-- Data Table -->
         <div id="tableContainer" class="table-container fade-in" style="display: none; margin-top: 20px;">
             <div class="table-card">
-                <h2 class="table-title">Budget Data Table</h2>
-                <div class="table-wrapper" style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
-                    <table id="budgetTable" class="table table-striped table-bordered">
+              <div class="table-header">
+                <h2 class="table-title-left">Tabel data Pagu & Realisasi (16 Juli 2025)</h2>
+                  </div>
+                    <div class="table-wrapper">
+                      <table id="budgetTable" class="table table-striped table-bordered">
                         <thead class="table-dark">
                             <tr>
-                                <th>Category</th>
-                                <th>Pagu</th>
-                                <th>Realisasi</th>
-                                <th>Realization %</th>
+                                <th><i class="fas fa-tag me-1"></i> Category</th>
+                                <th><i class="fas fa-wallet me-1"></i> Pagu</th>
+                                <th><i class="fas fa-chart-line me-1"></i> Realisasi</th>
+                                <th><i class="fas fa-percentage me-1"></i> Realization</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -524,6 +560,14 @@
                 </div>
             </div>
         </div>
+
+        <div class="text-center text-black/70 mt-4">
+            <small>
+                <i class="fas fa-clock me-1"></i>
+                <span id="last-Updated"></span>
+            </small>
+        </div>
+    </div>
     </div>
 
   <script src="https://cdn.tailwindcss.com"></script>     

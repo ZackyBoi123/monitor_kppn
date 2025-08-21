@@ -25,7 +25,7 @@ let allData = [];         // full dataset (fetched once)
 let filteredData = [];    // after filters + search + sort
 let currentPage = 1;
 let rowsPerPage = parseInt(document.getElementById("rowsPerPageSelect").value, 10) || 10;
-const debounceMs = 375;
+const debounceMs = 350;
 let debounceTimer = null;
 
 // Sorting state
@@ -126,7 +126,7 @@ function showMainContent() {
   setTimeout(()=> main.classList.add("visible"), 40);
 }
 
-// ---------- Fetch ALL rows (batched) ----------
+// ---------- Get Last Updated ----------
 async function getLastUpdated() {
   const { data, error } = await supabase
     .from('TKGTPG')
@@ -141,7 +141,7 @@ async function getLastUpdated() {
 
     if (data.length > 0) {
       const lastUpdated = new Date(data[0].updated_at);
-      document.getElementById("last-updated").textContent = "Last Updated: " + lastUpdated.toLocaleString();
+      document.getElementById("last-updated").textContent = "Last Updated: " + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true});
     }
 }
 

@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 let budgetData = [];
-let comparisonData = []; // New variable for bar chart data
+let comparisonData = [];
 let paguChart = null;
 let realisasiChart = null;
 let comparisonChart = null;
@@ -184,7 +184,7 @@ async function loadDataFromSupabase() {
             return row.Region && row.Category && row.Region !== '' && row.Category !== '';
         });
 
-        // Process comparison data (for bar chart) - no region needed
+        // Process comparison data (for bar chart)
         comparisonData = comparisonResponse.data.map((row, index) => {
             const processedRow = {
                 Category: row.category || row.Category || '',
@@ -223,10 +223,9 @@ async function loadDataFromSupabase() {
         
         // Hide skeleton and show content
         document.getElementById('skeletonLoader').style.display = 'none';
-        document.getElementById('controlsPanel').style.display = 'block'; // Show controls
         
         // Fade-in dashboard sections
-        const sections = ['statsContainer', 'chartsContainer', 'tableContainer'];
+        const sections = ['statsContainer', 'chartsContainer', 'tableContainer', 'controlsPanel'];
         sections.forEach(id => {
             const el = document.getElementById(id);
             el.style.display = ''; // remove display:none
@@ -272,6 +271,25 @@ function populateRegionDropdown() {
     label.textContent = regions[5];
     updateCharts(regions[5]);
   }
+}
+
+// Last updated timestamp
+async function getLastUpdated() {
+  const { data, error } = await supabaseClient
+    .from('barPaguRealisasi')
+    .select('updated_at')
+    .order('updated_at', { ascending: false })
+    .limit(1);
+
+    if (error) {
+      console.error("Error fetching last updated time:", error);
+      return;
+    }
+
+    if (data.length > 0) {
+      const lastUpdated = new Date(data[0].updated_at);
+      document.getElementById("last-Updated").textContent = "Last Updated: " + lastUpdated.toLocaleString();
+    }
 }
 
 // Toggle dropdown open/close
@@ -458,6 +476,7 @@ function refreshDataHandler() {
     document.getElementById('tableContainer').style.display = 'none';
     document.getElementById('controlsPanel').style.display = 'none';
     document.getElementById('skeletonLoader').style.display = 'block';
+
     
     // Clear existing data
     budgetData = [];
@@ -494,11 +513,13 @@ function updateCharts(selectedRegion) {
     updateBarChart(); // No parameters - shows all categories
     updateDataTable(selectedRegion); // Pass selectedRegion parameter
     updateStats(regionData);
+    getLastUpdated();
 
     // Show charts and table
     document.getElementById('chartsContainer').style.display = 'grid';
     document.getElementById('statsContainer').style.display = 'grid';
     document.getElementById('tableContainer').style.display = 'block';
+    document.getElementById('controlsPanel').style.display = 'block';
 }
 
 // Update chart function - handles both Pagu and Realisasi charts
@@ -678,18 +699,16 @@ function updateBarChart() {
     comparisonChart = new Chart(ctx, config);
 }
 
-// Fixed data table function - now uses budget data filtered by region
-function updateDataTable(selectedRegion) {
+// Update data table  
+function updateDataTable() {
     const tableBody = document.querySelector('#budgetTable tbody');
     tableBody.innerHTML = '';
 
-    // Get data from the budget table for selected region
-    const regionData = budgetData.filter(item => item.Region === selectedRegion);
-
-    regionData.forEach(item => {
+    // Use data from comparisonData 
+    comparisonData.forEach(item => {
         const row = document.createElement('tr');
         const realizationRate = item.Pagu > 0 ? ((item.Realisasi / item.Pagu) * 100).toFixed(1) : 0;
-        
+
         row.innerHTML = `
             <td class="fw-bold">${item.Category}</td>
             <td class="text-end">${formatCurrency(item.Pagu || 0)}</td>

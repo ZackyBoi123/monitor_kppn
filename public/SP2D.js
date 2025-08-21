@@ -23,7 +23,7 @@ let allData = [];         // full dataset (fetched once)
 let filteredData = [];    // after filters + search + sort
 let currentPage = 1;
 let rowsPerPage = parseInt(document.getElementById("rowsPerPageSelect").value, 10) || 10;
-const debounceMs = 375;
+const debounceMs = 200;
 let debounceTimer = null;
 
 // Sorting state
@@ -124,10 +124,10 @@ function showDescriptionModal(rowData) {
     modal.show();
 }
 
-function truncateText(text, maxLength = 30) {
-    if (!text || text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
-}
+// function truncateText(text, maxLength = 30) {
+//     if (!text || text.length <= maxLength) return text;
+//     return text.substring(0, maxLength) + '...';
+// }
 
 function showMainContent() {
   const main = document.getElementById("mainContent");
@@ -150,7 +150,7 @@ async function getLastUpdated() {
 
   if (data.length > 0) {
     const lastUpdated = new Date(data[0].updated_at);
-    document.getElementById("last-updated").textContent = "Last Updated: " + lastUpdated.toLocaleString();
+    document.getElementById("last-updated").textContent = "Last Updated: " + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true});
   }
 }
 

@@ -567,6 +567,8 @@ input[type="search"]:focus, select:focus {
     font-size: 14px;
     color: #6b7280; /* Tailwind's gray-500 */
     margin-bottom: 1.5rem;
+    padding-top: 3px;
+    padding-left: 4px;
 }
  
 /* Modal styling */
