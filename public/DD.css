@@ -294,10 +294,10 @@ tbody tr:nth-child(even) {
   padding: 1rem 1.2rem;
   background: white;
   border-top: 1px solid #ddd;
-  position: sticky;
+  /* position: sticky;
   bottom: 0;
   z-index: 100;
-  box-shadow: 0 -2px 6px rgb(59 130 246 / 0.1);
+  box-shadow: 0 -2px 6px rgb(59 130 246 / 0.1); */
   border-radius: 0 0 12px 12px;
 }
 

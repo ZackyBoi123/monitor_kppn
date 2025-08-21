@@ -594,6 +594,7 @@ $("#filterJenisSPM, #filterJenisSP2D").on("change", () => {
 // ---------- Initialization ----------
 (async function init(){
   try {
+    showToast("Loading data, please wait...");
     // document.getElementById("loader").style.display = "flex";
     allData = await fetchAllRowsBatched(1000); // fetch all rows in batches of 1000
     allData.sort((a,b) => (Number(a.ID) || 0) - (Number(b.ID) || 0));
@@ -608,9 +609,10 @@ $("#filterJenisSPM, #filterJenisSP2D").on("change", () => {
 
     // load persistent UI state
     loadState();
-
-    applyFiltersSearchAndSort();
     addCurrencyStyles();
+    applyFiltersSearchAndSort();
+    
+    showToast("Data loaded successfully!");
     showMainContent();
   } catch (err) {
     console.error("Init error:", err);
