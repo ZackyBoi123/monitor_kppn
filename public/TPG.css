@@ -512,7 +512,6 @@ input[type="search"]:focus, select:focus {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* Remove the separate th styling and use this instead */
 #tableScrollWrapper table th {
   position: sticky;
   top: 0;

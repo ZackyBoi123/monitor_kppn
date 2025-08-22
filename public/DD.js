@@ -12,16 +12,15 @@ const COLUMNS = `
    KECAMATAN,
   "PEMERINTAH DAERAH",
    PAGU,
-   PAGU_TAMBAHAN,
    REALISASI_1_REG,
    REALISASI_2_REG,
    REALISASI_1_EARMARK,
    REALISASI_2_EARMARK,
+   REALISASI_TAMBAHAN,
    "TOTAL PENYALURAN",
-   PAGU,
    PERSENTASE
    `;
-  //  REALISASI_TAMBAHAN
+  //  PAGU_TAMBAHAN,
    
 // ---------- State ----------
 let allData = [];         // full dataset (fetched once)
@@ -417,6 +416,7 @@ function renderTable(rows){
     { key: "REALISASI_2_REG", label: "Realisasi 2 Reg", sortable: false },
     { key: "REALISASI_1_EARMARK", label: "Realisasi 1 Earmark", sortable: false },
     { key: "REALISASI_2_EARMARK", label: "Realisasi 2 Earmark", sortable: false },
+    { key: "REALISASI_TAMBAHAN", label: "Realisasi Tambahan", sortable: false },
     { key: "TOTAL PENYALURAN", label: "Total Penyaluran", sortable: false },
     { key: "PERSENTASE", label: "Persentase", sortable: false },
   ];
@@ -479,10 +479,11 @@ function renderTable(rows){
         <td class="realisasi2reg-cell currency" data-fulltext="${escapeHTML(row.REALISASI_2_REG)}">${formatRupiahWithHighlight(row.REALISASI_2_REG, searchTerm)}</td>
         <td class="realisasi1ear-cell currency" data-fulltext="${escapeHTML(row.REALISASI_1_EARMARK)}">${formatRupiahWithHighlight(row.REALISASI_1_EARMARK, searchTerm)}</td>
         <td class="realisasi2ear-cell currency" data-fulltext="${escapeHTML(row.REALISASI_2_EARMARK)}">${formatRupiahWithHighlight(row.REALISASI_2_EARMARK, searchTerm)}</td>
+        <td class="realisasitam-cell currency" data-fulltext="${escapeHTML(row.REALISASI_TAMBAHAN)}">${formatRupiahWithHighlight(row.REALISASI_TAMBAHAN, searchTerm)}</td>
         <td class="totalpenyaluran-cell currency" data-fulltext="${escapeHTML(row["TOTAL PENYALURAN"])}">${formatRupiahWithHighlight(row["TOTAL PENYALURAN"], searchTerm)}</td>
         <td class="persentase-cell" data-fulltext="${escapeHTML(row.PERSENTASE)}">${createProgressBar(row.PERSENTASE)}</td>
-      `;
-      
+        `;
+
       tbody.appendChild(tr);
 
       // Set tooltips for overflowed content
