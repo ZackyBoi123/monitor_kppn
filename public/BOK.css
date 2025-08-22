@@ -30,6 +30,10 @@ body {
   margin-bottom: 1rem;
 }
 
+#navbar {
+  z-index: 9999;
+}
+
 .filter-row {
   display: flex;
   flex-wrap: wrap;
@@ -179,7 +183,7 @@ body {
 .loader-overlay {
   position: fixed;
   inset: 0;
-  background: #fff;
+  /* background: #fff; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -190,8 +194,8 @@ body {
   border: 5px solid #e0e0e0;
   border-top: 5px solid var(--blue-500);
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   animation: spin 0.9s linear infinite;
   margin: auto;
 }

@@ -56,6 +56,10 @@
             opacity: 0.9;
         }
 
+        #navbar {
+            z-index: 1000;
+        }
+
         .controls {
             display: flex;
             justify-content: center;
@@ -64,12 +68,19 @@
 
         .dropdown-container {
             position: relative;
+            z-index: 1000;
+        }
+
+        #regionDropdownMenu {
+          position: absolute; 
+          left: 0;
+          z-index: 9999 !important;
         }
 
         #regionSelector {
           background: #fff;
           border: 1px solid #ddd;
-          border-radius: 12px; /* instead of 50px */
+          border-radius: 12px;
           padding: 12px 16px;
           font-size: 1rem;
           font-weight: 500;
@@ -97,6 +108,8 @@
             padding-left: 15px;
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 100;
         }
 
         .control-group {
@@ -180,6 +193,9 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             border-left: 4px solid var(--primary-color);
+            position: relative;
+            z-index: 1;
+            overflow: visible !important;
         }
 
         .stat-card:hover {
@@ -345,7 +361,7 @@
   </style>
 </head>
 <body class="pt-16">
-<nav id="navbar" class="bg-white shadow-md fixed z-20 top-0 w-full transition-transform duration-300">
+<nav id="navbar" class="bg-white shadow-md fixed top-0 w-full transition-transform duration-300">
     <div class="max-w-8xl mx-auto px-3 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
 
@@ -401,14 +417,14 @@
             <div class="control-group">
                 <div>
                     <label class="form-label fw-bold">
-                        <i class="fas fa-map-marker-alt text-primary me-1"></i>Region
+                        <i class="fas fa-map-marker-alt text-primary me-1"></i>Kab / Kota
                     </label>
-
+                      
                     <div class="flex justify-center mb-8">
                     <div class="relative inline-block text-left">
                     
                       <button id="regionDropdownButton"
-                        class="inline-flex w-56 justify-between rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-md ring-1 ring-gray-300 hover:bg-gray-50 focus:outline-none"
+                        class="inline-flex w-64 justify-between rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-md ring-1 ring-gray-300 hover:bg-gray-50 focus:outline-none"
                         type="button">
                         <span id="regionDropdownLabel">Pilih Wilayah</span>
 
@@ -418,7 +434,7 @@
                       </button>
 
                       <div id="regionDropdownMenu"
-                        class="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 hidden">
+                        class="mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 hidden">
                         <div class="py-1 max-h-60 overflow-y-auto">
                           <!-- Regions will be injected here by JS -->
                         </div>
@@ -432,9 +448,9 @@
                         <i class="fas fa-download me-2"></i>Export
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" id="exportPDF"><i class="fas fa-file-pdf me-2 text-danger"></i>Export as PDF</a></li>
-                        <li><a class="dropdown-item" href="#" id="exportExcel"><i class="fas fa-file-excel me-2 text-success"></i>Export as Excel</a></li>
-                        <li><a class="dropdown-item" href="#" id="exportCSV"><i class="fas fa-file-csv me-2 text-info"></i>Export as CSV</a></li>
+                        <li><a class="dropdown-item" href="#" id="exportPDF"><i class="fas fa-file-pdf me-2 text-danger"></i>Export sebagai PDF</a></li>
+                        <li><a class="dropdown-item" href="#" id="exportExcel"><i class="fas fa-file-excel me-2 text-success"></i>Export sebagai Excel</a></li>
+                        <li><a class="dropdown-item" href="#" id="exportCSV"><i class="fas fa-file-csv me-2 text-info"></i>Export sebagai CSV</a></li>
                     </ul>
                 </div>
                 <button class="btn btn-outline-success" id="refreshData">
@@ -551,7 +567,7 @@
                                 <th><i class="fas fa-tag me-1"></i> Category</th>
                                 <th><i class="fas fa-wallet me-1"></i> Pagu</th>
                                 <th><i class="fas fa-chart-line me-1"></i> Realisasi</th>
-                                <th><i class="fas fa-percentage me-1"></i> Realization</th>
+                                <th><i class="fas fa-percentage me-1"></i> Rate</th>
                             </tr>
                         </thead>
                         <tbody>

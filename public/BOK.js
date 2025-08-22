@@ -137,7 +137,7 @@ async function getLastUpdated() {
 
   if (data.length > 0) {
     const lastUpdated = new Date(data[0].updated_at);
-    document.getElementById("last-updated").textContent = "Last Updated: " + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true});
+    document.getElementById("last-updated").textContent = "Last Updated: " + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false});
   }
 }
 
@@ -585,7 +585,7 @@ $("#filterJenisPemda, #filterJenisTahap, #filterJenisGelombang, #filterJenisPusk
 (async function init(){
   try {
     showToast("Loading data, please wait...");
-    // document.getElementById("loader").style.display = "flex";
+    document.getElementById("loader").style.display = "flex";
     allData = await fetchAllRowsBatched(1000); // fetch all rows in batches of 1000
     allData.sort((a,b) => (Number(a.ID) || 0) - (Number(b.ID) || 0));
     filteredData = [...allData];
@@ -613,6 +613,6 @@ $("#filterJenisPemda, #filterJenisTahap, #filterJenisGelombang, #filterJenisPusk
     document.getElementById("tableContainer").innerHTML = `<p style="color:red;">Failed to load data. See console.</p>`;
     showMainContent();
   } finally {
-    // document.getElementById("loader").style.display = "none";
+    document.getElementById("loader").style.display = "none";
   }
 })();
