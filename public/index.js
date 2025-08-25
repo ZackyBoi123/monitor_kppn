@@ -305,6 +305,9 @@ document.addEventListener("click", e => {
   }
 });
 
+// Wire up Vercel Analytics
+window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 
 // Initialize all event listeners
 function initializeEventListeners() {
