@@ -438,7 +438,7 @@ input[type="search"]:focus, select:focus {
   opacity: 1;
 }
 
-/* Responsive */
+/* Mobile-specific overrides */
 @media (max-width: 768px) {
   .header-bar {
     flex-direction: column;
@@ -447,16 +447,54 @@ input[type="search"]:focus, select:focus {
   .pagination-container {
     position: static;
     box-shadow: none;
+    width: 100%; 
   }
   
   .pagination-left {
     justify-content: center;
+    width: 100%; 
   }
   
   .pagination-controls {
     justify-content: center;
+    width: 100%; 
   }
-#toast {
+
+  /* Fix table text wrapping on mobile */
+  table.compact td {
+    max-width: none;            /* Remove max-width restriction */
+    white-space: normal;        /* Allow text to wrap */
+    text-wrap: wrap;            /* Enable text wrapping */
+    word-break: break-word;     /* Break long words if needed */
+    overflow-wrap: break-word;  /* Additional word breaking */
+    padding: 0.5rem;            /* Reduce padding for mobile */
+    font-size: 0.75rem;         /* Slightly smaller font for mobile */
+  }
+
+  /* Allow table headers to wrap on mobile too */
+  table.compact th {
+    white-space: normal;
+    text-wrap: wrap;
+    word-break: break-word;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Make table container more mobile-friendly */
+  #tableScrollWrapper {
+    max-height: none;           /* Remove height restriction on mobile */
+    overflow-x: auto;           /* Allow horizontal scrolling if needed */
+    overflow-y: visible;        /* Don't restrict vertical overflow */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+
+  /* Ensure table takes full width on mobile */
+  table {
+    width: 100%;
+    table-layout: auto;         /* Allow flexible column widths */
+  }
+
+  #toast {
     left: 50%;
     transform: translateX(-50%) translateY(50%);
     width: auto;
@@ -470,7 +508,19 @@ input[type="search"]:focus, select:focus {
   #toast.show {
     transform: translateX(-50%) translateY(0);
   }
+}
 
+/* Optional: Add a smaller mobile breakpoint for very small screens */
+@media (max-width: 480px) {
+  table.compact td {
+    font-size: 0.7rem;
+    padding: 0.4rem;
+  }
+  
+  table.compact th {
+    font-size: 0.8rem;
+    padding: 0.4rem;
+  }
 }
 
 /* Toast notification */
