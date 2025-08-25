@@ -288,7 +288,7 @@ async function getLastUpdated() {
 
     if (data.length > 0) {
       const lastUpdated = new Date(data[0].updated_at);
-      document.getElementById("last-Updated").textContent = "Last Updated: " + lastUpdated.toLocaleString();
+      document.getElementById("last-Updated").textContent = "Last Updated: " + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'numeric', day: 'numeric',  hour: 'numeric', minute: 'numeric', hour12: true});
     }
 }
 
