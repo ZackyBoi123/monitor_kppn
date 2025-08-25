@@ -7,7 +7,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const COLUMNS = `
   ID,
   "Nomor SP2D",
-  "Tanggal Selesai SP2D",  
+  "Tanggal Selesai SP2D",
   "Tanggal SP2D",
    "Nilai SP2D",
   "Nomor Invoice",
@@ -112,16 +112,6 @@ function capitalizeWords(str) {
     .split(' ')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-}
-
-// Modal functions
-function showDescriptionModal(rowData) {
-    document.getElementById('modalNomorSP2D').textContent = rowData["Nomor SP2D"] || '-';
-    document.getElementById('modalTanggalSP2D').textContent = rowData["Tanggal SP2D"] || '-';
-    document.getElementById('modalDescription').textContent = rowData.Deskripsi || 'Tidak ada deskripsi tersedia';
-    
-    const modal = new bootstrap.Modal(document.getElementById('descriptionModal'));
-    modal.show();
 }
 
 // function truncateText(text, maxLength = 30) {
@@ -331,15 +321,9 @@ function renderTable(rows){
   const headers = [
     { key: "No", label: "#", sortable: true },
     { key: "Nomor SP2D", label: "Nomor SP2D", sortable: false },
-    { key: "Tanggal Selesai SP2D", label: "Tanggal Selesai SP2D", sortable: true },
     { key: "Tanggal SP2D", label: "Tanggal SP2D", sortable: true },
     { key: "Nilai SP2D", label: "Nilai SP2D", sortable: false },
-    { key: "Nomor Invoice", label: "Nomor Invoice", sortable: false },
-    { key: "Tanggal Invoice", label: "Tanggal Invoice", sortable: true },
-    { key: "Jenis SPM", label: "Jenis SPM", sortable: false },
-    { key: "Jenis SP2D", label: "Jenis SP2D", sortable: false },
     { key: "Deskripsi", label: "Deskripsi", sortable: false },
-    { key: "Cek Detail Akun", label: "Detail Akun", sortable: false },
   ];
 
   const thead = document.createElement("thead");
@@ -393,25 +377,10 @@ function renderTable(rows){
       tr.innerHTML = `
         <td>${displayIndex}</td>
         <td class="nomor-cell" data-fulltext="${escapeHTML(row["Nomor SP2D"])}">${highlightHTML(row["Nomor SP2D"], searchTerm)}</td>
-        <td class="tanggalselesai-cell" data-fulltext="${escapeHTML(row["Tanggal Selesai SP2D"])}">${highlightHTML(row["Tanggal Selesai SP2D"], searchTerm)}</td>
         <td class="tanggal-cell" data-fulltext="${escapeHTML(row["Tanggal SP2D"])}">${highlightHTML(row["Tanggal SP2D"], searchTerm)}</td>
         <td class="nilai-cell currency" data-fulltext="${escapeHTML(row["Nilai SP2D"])}">${formatRupiahWithHighlight(row["Nilai SP2D"], searchTerm)}</td>
-        <td class="ninvoice-cell" data-fulltext="${escapeHTML(row["Nomor Invoice"])}">${highlightHTML(row["Nomor Invoice"], searchTerm)}</td>
-        <td class="tinvoice-cell" data-fulltext="${escapeHTML(row["Tanggal Invoice"])}">${highlightHTML(row["Tanggal Invoice"], searchTerm)}</td>
-        <td class="jenisspm-cell" data-fulltext="${escapeHTML(row["Jenis SPM"])}">${highlightHTML(capitalizeWords(row["Jenis SPM"]), searchTerm)}</td>
-        <td class="jenissp2d-cell" data-fulltext="${escapeHTML(row["Jenis SP2D"])}">${highlightHTML(capitalizeWords(row["Jenis SP2D"]), searchTerm)}</td>
-        <td style="max-width: 200px;">
-                    <div class="d-flex align-items-center">
-                        <button class="deskripsi-btn" onclick="showDescriptionModal_${idx}()" title="Lihat deskripsi lengkap">
-                            <i class="bi bi-eye"></i> Detail
-                        </button>
-                    </div>
-                </td>
-        <td class="cek-cell" data-fulltext="${escapeHTML(row["Cek Detail Akun"])}">${highlightHTML(row["Cek Detail Akun"], searchTerm)}</td>
+        <td class="deskripsi-cell" data-fulltext="${escapeHTML(row.Deskripsi)}">${highlightHTML(row.Deskripsi, searchTerm)}</td>
       `;
-
-      // Create a unique function for each row
-      window[`showDescriptionModal_${idx}`] = () => showDescriptionModal(row);
 
       tbody.appendChild(tr);
 

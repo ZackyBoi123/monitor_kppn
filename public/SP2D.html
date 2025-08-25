@@ -25,10 +25,10 @@
       <!-- Right side: Menu -->
       <div class="hidden md:flex space-x-6">
         <a href="index.html" class="text-gray-700 hover:text-blue-600 transition" id="link">Beranda</a>
-        <a href="BOK.html" class="text-gray-700 hover:text-blue-600 transition" id="link">BOK</a>
-        <a href="TKG.html" class="text-gray-700 hover:text-blue-600 transition" id="link">TKG & TPG</a>
         <a href="SP2D.html" class="text-blue-600 font-semibold border-b-2 border-blue-600" id="link">SP2D</a>
         <a href="DD.html" class="text-gray-700 hover:text-blue-600 transition" id="link">DD</a>
+        <a href="BOK.html" class="text-gray-700 hover:text-blue-600 transition" id="link">BOK</a>
+        <a href="TKG.html" class="text-gray-700 hover:text-blue-600 transition" id="link">Tunj. ASN Daerah</a>
       </div>
 
       <!-- Mobile menu button -->
@@ -47,10 +47,10 @@
   <!-- Mobile menu dropdown -->
   <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2">
     <a href="index.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">Beranda</a>
-    <a href="BOK.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">BOK</a>
-    <a href="TKG.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">TKG & TPG</a>
     <a href="SP2D.html" class="block text-blue-600 font-semibold border-b-2 border-blue-600" id="link">SP2D</a>
     <a href="DD.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">DD</a>
+    <a href="BOK.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">BOK</a>
+    <a href="TKG.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">Tunj. ASN Daerah</a>
   </div>
 </nav>
 
@@ -63,7 +63,8 @@
       <div class="header-bar">
         <div class="filter-row">
         <div class="chip-filter-group">
-          <div class="chip-filter">
+
+          <!-- <div class="chip-filter">
             <select id="filterJenisSPM" style="width: 230px;">
               <option value="" >[ Pilih SPM ]</option>
             </select>
@@ -73,7 +74,7 @@
           <select id="filterJenisSP2D" style="width: 230px;">
             <option value="" >[ Pilih SP2D ]</option>
           </select>
-        </div>
+        </div> -->
 
       <div class ="search-reset">
         <div class="search-container">
@@ -116,37 +117,6 @@
     </div>
 
     <div id="toast" role="alert" aria-live="polite" aria-atomic="true"></div>
-
-    <!-- Description Modal -->
-<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="descriptionModalLabel">
-                    <i class="bi bi-file-text me-2"></i>Detail Deskripsi
-                </h5>
-                <!-- <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button> -->
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <h6 class="text-muted mb-2">Nomor SP2D:</h6>
-                    <p id="modalNomorSP2D" class="fw-bold"></p>
-                </div>
-                <div class="mb-3">
-                    <h6 class="text-muted mb-2">Tanggal SP2D:</h6>
-                    <p id="modalTanggalSP2D"></p>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-2">Deskripsi Lengkap:</h6>
-                    <div id="modalDescription" class="description-text border rounded p-3 bg-light"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
   
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
