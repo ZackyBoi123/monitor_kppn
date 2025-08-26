@@ -318,12 +318,12 @@ function renderTable(rows){
   const table = document.createElement("table");
   table.className = "compact";
 
-  // Headers with sortable columns (NIP, NAMA, PEMDA)
+  // Headers with sortable columns
   const headers = [
-    { key: "No", label: "#", sortable: true },
+    { key: "No", label: "#", sortable: false },
     { key: "PEMDA", label: "Kab / Kota", sortable: true },
     { key: "NAMA TAHAP", label: "Tahap", sortable: true },
-    { key: "GELOMBANG", label: "Gelombang", sortable: true },
+    { key: "GELOMBANG", label: "Gelombang", sortable: false },
     { key: "PUSKESMAS", label: "Puskesmas", sortable: true },
     { key: "TOTAL PAGU", label: "Total Pagu", sortable: false },
     { key: "PAGU PER TAHAP", label: "Pagu Per Tahap", sortable: false },

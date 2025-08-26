@@ -317,11 +317,11 @@ function renderTable(rows){
   const table = document.createElement("table");
   table.className = "compact";
 													
-  // Headers with sortable columns (SPM, SP2D, PEMDA)
+  // Headers with sortable columns
   const headers = [
-    { key: "No", label: "#", sortable: true },
+    { key: "No", label: "#", sortable: false },
     { key: "Nomor SP2D", label: "Nomor SP2D", sortable: false },
-    { key: "Tanggal SP2D", label: "Tanggal SP2D", sortable: true },
+    { key: "Tanggal SP2D", label: "Tanggal SP2D", sortable: false },
     { key: "Nilai SP2D", label: "Nilai SP2D", sortable: false },
     { key: "Deskripsi", label: "Deskripsi", sortable: false },
   ];

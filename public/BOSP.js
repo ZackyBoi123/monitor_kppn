@@ -6,21 +6,15 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 // ---------- Column list (exact DB names; spaces quoted) ----------
 const COLUMNS = `
   ID,
-  "KODE DESA",
-  "NAMA DESA",  
-  "STATUS DESA",
-   KECAMATAN,
-  "PEMERINTAH DAERAH",
-   PAGU,
-   REALISASI_1_REG,
-   REALISASI_2_REG,
-   REALISASI_1_EARMARK,
-   REALISASI_2_EARMARK,
-   REALISASI_TAMBAHAN,
-   "TOTAL PENYALURAN",
-   PERSENTASE
+  "LOKASI SEKOLAH",
+  "NAMA SEKOLAH",
+  "STS SEKOLAH",
+  "TGL SP2D DETAIL",
+  TAHAP,
+  GEL,
+  NILAI,
+  "JMLH SISWA"
    `;
-  //  PAGU_TAMBAHAN,
    
 // ---------- State ----------
 let allData = [];         // full dataset (fetched once)
@@ -130,7 +124,7 @@ function showMainContent() {
 // ---------- Fetch ALL rows (batched) ----------
 async function getLastUpdated() {
   const { data, error } = await supabase
-    .from('DDD')
+    .from('BOSP')
     .select('updated_at')
     .order('updated_at', { ascending: false })
     .limit(1);
@@ -151,7 +145,7 @@ getLastUpdated();
 async function fetchAllRowsBatched(batchSize = 1000) {
   // Get exact count first
   const headRes = await supabase
-    .from('DDD')
+    .from('BOSP')
     .select('ID', { head: true, count: 'exact' });
 
   if (headRes.error) throw headRes.error;
@@ -160,7 +154,7 @@ async function fetchAllRowsBatched(batchSize = 1000) {
 
   if (total <= batchSize) {
     const { data, error } = await supabase
-      .from('DDD')
+      .from('BOSP')
       .select(COLUMNS)
       .order('ID', { ascending: true })
       .range(0, total - 1);
@@ -174,7 +168,7 @@ async function fetchAllRowsBatched(batchSize = 1000) {
     const from = i * batchSize;
     const to = Math.min(from + batchSize - 1, total - 1);
     const { data, error } = await supabase
-      .from('DDD')
+      .from('BOSP')
       .select(COLUMNS)
       .order('ID', { ascending: true })
       .range(from, to);
@@ -330,50 +324,50 @@ function createProgressBar(percentage) {
 }
 
 // Format status desa with color coding
-function formatStatusDesa(status, searchTerm = '') {
-  if (!status || status === '' || status === '-') {
-    return '<span class="status-other">-</span>';
-  }
+// function formatStatusDesa(status, searchTerm = '') {
+//   if (!status || status === '' || status === '-') {
+//     return '<span class="status-other">-</span>';
+//   }
 
-  // Clean and normalize the status text
-  const statusLower = String(status).toLowerCase().trim();
-  const formattedText = capitalizeWords(status);
+//   // Clean and normalize the status text
+//   const statusLower = String(status).toLowerCase().trim();
+//   const formattedText = capitalizeWords(status);
   
-  // Define status mapping with their corresponding CSS classes
-  const statusMap = {
-    'mandiri': 'status-mandiri',
-    'berkembang': 'status-berkembang',
-    'maju': 'status-maju',
-    'tertinggal': 'status-tertinggal',
-    'sangat tertinggal': 'status-sangat-tertinggal',
+//   // Define status mapping with their corresponding CSS classes
+//   const statusMap = {
+//     'mandiri': 'status-mandiri',
+//     'berkembang': 'status-berkembang',
+//     'maju': 'status-maju',
+//     'tertinggal': 'status-tertinggal',
+//     'sangat tertinggal': 'status-sangat-tertinggal',
 
-    // Add more status mappings here as needed
-    // 'your_status': 'status-your-css-class',
-  };
+//     Add more status mappings here as needed
+//     'your_status': 'status-your-css-class',
+//   };
 
-  // Find matching status or use default
-  let cssClass = 'status-other'; // default fallback
+//   Find matching status or use default
+//   let cssClass = 'status-other'; // default fallback
   
-  // Check for exact match first
-  if (statusMap[statusLower]) {
-    cssClass = statusMap[statusLower];
-  } else {
-    // Check for partial matches (useful for variations)
-    for (const [key, value] of Object.entries(statusMap)) {
-      if (statusLower.includes(key) || key.includes(statusLower)) {
-        cssClass = value;
-        break;
-      }
-    }
-  }
+//   // Check for exact match first
+//   if (statusMap[statusLower]) {
+//     cssClass = statusMap[statusLower];
+//   } else {
+//     // Check for partial matches (useful for variations)
+//     for (const [key, value] of Object.entries(statusMap)) {
+//       if (statusLower.includes(key) || key.includes(statusLower)) {
+//         cssClass = value;
+//         break;
+//       }
+//     }
+//   }
   
-  // Apply search highlighting if needed
-  const highlightedText = searchTerm ? 
-    highlightHTML(formattedText, searchTerm) : 
-    escapeHTML(formattedText);
+//   // Apply search highlighting if needed
+//   const highlightedText = searchTerm ? 
+//     highlightHTML(formattedText, searchTerm) : 
+//     escapeHTML(formattedText);
 
-  return `<span class="${cssClass}">${highlightedText}</span>`;
-}
+//   return `<span class="${cssClass}">${highlightedText}</span>`;
+// }
 
 // ---------- Format Rupiah with search highlighting ----------
 function formatRupiahWithHighlight(number, searchTerm = '') {
@@ -403,22 +397,17 @@ function renderTable(rows){
   const table = document.createElement("table");
   table.className = "compact";
 													
-  // Headers with sortable columns (DESA, KECAMATAN, PEMDA)
+  // Headers with sortable columns
   const headers = [
-    { key: "No", label: "#", sortable: true },
-    { key: "KODE DESA", label: "Kode Desa", sortable: true },
-    { key: "NAMA DESA", label: "Nama Desa", sortable: true },
-    { key: "STATUS DESA", label: "Status Desa", sortable: true },
-    { key: "KECAMATAN", label: "Kecamatan", sortable: true },
-    { key: "PEMERINTAH DAERAH", label: "Kab / Kota", sortable: true },
-    { key: "PAGU", label: "Pagu", sortable: false },
-    { key: "REALISASI_1_REG", label: "Realisasi 1 Reg", sortable: false },
-    { key: "REALISASI_2_REG", label: "Realisasi 2 Reg", sortable: false },
-    { key: "REALISASI_1_EARMARK", label: "Realisasi 1 Earmark", sortable: false },
-    { key: "REALISASI_2_EARMARK", label: "Realisasi 2 Earmark", sortable: false },
-    { key: "REALISASI_TAMBAHAN", label: "Realisasi Tambahan", sortable: false },
-    { key: "TOTAL PENYALURAN", label: "Total Penyaluran", sortable: false },
-    { key: "PERSENTASE", label: "Persentase", sortable: false },
+    { key: "No", label: "#", sortable: false },
+    { key: "LOKASI SEKOLAH", label: "Lokasi Sekolah", sortable: true },
+    { key: "NAMA SEKOLAH", label: "Nama Sekolah", sortable: true },
+    { key: "STS SEKOLAH", label: "Status Sekolah", sortable: true },
+    { key: "TGL SP2D DETAIL", label: "Tanggal SP2D", sortable: false },
+    { key: "TAHAP", label: "Tahap", sortable: false },
+    { key: "GEL", label: "Gelombang", sortable: false },
+    { key: "NILAI", label: "Nilai", sortable: false },
+    { key: "JMLH SISWA", label: "Jumlah Siswa", sortable: false },
   ];
 
   const thead = document.createElement("thead");
@@ -469,19 +458,14 @@ function renderTable(rows){
       
       tr.innerHTML = `
         <td class="numbers">${displayIndex}</td>
-        <td class="kode-cell" data-fulltext="${escapeHTML(row["KODE DESA"])}">${highlightHTML(row["KODE DESA"], searchTerm)}</td>
-        <td class="nama-cell" data-fulltext="${escapeHTML(row["NAMA DESA"])}">${highlightHTML(capitalizeWords(row["NAMA DESA"]), searchTerm)}</td>
-        <td class="status-cell" data-fulltext="${escapeHTML(row["STATUS DESA"])}">${formatStatusDesa(row["STATUS DESA"], searchTerm)}</td>
-        <td class="kecamatan-cell" data-fulltext="${escapeHTML(row.KECAMATAN)}">${highlightHTML(capitalizeWords(row.KECAMATAN), searchTerm)}</td>
-        <td class="pemda-cell" data-fulltext="${escapeHTML(row["PEMERINTAH DAERAH"])}">${highlightHTML(capitalizeWords(row["PEMERINTAH DAERAH"]), searchTerm)}</td>
-        <td class="pagu-cell currency" data-fulltext="${escapeHTML(row.PAGU)}">${formatRupiahWithHighlight(row.PAGU, searchTerm)}</td>
-        <td class="realisasi1reg-cell currency" data-fulltext="${escapeHTML(row.REALISASI_1_REG)}">${formatRupiahWithHighlight(row.REALISASI_1_REG, searchTerm)}</td>
-        <td class="realisasi2reg-cell currency" data-fulltext="${escapeHTML(row.REALISASI_2_REG)}">${formatRupiahWithHighlight(row.REALISASI_2_REG, searchTerm)}</td>
-        <td class="realisasi1ear-cell currency" data-fulltext="${escapeHTML(row.REALISASI_1_EARMARK)}">${formatRupiahWithHighlight(row.REALISASI_1_EARMARK, searchTerm)}</td>
-        <td class="realisasi2ear-cell currency" data-fulltext="${escapeHTML(row.REALISASI_2_EARMARK)}">${formatRupiahWithHighlight(row.REALISASI_2_EARMARK, searchTerm)}</td>
-        <td class="realisasitam-cell currency" data-fulltext="${escapeHTML(row.REALISASI_TAMBAHAN)}">${formatRupiahWithHighlight(row.REALISASI_TAMBAHAN, searchTerm)}</td>
-        <td class="totalpenyaluran-cell currency" data-fulltext="${escapeHTML(row["TOTAL PENYALURAN"])}">${formatRupiahWithHighlight(row["TOTAL PENYALURAN"], searchTerm)}</td>
-        <td class="persentase-cell" data-fulltext="${escapeHTML(row.PERSENTASE)}">${createProgressBar(row.PERSENTASE)}</td>
+        <td class="" data-fulltext="${escapeHTML(row["LOKASI SEKOLAH"])}">${highlightHTML(capitalizeWords(row["LOKASI SEKOLAH"]), searchTerm)}</td>
+        <td class="" data-fulltext="${escapeHTML(row["NAMA SEKOLAH"])}">${highlightHTML(row["NAMA SEKOLAH"], searchTerm)}</td>
+        <td class="" data-fulltext="${escapeHTML(row["STS SEKOLAH"])}">${highlightHTML(capitalizeWords(row["STS SEKOLAH"]), searchTerm)}</td>
+        <td class="" data-fulltext="${escapeHTML(row["TGL SP2D DETAIL"])}">${highlightHTML(row["TGL SP2D DETAIL"], searchTerm)}</td>
+        <td class="" data-fulltext="${escapeHTML(row.TAHAP)}">${highlightHTML(row.TAHAP, searchTerm)}</td>
+        <td class="" data-fulltext="${escapeHTML(row.GEL)}">${highlightHTML(row.GEL, searchTerm)}</td>
+        <td class="currency" data-fulltext="${escapeHTML(row.NILAI)}">${formatRupiahWithHighlight(row.NILAI, searchTerm)}</td>
+        <td class="" data-fulltext="${escapeHTML(row["JMLH SISWA"])}">${highlightHTML(row["JMLH SISWA"], searchTerm)}</td>
         `;
 
       tbody.appendChild(tr);

@@ -323,13 +323,13 @@ function renderTable(rows){
   const table = document.createElement("table");
   table.className = "compact";
 
-  // Headers with sortable columns (NIP, NAMA, SATDIK)
+  // Headers with sortable columns
   const headers = [
-    { key: "No", label: "#", sortable: true },
-    { key: "NIP", label: "NIP", sortable: true },
+    { key: "No", label: "#", sortable: false },
+    { key: "NIP", label: "NIP", sortable: false },
     { key: "NAMA", label: "Nama", sortable: true },
     { key: "NAMA PEMILIK REKENING", label: "Nama Pemilik Rekening", sortable: true },
-    { key: "NO REKENING", label: "No Rekening", sortable: true },
+    { key: "NO REKENING", label: "No Rekening", sortable: false },
     { key: "SATDIK", label: "Satdik", sortable: true },
     { key: "JENIS TUNJANGAN", label: "Jenis Tunjangan", sortable: true },
     { key: "PEMDA", label: "Kab / Kota", sortable: true },
