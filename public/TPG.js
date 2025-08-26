@@ -129,7 +129,7 @@ function showMainContent() {
 // ---------- Get Last Updated ----------
 async function getLastUpdated() {
   const { data, error } = await supabase
-    .from('TKGTPG')
+    .from('tkgtpg_masked')
     .select('updated_at')
     .order('updated_at', { ascending: false })
     .limit(1);
@@ -150,7 +150,7 @@ getLastUpdated();
 async function fetchAllRowsBatched(batchSize = 1000) {
   // Get exact count first
   const headRes = await supabase
-    .from('TKGTPG')
+    .from('tkgtpg_masked')
     .select('ID', { head: true, count: 'exact' });
 
   if (headRes.error) throw headRes.error;
@@ -159,7 +159,7 @@ async function fetchAllRowsBatched(batchSize = 1000) {
 
   if (total <= batchSize) {
     const { data, error } = await supabase
-      .from('TKGTPG')
+      .from('tkgtpg_masked')
       .select(COLUMNS)
       .order('ID', { ascending: true })
       .range(0, total - 1);
@@ -173,7 +173,7 @@ async function fetchAllRowsBatched(batchSize = 1000) {
     const from = i * batchSize;
     const to = Math.min(from + batchSize - 1, total - 1);
     const { data, error } = await supabase
-      .from('TKGTPG')
+      .from('tkgtpg_masked')
       .select(COLUMNS)
       .order('ID', { ascending: true })
       .range(from, to);
@@ -328,14 +328,13 @@ function renderTable(rows){
     { key: "No", label: "#", sortable: false },
     { key: "NIP", label: "NIP", sortable: false },
     { key: "NAMA", label: "Nama", sortable: true },
-    { key: "NAMA PEMILIK REKENING", label: "Nama Pemilik Rekening", sortable: true },
-    { key: "NO REKENING", label: "No Rekening", sortable: false },
+    { key: "NO REKENING", label: "No. Rekening", sortable: false },
     { key: "SATDIK", label: "Satdik", sortable: true },
     { key: "JENIS TUNJANGAN", label: "Jenis Tunjangan", sortable: true },
     { key: "PEMDA", label: "Kab / Kota", sortable: true },
     { key: "SALUR BRUTO", label: "Salur Bruto", sortable: false },
     { key: "PPH", label: "PPH", sortable: false },
-    { key: "POT JKN", label: "Pot JKN", sortable: false },
+    { key: "POT JKN", label: "Pot. JKN", sortable: false },
     { key: "SALUR NETTO", label: "Salur Netto", sortable: false },
     { key: "TRIWULAN", label: "Triwulan", sortable: false },
   ];
@@ -392,7 +391,6 @@ function renderTable(rows){
         <td>${displayIndex}</td>
         <td class="nip-cell" data-fulltext="${escapeHTML(row.NIP)}">${highlightHTML(row.NIP, searchTerm)}</td>
         <td class="nama-cell" data-fulltext="${escapeHTML(row.NAMA)}">${highlightHTML(capitalizeWords(row.NAMA), searchTerm)}</td>
-        <td class="namarek-cell" data-fulltext="${escapeHTML(row["NAMA PEMILIK REKENING"])}">${highlightHTML(capitalizeWords(row["NAMA PEMILIK REKENING"]), searchTerm)}</td>
         <td class="norek-cell" data-fulltext="${escapeHTML(row["NO REKENING"])}">${highlightHTML(row["NO REKENING"], searchTerm)}</td>
         <td class="satdik-cell" data-fulltext="${escapeHTML(row.SATDIK)}">${highlightHTML(capitalizeWords(row.SATDIK), searchTerm)}</td>
         <td class="jenistunjangan-cell" data-fulltext="${escapeHTML(row["JENIS TUNJANGAN"])}">${highlightHTML(capitalizeWords(row["JENIS TUNJANGAN"]), searchTerm)}</td>

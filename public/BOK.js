@@ -13,12 +13,12 @@ const COLUMNS = `
   "TOTAL PAGU",
   "PAGU PER TAHAP",
   "NILAI PENGURANG",
+  "NILAI PENGGUNAAN DANA",
   "NILAI PENYALURAN",
   SP2D,
   "TANGGAL SP2D",
-  "NILAI SP2D"
+  "NILAI SP2D" 
   `;
-  // "NILAI PENGGUNAAN DANA",
   
 // ---------- State ----------
 let allData = [];         // full dataset (fetched once)
@@ -328,10 +328,9 @@ function renderTable(rows){
     { key: "TOTAL PAGU", label: "Total Pagu", sortable: false },
     { key: "PAGU PER TAHAP", label: "Pagu Per Tahap", sortable: false },
     { key: "NILAI PENGURANG", label: "Nilai Pengurang", sortable: false },
-    // { key: "NILAI PENGGUNAAN DANA", label: "Nilai Penggunaan Dana", sortable: false },
+    { key: "NILAI PENGGUNAAN DANA", label: "Nilai Penggunaan Dana", sortable: false },
     { key: "NILAI PENYALURAN", label: "Nilai Penyaluran", sortable: false },
     { key: "SP2D", label: "SP2D", sortable: false },
-    { key: "NILAI SP2D", label: "Nilai SP2D", sortable: false },
     { key: "TANGGAL SP2D", label: "Tanggal SP2D", sortable: false },
   ];
 
@@ -392,12 +391,11 @@ function renderTable(rows){
         <td class="totalpagu-cell currency" data-fulltext="${escapeHTML(row["TOTAL PAGU"])}">${formatRupiahWithHighlight(row["TOTAL PAGU"], searchTerm)}</td>
         <td class="pagupertahap-cell currency" data-fulltext="${escapeHTML(row["PAGU PER TAHAP"])}">${formatRupiahWithHighlight(row["PAGU PER TAHAP"], searchTerm)}</td>
         <td class="nilaipeng-cell currency" data-fulltext="${escapeHTML(row["NILAI PENGURANG"])}">${formatRupiahWithHighlight(row["NILAI PENGURANG"], searchTerm)}</td>
+        <td class="nilaipengg-cell currency" data-fulltext="${escapeHTML(row["NILAI PENGGUNAAN DANA"])}">${formatRupiahWithHighlight(row["NILAI PENGGUNAAN DANA"], searchTerm)}</td>
         <td class="nilaipenyaluran-cell currency" data-fulltext="${escapeHTML(row["NILAI PENYALURAN"])}">${formatRupiahWithHighlight(row["NILAI PENYALURAN"], searchTerm)}</td>
         <td class="sp2d-cell" data-fulltext="${escapeHTML(row.SP2D)}">${highlightHTML(row.SP2D, searchTerm)}</td>
-        <td class="nilaisp2d-cell" data-fulltext="${escapeHTML(row["NILAI SP2D"])}">${highlightHTML(row["NILAI SP2D"], searchTerm)}</td>
         <td class="tanggal-cell" data-fulltext="${escapeHTML(row["TANGGAL SP2D"])}">${highlightHTML(row["TANGGAL SP2D"], searchTerm)}</td>
         `;
-        // <td class="nilaipengg-cell" data-fulltext="${escapeHTML(row["NILAI PENGGUNAAN DANA"])}">${highlightHTML(row["NILAI PENGGUNAAN DANA"], searchTerm)}</td>
         tbody.appendChild(tr);
 
       // After inserting row to tbody:
