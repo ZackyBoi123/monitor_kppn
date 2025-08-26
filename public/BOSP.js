@@ -66,9 +66,10 @@ scrollWrapper.addEventListener("scroll", () => {
 function saveState() {
   const state = {
     // filters: {
-    //   desa: $("#filterJenisDesa").val(),
-    //   kecamatan: $("#filterJenisKecamatan").val(),
-    //   pemda: $("#filterJenisPemda").val(),
+    //   lokasii: $("#filterJenisLokasi").val(),
+    //   sekolahh: $("#filterJenisSekolah").val(),
+    //   tahapp: $("#filterJenisTahap").val(),
+    //   gemm: $("#filterJenisGelombang").val(),
     // },
     searchTerm: document.getElementById("searchInput").value.trim(),
     sortColumn,
@@ -83,9 +84,10 @@ function loadState() {
     const state = JSON.parse(localStorage.getItem("tableState"));
     if (!state) return;
     if(state.filters) {
-      $("#filterJenisDesa").val(state.filters.desa).trigger("change");
-      $("#filterJenisKecamatan").val(state.filters.kecamatan).trigger("change");
-      $("#filterJenisPemda").val(state.filters.pemda).trigger("change");
+      $("#filterJenisLokasi").val(state.filters.lokasii).trigger("change");
+      $("#filterJenisSekolah").val(state.filters.sekolahh).trigger("change");
+      $("#filterJenisTahap").val(state.filters.tahapp).trigger("change");
+      $("#filterJenisGelombang").val(state.filters.gemm).trigger("change");
     }
     if(state.searchTerm) {
       document.getElementById("searchInput").value = state.searchTerm;
@@ -195,15 +197,17 @@ function fillSelect(selector, values, placeholderText){
 
 // ---------- Apply filters + search + sorting ----------
 function applyFiltersSearchAndSort(){
-  const desa = $("#filterJenisDesa").val();
-  const kecamatan = $("#filterJenisKecamatan").val();
-  const pemda = $("#filterJenisPemda").val();
+  const lokasii = $("#filterJenisLokasi").val();
+  const sekolahh = $("#filterJenisSekolah").val();
+  const tahapp = $("#filterJenisTahap").val();
+  const gemm = $("#filterJenisGelombang").val();
   const searchTerm = (document.getElementById("searchInput").value || "").trim().toLowerCase();
 
   filteredData = allData.filter(row => {
-    if (desa && row["NAMA DESA"] !== desa) return false;
-    if (kecamatan && row.KECAMATAN !== kecamatan) return false;
-    if (pemda && row["PEMERINTAH DAERAH"] !== pemda) return false;
+    if (lokasii && row["LOKASI SEKOLAH"] !== lokasii) return false;
+    if (sekolahh && row["NAMA SEKOLAH"] !== sekolahh) return false;
+    if (tahapp && row["TAHAP"] !== tahapp) return false;
+    if (gemm && row["GEL"] !== gemm) return false;
 
     if (!searchTerm) return true;
 
@@ -579,7 +583,7 @@ function renderPaginationControls(totalPages){
 
 // ---------- Reset handler ----------
 function resetAll(){
-  ["#filterJenisDesa", "#filterJenisKecamatan", "#filterJenisPemda"].forEach(sel => {
+  ["#filterJenisLokasi", "#filterJenisSekolah", "#filterJenisTahap", "#filterJenisGelombang"].forEach(sel => {
     $(sel).val("").trigger("change");
   });
   document.getElementById("searchInput").value = "";
@@ -623,7 +627,7 @@ document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
 document.getElementById("resetFilters").addEventListener("click", resetAll);
 
 // apply filters on change
-$("#filterJenisDesa, #filterJenisKecamatan, #filterJenisPemda").on("change", () => {
+$("#filterJenisLokasi, #filterJenisSekolah, #filterJenisTahap, filterJenisGelombang").on("change", () => {
   currentPage = 1;
   applyFiltersSearchAndSort();
 });
@@ -656,13 +660,15 @@ $("#filterJenisDesa, #filterJenisKecamatan, #filterJenisPemda").on("change", () 
     filteredData = [...allData];
 
     // populate filter dropdowns
-    const desaa = [...new Set(allData.map(r => r["NAMA DESA"]).filter(Boolean))].sort();
-    const kece = [...new Set(allData.map(r => r.KECAMATAN).filter(Boolean))].sort();
-    const pem = [...new Set(allData.map(r => r["PEMERINTAH DAERAH"]).filter(Boolean))].sort();
+    const lokasi = [...new Set(allData.map(r => r["LOKASI SEKOLAH"]).filter(Boolean))].sort();
+    const sekolah = [...new Set(allData.map(r => r["NAMA SEKOLAH"]).filter(Boolean))].sort();
+    const tahap = [...new Set(allData.map(r => r["TAHAP"]).filter(Boolean))].sort();
+    const gem = [...new Set(allData.map(r => r["GEL"]).filter(Boolean))].sort();
 
-    fillSelect("#filterJenisDesa", desaa, "[ Pilih Desa ]");
-    fillSelect("#filterJenisKecamatan", kece, "[ Pilih Kecamatan ]");
-    fillSelect("#filterJenisPemda", pem, "[ Pilih Kab / Kota ]");
+    fillSelect("#filterJenisLokasi", lokasi, "[ Pilih Lokasi ]");
+    fillSelect("#filterJenisSekolah", sekolah, "[ Pilih Sekolah ]");
+    fillSelect("#filterJenisTahap", tahap, "[ Pilih Tahap ]");
+    fillSelect("#filterJenisGelombang", gem, "[ Pilih Gelombang ]");
 
     // load persistent UI state
     loadState();
