@@ -328,14 +328,8 @@ function initializeEventListeners() {
     });
 
     // Export buttons
-    const exportPDF = document.getElementById('exportPDF');
-    const exportExcel = document.getElementById('exportExcel');
-    const exportCSV = document.getElementById('exportCSV');
     const refreshData = document.getElementById('refreshData');
     
-    if (exportPDF) exportPDF.addEventListener('click', exportToPDF);
-    if (exportExcel) exportExcel.addEventListener('click', exportToExcel);
-    if (exportCSV) exportCSV.addEventListener('click', exportToCSV);
     if (refreshData) refreshData.addEventListener('click', refreshDataHandler);
 
     // Mobile menu toggle
@@ -364,110 +358,6 @@ function initializeEventListeners() {
 
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative
         });
-    }
-}
-
-// Export functions
-function exportToPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    doc.setFontSize(20);
-    doc.text('KPPN Budget Report', 20, 20);
-    
-    doc.setFontSize(12);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 40);
-    
-    // Add table data
-    const tableData = comparisonData.map(item => [
-        item.Category,
-        formatCurrency(item.Pagu),
-        formatCurrency(item.Realisasi),
-        `${(item.Pagu > 0 ? (item.Realisasi / item.Pagu * 100) : 0).toFixed(1)}%`
-    ]);
-    
-    doc.autoTable({
-        head: [['Category', 'Pagu', 'Realisasi', 'Rate']],
-        body: tableData,
-        startY: 50
-    });
-    
-    doc.save('budget-report.pdf');
-    showAlert('PDF exported successfully!', 'success');
-}
-
-function exportToExcel() {
-    try {
-        // Get current region data
-        const regionSelector = document.getElementById('regionDropdownLabel');
-        const selectedRegion = regionSelector.textContent.trim();
-        
-        if (!selectedRegion) {
-            showAlert('Please select a region first!', 'error');
-            return;
-        }
-        
-        const regionData = budgetData.filter(item => item.Region === selectedRegion);
-        
-        // Create CSV content
-        let csvContent = "Category,Pagu,Realisasi,Realization Rate\n";
-        regionData.forEach(item => {
-            const realizationRate = item.Pagu > 0 ? ((item.Realisasi / item.Pagu) * 100).toFixed(1) : 0;
-            csvContent += `"${item.Category}",${item.Pagu},${item.Realisasi},${realizationRate}%\n`;
-        });
-        
-        // Download file
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", `budget_data_${selectedRegion}_${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        showAlert('Excel file exported successfully!', 'success');
-    } catch (error) {
-        console.error('Export error:', error);
-        showAlert('Error exporting to Excel', 'error');
-    }
-}
-
-function exportToCSV() {
-    try {
-        // Get current region data
-        const regionSelector = document.getElementById('regionDropdownLabel');
-        const selectedRegion = regionSelector.textContent.trim();
-        
-        if (!selectedRegion) {
-            showAlert('Please select a region first!', 'error');
-            return;
-        }
-        
-        const regionData = budgetData.filter(item => item.Region === selectedRegion);
-        
-        // Create CSV content
-        let csvContent = "Category,Pagu,Realisasi,Realization Rate\n";
-        regionData.forEach(item => {
-            const realizationRate = item.Pagu > 0 ? ((item.Realisasi / item.Realisasi) * 100).toFixed(1) : 0;
-            csvContent += `"${item.Category}",${item.Pagu},${item.Realisasi},${realizationRate}%\n`;
-        });
-        
-        // Download file
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", `budget_data_${selectedRegion}_${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showAlert('CSV file exported successfully!', 'success');
-        
-    } catch (error) {
-        console.error('Export error:', error);
     }
 }
 
