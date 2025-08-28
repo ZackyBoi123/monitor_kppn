@@ -531,7 +531,7 @@ function resetAll(){
   showToast("Filters and search have been reset!");
 }
 
-// ---------- Reset message popup ----------
+// ---------- message popup ----------
 function showToast(msg){
   const toast = document.getElementById("toast");
   toast.textContent = msg;
@@ -540,6 +540,36 @@ function showToast(msg){
     toast.classList.remove("show");
   }, 2325);
 }
+
+// ---------- copy popup ----------
+function showToastCopy(msg){
+  const toastCopy = document.getElementById("toastCopy");
+  toastCopy.style.left = x + "px";
+  toastCopy.style.top = (y - 63) + "px"; // position above cursor
+  toastCopy.textContent = msg;
+  toastCopy.classList.add("show");
+  setTimeout(() => {
+    toastCopy.classList.remove("show");
+  }, 2325);
+}
+
+// Track mouse position for copy popup
+let x = 0 
+let y = 0;
+
+// Update x and y on mouse move
+document.addEventListener("mousemove", (e) => {
+  x = e.clientX;
+  y = e.clientY;
+});
+
+// ---------- Ctrl/Cmd + C popup ----------
+document.addEventListener("copy", () => {
+    const selection = window.getSelection().toString().trim();
+    if (selection.length > 0) {
+    showToastCopy("Copied to clipboard!");
+  }
+});
 
 // ---------- Vercel Analytics ----------
 window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };

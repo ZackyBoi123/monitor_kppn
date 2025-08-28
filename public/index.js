@@ -251,9 +251,9 @@ function populateRegionDropdown() {
   menu.innerHTML = "";
 
   regions.forEach(region => {
-    const item = document.createElement("a");
+    const item = document.createElement("div");
     item.href = "#";
-    item.className = "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100";
+    item.className = "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 no-underline";
     item.textContent = region;
 
     item.addEventListener("click", e => {

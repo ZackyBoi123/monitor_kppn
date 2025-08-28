@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="images/logo-kementerian-keuangan-356.png" type="image/x-icon">
     <title>KPPN</title>
-    <link href="./output.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="./output.css" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
     <script defer src="/_vercel/insights/script.js"></script>
     <script type="module" src="index.js"></script>
@@ -44,6 +41,26 @@
             min-height: 100vh;
         }
 
+        a {
+          text-decoration: none;
+          color: inherit;
+        }
+
+        .current { 
+          color: oklch(54.6% 0.245 262.881);
+          border-bottom: 2px solid oklch(54.6% 0.245 262.881);
+          font-weight: 600;
+        }
+
+        .other {
+          color: oklch(37.3% 0.034 259.733);
+          transition: color 0.3s ease;
+        }
+
+        .other:hover {
+          color: oklch(54.6% 0.245 262.881)
+        }
+
         h1 {
             font-family: 'Georgia', serif;
             background: linear-gradient(45deg, #362f2f, #0f1011);
@@ -52,6 +69,8 @@
             background-clip: text;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
             letter-spacing: 1.75px;
+            font-size: 4.5rem;
+            font-weight: 700;
         }
 
         p {
@@ -112,8 +131,9 @@
             background: white;
             border-radius: 16px;
             padding-top: 20px;
-            padding-bottom: 10px;
+            padding-bottom: 2px;
             padding-left: 15px;
+            margin-top: 15px;
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.4);
             position: relative;
@@ -238,25 +258,6 @@
             font-weight: 500;
         }
 
-        .loading {
-            text-align: center;
-            color: white;
-            font-size: 1.2rem;
-            margin: 50px 0;
-        }
-
-        .loading::after {
-            content: '';
-            animation: dots 1.5s steps(5, end) infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
-        }
-
         .debug-info {
             background: rgba(255, 255, 255, 0.1);
             color: white;
@@ -265,6 +266,17 @@
             margin: 20px 0;
             font-family: monospace;
             font-size: 0.9rem;
+        }
+
+        @media (max-width: 420px) {
+            .btn {
+                margin-bottom: 20px;
+            }
+
+            .dropdown {
+              margin-bottom: 2px;
+            }
+          
         }
 
         @media (max-width: 768px) {
@@ -279,12 +291,16 @@
 
             .stat-value{
               font-size: 1.6rem;
+            }
 
+            .dropdown {
+              margin-bottom: 2px;
             }
 
             h1 {
-              font-size: 2.5rem;
+              font-size: 3.5rem;
             }
+            
           }
 
         #link {
@@ -367,22 +383,22 @@
 </head>
 <body class="pt-16">
 <nav id="navbar" class="bg-white shadow-md fixed top-0 w-full transition-transform duration-300">
-    <div class="max-w-8xl mx-auto px-3 sm:px-6 lg:px-8">
+    <div class="max-w-8xl mx-auto px-3 sm:px-4 lg:px-4">
         <div class="flex justify-between h-16 items-center">
 
       <!-- Left side: Logo + Title -->
       <a href="#" class="flex items-center space-x-2">
-        <img src="images/LOGO_KPPN_JAYAPURA_FIX.png" alt="Logo" class="h-12 w-15">
+        <img src="images/LOGO_KPPN_JAYAPURA_FIX.png" alt="Logo" class="h-12 w-35">
         <!-- <span class="font-semibold text-lg text-gray-800">KPPN</span> -->
       </a>
 
       <!-- Right side: Menu -->
       <div class="hidden md:flex space-x-6">
-        <a href="index.html" class="text-blue-600 font-semibold border-b-2 border-blue-600" id="link">Beranda</a>
-        <a href="SP2D.html" class="text-gray-700 hover:text-blue-600 transition" id="link">SP2D</a>
-        <a href="BOSP.html" class="text-gray-700 hover:text-blue-600 transition" id="link">BOSP</a>
-        <a href="BOK.html" class="text-gray-700 hover:text-blue-600 transition" id="link">BOK</a>
-        <a href="TKG.html" class="text-gray-700 hover:text-blue-600 transition" id="link">Tunj. ASN Daerah</a>
+        <a href="index.html" class="current" id="link">Beranda</a>
+        <a href="SP2D.html" class="other" id="link">SP2D</a>
+        <a href="BOSP.html" class="other" id="link">BOSP</a>
+        <a href="BOK.html" class="other" id="link">BOK</a>
+        <a href="TKG.html" class="other" id="link">Tunj. ASN Daerah</a>
       </div>
 
       <!-- Mobile menu button -->
@@ -409,8 +425,8 @@
 </nav>
 <div class="dashboard-container">
 
-  <h1 class="text-center pt-1 text-7xl font-bold">MATOA</h1>
-  <p class="text-center pb-3 text-lg italic font-bold">Monitoring Anggaran Transfer dan Otonomi Papua</p>
+  <h1 class="text-center pt-1">MATOA</h1>
+  <p class="sub-header text-center pb-3 text-lg italic font-bold">Monitoring Anggaran Transfer dan Otonomi Papua</p>
 
 <!-- Alert Banner -->
     <div id="alertBanner" class="alert alert-info alert-banner" style="display: none;">
@@ -424,15 +440,14 @@
         <div class="controls-panel fade-in" id="controlsPanel" style="display: none;">
             <div class="control-group">
                 <div>
-                    <label class="form-label fw-bold">
+                    <label class="form-label font-bold">
                         <i class="fas fa-map-marker-alt text-primary me-1"></i>Kab / Kota
                     </label>
                       
-                    <div class="flex justify-center mb-8">
+                    <div class="flex justify-center sm:mb-8">
                     <div class="relative inline-block text-left">
                     
-                      <button id="regionDropdownButton"
-                        class="inline-flex w-64 justify-between rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-md ring-1 ring-gray-300 hover:bg-gray-50 focus:outline-none"
+                      <button id="regionDropdownButton" class="inline-flex w-64 justify-between rounded-pill bg-white px-3 py-1 text-sm font-medium text-gray-700 shadow-md ring-1 ring-gray-300 hover:bg-gray-50 focus:outline-none"
                         type="button">
                         <span id="regionDropdownLabel">Pilih Wilayah</span>
 
