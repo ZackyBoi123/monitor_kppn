@@ -3,12 +3,9 @@
   "version": "1.0.0",
   "main": "TPG.js",
   "scripts": {
-
-  "build:css": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify && npx tailwindcss -i ./src/BOK.css -o ./public/BOK.css --minify && npx tailwindcss -i ./src/BOSP.css -o ./public/BOSP.css --minify",
-  "build:js": "npx terser ./src/index.js -o ./public/index.js -c -m && npx terser ./src/BOK.js -o ./public/BOK.js -c -m && npx terser ./src/BOSP.js -o ./public/BOSP.js -c -m",
-  "build:html": "npx html-minifier-terser ./src/index.html -o ./public/index.html --collapse-whitespace --remove-comments --minify-css true --minify-js true && npx html-minifier-terser ./src/BOK.html -o ./public/BOK.html --collapse-whitespace --remove-comments --minify-css true --minify-js true && npx html-minifier-terser ./src/BOSP.html -o ./public/BOSP.html --collapse-whitespace --remove-comments --minify-css true --minify-js true && npx html-minifier-terser ./src/login.html -o ./public/login.html --collapse-whitespace --remove-comments --minify-css true --minify-js true",
-  "build": "npm run build:css && npm run build:js && npm run build:html"
-
+    "build": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify",
+    "watch": "npx tailwindcss -i ./src/input.css -o ./public/output.css --watch",
+    "dev": "npm run watch"
   },
   "keywords": [],
   "author": "",
@@ -21,11 +18,6 @@
     "esbuild": "^0.25.9"
   },
   "devDependencies": {
-    "clean-css-cli": "^5.6.3",
-    "cpy-cli": "^6.0.0",
-    "html-minifier-terser": "^7.2.0",
-    "mkdirp": "^3.0.1",
-    "tailwindcss": "^4.1.12",
-    "terser": "^5.44.0"
+    "tailwindcss": "^4.1.12"
   }
 }
