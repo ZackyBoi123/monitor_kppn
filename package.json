@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "main": "TPG.js",
   "scripts": {
-    
-  "build:css": "npx tailwindcss -i ./src/input.css -o ./public/style.css --minify && npx tailwindcss -i ./src/BOK.css -o ./public/BOK.css --minify",
-  "build:js": "npx terser ./src/script.js -o ./public/script.js -c -m && npx terser ./src/BOK.js -o ./public/BOK.js -c -m",
-  "build:html": "npx html-minifier-terser ./src/index.html -o ./public/index.html --collapse-whitespace --remove-comments --minify-css true --minify-js true && npx html-minifier-terser ./src/BOK.html -o ./public/BOK.html --collapse-whitespace --remove-comments --minify-css true --minify-js true",
+
+  "build:css": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify && npx tailwindcss -i ./src/BOK.css -o ./public/BOK.css --minify && npx tailwindcss -i ./src/BOSP.css -o ./public/BOSP.css --minify",
+  "build:js": "npx terser ./src/index.js -o ./public/index.js -c -m && npx terser ./src/BOK.js -o ./public/BOK.js -c -m && npx terser ./src/BOSP.js -o ./public/BOSP.js -c -m",
+  "build:html": "npx html-minifier-terser ./src/index.html -o ./public/index.html --collapse-whitespace --remove-comments --minify-css true --minify-js true && npx html-minifier-terser ./src/BOK.html -o ./public/BOK.html --collapse-whitespace --remove-comments --minify-css true --minify-js true && npx html-minifier-terser ./src/BOSP.html -o ./public/BOSP.html --collapse-whitespace --remove-comments --minify-css true --minify-js true && npx html-minifier-terser ./src/login.html -o ./public/login.html --collapse-whitespace --remove-comments --minify-css true --minify-js true",
   "build": "npm run build:css && npm run build:js && npm run build:html"
 
   },
