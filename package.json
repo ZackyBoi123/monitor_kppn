@@ -6,13 +6,14 @@
     "buildLocal": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify",
     "watch": "npx tailwindcss -i ./src/input.css -o ./public/output.css --watch",
     "dev": "npm run watch",
-    
-    "build:css": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify && npx glob './src/!(output).css' -- npx tailwindcss -i {file} -o ./public/{base} --minify",
+
+    "prebuild": "mkdir -p public",
+    "build:css": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify && npx glob './src/!(input).css' -- npx tailwindcss -i {file} -o ./public/{base} --minify",
     "build:js": "npx glob './src/*.js' -- npx terser {file} -o ./public/{base} -c -m",
     "build:html": "npx glob './src/*.html' -- npx html-minifier-terser {file} -o ./public/{base} --collapse-whitespace --remove-comments --minify-css true --minify-js true",
     "build:images": "npx cpx './src/images/**/*' ./public/images",
 
-    "build": "npm run build:css && npm run build:js && npm run build:html && npm run build:images"
+    "build": "npm run prebuild && npm run build:css && npm run build:js && npm run build:html && npm run build:images"
   },
   "keywords": [],
   "author": "",
