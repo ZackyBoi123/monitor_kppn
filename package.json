@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "main": "TPG.js",
   "scripts": {
-    "buildLocal": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify",
-    "watch": "npx tailwindcss -i ./src/input.css -o ./public/output.css --watch",
-    "dev": "npm run watch",
     "build": "npx mkdirp public && npm run build:css && npm run build:js && npm run build:html && npm run build:images",
     "build:css": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify && npx glob-cli './src/!(input).css' -- npx tailwindcss -i {file} -o ./public/{base} --minify",
     "build:js": "npx glob-cli './src/*.js' -- npx terser {file} -o ./public/{base} -c -m",
