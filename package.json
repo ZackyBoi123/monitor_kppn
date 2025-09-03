@@ -6,11 +6,11 @@
     "buildLocal": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify",
     "watch": "npx tailwindcss -i ./src/input.css -o ./public/output.css --watch",
     "dev": "npm run watch",
-    "build:css": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify && npx glob './src/!(input).css' -- npx tailwindcss -i {file} -o ./public/{base} --minify",
-    "build:js": "npx glob './src/*.js' -- npx terser {file} -o ./public/{base} -c -m",
-    "build:html": "npx glob './src/*.html' -- npx html-minifier-terser {file} -o ./public/{base} --collapse-whitespace --remove-comments --minify-css true --minify-js true",
-    "build:images": "npx cpx './src/images/**/*' ./public/images",
-    "build": "npx mkdirp public && npm run build:css && npm run build:js && npm run build:html && npm run build:images"
+    "build": "npx mkdirp public && npm run build:css && npm run build:js && npm run build:html && npm run build:images",
+    "build:css": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify && npx glob-cli './src/!(input).css' -- npx tailwindcss -i {file} -o ./public/{base} --minify",
+    "build:js": "npx glob-cli './src/*.js' -- npx terser {file} -o ./public/{base} -c -m",
+    "build:html": "npx glob-cli './src/*.html' -- npx html-minifier-terser {file} -o ./public/{base} --collapse-whitespace --remove-comments --minify-css true --minify-js true",
+   "build:images": "npx cpx './src/images/**/*' ./public/images"
   },
   "keywords": [],
   "author": "",
@@ -23,7 +23,8 @@
     "esbuild": "^0.25.9"
   },
   "devDependencies": {
-    "cpx": "^1.5.0",
+    "cpx": "^1.2.1",
+    "glob-cli": "^1.0.0",
     "mkdirp": "^3.0.1",
     "tailwindcss": "^4.1.12"
   }
