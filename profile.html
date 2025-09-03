@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .glass-card {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+    .avatar-container {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .avatar-container:hover {
+      transform: scale(1.05);
+    }
+    .upload-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      cursor: pointer;
+    }
+    .avatar-container:hover .upload-overlay {
+      opacity: 1;
+    }
+    .form-section {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    .form-section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    .modern-input {
+      border-radius: 12px;
+      border: 2px solid #e2e8f0;
+      transition: all 0.3s ease;
+      padding: 12px 16px;
+    }
+    .modern-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      outline: none;
+    }
+    .modern-btn {
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary-modern {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .btn-primary-modern:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+    .btn-warning-modern {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+    .btn-warning-modern:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);
+    }
+    .btn-error-modern {
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+      color: #dc2626;
+    }
+    .btn-error-modern:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 154, 158, 0.3);
+    }
+    .info-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 1rem;
+      border-left: 4px solid #667eea;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body class="min-h-screen gradient-bg">
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+      
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-white mb-2">👤 Your Profile</h1>
+        <p class="text-white/80">Manage your account settings and preferences</p>
+      </div>
+
+      <!-- Main Card -->
+      <div class="glass-card rounded-2xl p-8">
+        
+        <!-- Avatar Section -->
+        <div class="form-section">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+            <i class="fas fa-user-circle mr-2 text-purple-600"></i>
+            Profile Picture
+          </h2>
+          
+          <div class="flex flex-col items-center">
+            <div class="avatar-container w-32 h-32 mb-4">
+              <img id="profileAvatar" src="" 
+                   class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg" 
+                   alt="Profile Avatar" />
+              <div class="upload-overlay" onclick="document.getElementById('avatarUpload').click()">
+                <i class="fas fa-camera text-white text-2xl"></i>
+              </div>
+            </div>
+            
+            <input type="file" id="avatarUpload" class="hidden" accept="image/*" />
+            
+            <div class="flex gap-3 w-full max-w-sm">
+              <button id="uploadAvatarBtn" class="modern-btn btn-primary-modern flex-1">
+                <i class="fas fa-upload mr-2"></i>Upload
+              </button>
+              <button id="deleteAvatarBtn" class="modern-btn btn-error-modern flex-1">
+                <i class="fas fa-trash mr-2"></i>Delete
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Information -->
+        <div class="form-section">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+            <i class="fas fa-info-circle mr-2 text-blue-600"></i>
+            Account Information
+          </h2>
+          
+          <div id="profileInfo" class="space-y-3">
+            <div class="info-card">
+              <div class="flex items-center">
+                <i class="fas fa-envelope text-gray-500 w-5"></i>
+                <span class="font-medium text-gray-700 ml-3">Email:</span>
+                <span id="profileEmail" class="ml-2 text-gray-900">Loading...</span>
+              </div>
+            </div>
+            
+            <div class="info-card">
+              <div class="flex items-center">
+                <i class="fas fa-user text-gray-500 w-5"></i>
+                <span class="font-medium text-gray-700 ml-3">Username:</span>
+                <span id="profileUsername" class="ml-2 text-gray-900">Loading...</span>
+              </div>
+            </div>
+            
+            <div class="info-card">
+              <div class="flex items-center">
+                <i class="fas fa-shield-alt text-gray-500 w-5"></i>
+                <span class="font-medium text-gray-700 ml-3">Role:</span>
+                <span id="profileRole" class="ml-2 text-gray-900 capitalize">Loading...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Update Username -->
+        <div class="form-section">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+            <i class="fas fa-edit mr-2 text-green-600"></i>
+            Update Profile
+          </h2>
+          
+          <form id="updateProfileForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-user mr-1"></i>New Username
+              </label>
+              <input type="text" id="newUsername" placeholder="Enter your new username" 
+                     class="modern-input w-full" maxlength="30" />
+              <div class="text-xs text-gray-500 mt-1">
+                Username must be 3-30 characters long
+              </div>
+            </div>
+            <button type="submit" class="modern-btn btn-primary-modern w-full">
+              <i class="fas fa-save mr-2"></i>Save Changes
+            </button>
+          </form>
+        </div>
+
+        <!-- Security Actions -->
+        <div class="form-section">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+            <i class="fas fa-lock mr-2 text-red-600"></i>
+            Security & Access
+          </h2>
+          
+          <div class="space-y-3">
+            <button id="resetPasswordBtn" class="modern-btn btn-warning-modern w-full">
+              <i class="fas fa-key mr-2"></i>Send Password Reset Link
+            </button>
+            
+            <button id="logoutBtn" class="modern-btn btn-error-modern w-full">
+              <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg p-6 text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+      <p class="text-gray-700">Processing...</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    
+    const SUPABASE_URL = "https://kntomoredgduvwbovgpx.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtudG9tb3JlZGdkdXZ3Ym92Z3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MzI0NzcsImV4cCI6MjA3MDIwODQ3N30.Ei7vJ8RQCiz7KPXis6He8dVzL91Euocxzxzg1ptg1_U";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Utility functions
+    function showLoading() {
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+    }
+    
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.add('hidden');
+    }
+    
+    function showAlert(message, type = 'success') {
+      const alertColors = {
+        success: 'bg-green-100 border-green-400 text-green-700',
+        error: 'bg-red-100 border-red-400 text-red-700',
+        info: 'bg-blue-100 border-blue-400 text-blue-700'
+      };
+      
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `fixed top-4 right-4 z-50 border px-4 py-3 rounded-lg shadow-lg ${alertColors[type]} transition-all duration-300`;
+      alertDiv.innerHTML = `
+        <div class="flex items-center">
+          <span>${message}</span>
+          <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-lg font-bold">×</button>
+        </div>
+      `;
+      
+      document.body.appendChild(alertDiv);
+      
+      setTimeout(() => {
+        if (alertDiv.parentNode) {
+          alertDiv.remove();
+        }
+      }, 5000);
+    }
+
+    async function loadProfile() {
+      try {
+        showLoading();
+        
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        // Display email
+        document.getElementById("profileEmail").textContent = user.email || 'N/A';
+
+        // Load profile data
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("username, role, avatar_url")
+          .eq("id", user.id)
+          .single();
+
+        if (profile) {
+          document.getElementById("profileUsername").textContent = profile.username || 'Not set';
+          document.getElementById("profileRole").textContent = profile.role || 'User';
+
+          if (profile.avatar_url) {
+            document.getElementById("profileAvatar").src = profile.avatar_url;
+          }
+        } else if (profileError) {
+          console.warn("Profile not found, this might be a new user:", profileError);
+          document.getElementById("profileUsername").textContent = 'Not set';
+          document.getElementById("profileRole").textContent = 'User';
+        }
+      } catch (error) {
+        console.error("Error loading profile:", error);
+        showAlert("Failed to load profile data", 'error');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Update username with validation
+    document.getElementById("updateProfileForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const newUsername = document.getElementById("newUsername").value.trim();
+      
+      // Validation
+      if (!newUsername) {
+        showAlert("Username cannot be empty", 'error');
+        return;
+      }
+      
+      if (newUsername.length < 3 || newUsername.length > 30) {
+        showAlert("Username must be between 3-30 characters", 'error');
+        return;
+      }
+      
+      if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
+        showAlert("Username can only contain letters, numbers, and underscores", 'error');
+        return;
+      }
+      
+      try {
+        showLoading();
+        
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          showAlert("You must be logged in", 'error');
+          return;
+        }
+
+        const { error } = await supabase
+          .from("profiles")
+          .upsert({ 
+            id: user.id,
+            username: newUsername,
+            updated_at: new Date().toISOString()
+          });
+
+        if (!error) {
+          showAlert("Username updated successfully! ✅", 'success');
+          document.getElementById("newUsername").value = '';
+          await loadProfile();
+        } else {
+          showAlert("Update failed: " + error.message, 'error');
+        }
+      } catch (error) {
+        console.error("Update error:", error);
+        showAlert("An unexpected error occurred", 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+
+    // Avatar upload with better error handling
+    document.getElementById("uploadAvatarBtn").addEventListener("click", async () => {
+      const fileInput = document.getElementById("avatarUpload");
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        showAlert("Please select a file first", 'error');
+        return;
+      }
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showAlert("Please select an image file", 'error');
+        return;
+      }
+      
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        showAlert("File size must be less than 5MB", 'error');
+        return;
+      }
+
+      try {
+        showLoading();
+        
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          showAlert("You must be logged in to upload an avatar", 'error');
+          return;
+        }
+
+        // Create unique filename
+        const fileExt = file.name.split(".").pop().toLowerCase();
+        const fileName = `avatar_${Date.now()}.${fileExt}`;
+        const filePath = `${user.id}/${fileName}`;
+
+        // Upload file
+        const { error: uploadError } = await supabase.storage
+          .from("avatars")
+          .upload(filePath, file, { upsert: true });
+
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          showAlert("Upload failed: " + uploadError.message, 'error');
+          return;
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(filePath);
+
+        // Update profile
+        const { error: dbError } = await supabase
+          .from("profiles")
+          .upsert({
+            id: user.id,
+            avatar_url: publicUrl,
+            updated_at: new Date().toISOString()
+          });
+
+        if (dbError) {
+          console.error("Profile update error:", dbError);
+          showAlert("Failed to save avatar: " + dbError.message, 'error');
+          return;
+        }
+
+        showAlert("Avatar updated successfully! ✅", 'success');
+        document.getElementById("profileAvatar").src = publicUrl;
+        fileInput.value = ''; // Clear file input
+        
+      } catch (error) {
+        console.error("Unexpected error:", error);
+        showAlert("An unexpected error occurred", 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+
+    // Delete avatar
+    document.getElementById("deleteAvatarBtn").addEventListener("click", async () => {
+      if (!confirm("Are you sure you want to delete your avatar?")) {
+        return;
+      }
+      
+      try {
+        showLoading();
+        
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          showAlert("You must be logged in to delete an avatar", 'error');
+          return;
+        }
+
+        // Get current avatar URL
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("id", user.id)
+          .single();
+
+        if (profileError || !profile?.avatar_url) {
+          showAlert("No avatar found to delete", 'info');
+          return;
+        }
+
+        // Extract file path from URL
+        const url = new URL(profile.avatar_url);
+        const path = url.pathname.replace("/storage/v1/object/public/avatars/", "");
+
+        // Delete from storage
+        const { error: deleteError } = await supabase.storage
+          .from("avatars")
+          .remove([path]);
+
+        if (deleteError) {
+          console.warn("Storage delete error:", deleteError);
+          // Continue anyway, as the file might already be deleted
+        }
+
+        // Update profile
+        const { error: dbError } = await supabase
+          .from("profiles")
+          .update({ 
+            avatar_url: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", user.id);
+
+        if (dbError) {
+          console.error("Profile update error:", dbError);
+          showAlert("Failed to update profile: " + dbError.message, 'error');
+          return;
+        }
+
+        showAlert("Avatar deleted successfully! ✅", 'success');
+        document.getElementById("profileAvatar").src = "";
+        
+      } catch (error) {
+        console.error("Unexpected error:", error);
+        showAlert("An unexpected error occurred", 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+
+    // Password reset
+    document.getElementById("resetPasswordBtn").addEventListener("click", async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user?.email) {
+          showAlert("No email found for password reset", 'error');
+          return;
+        }
+
+        showLoading();
+        
+        const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+          redirectTo: window.location.origin + "/reset-password.html"
+        });
+
+        if (!error) {
+          showAlert("Password reset link sent! ✅ Check your email", 'success');
+        } else {
+          showAlert("Failed to send reset link: " + error.message, 'error');
+        }
+      } catch (error) {
+        console.error("Reset password error:", error);
+        showAlert("An unexpected error occurred", 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      if (confirm("Are you sure you want to logout?")) {
+        try {
+          showLoading();
+          await supabase.auth.signOut();
+          window.location.href = "login.html";
+        } catch (error) {
+          console.error("Logout error:", error);
+          showAlert("Logout failed", 'error');
+          hideLoading();
+        }
+      }
+    });
+
+    // Auto-trigger file input when avatar is clicked
+    document.getElementById('avatarUpload').addEventListener('change', () => {
+      if (document.getElementById('avatarUpload').files[0]) {
+        document.getElementById('uploadAvatarBtn').click();
+      }
+    });
+
+    // Initialize
+    loadProfile();
+  </script>
+</body>
+</html>

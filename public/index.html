@@ -6,14 +6,14 @@
     <link rel="shortcut icon" href="images/logo-kementerian-keuangan-356.png" type="image/x-icon">
     <title>KPPN</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="./output.css" rel="stylesheet">
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
     <script defer src="/_vercel/insights/script.js"></script>
     <script type="module" src="index.js"></script>
+    <link href="./output.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #3b82f6;
@@ -52,17 +52,34 @@
           font-weight: 600;
         }
 
+        .currentm {
+          display: block;
+          color: oklch(54.6% 0.245 262.881);
+          border-bottom: 2px solid oklch(54.6% 0.245 262.881);
+          font-weight: 600;
+        }
+
+        .otherm {
+          display: block;
+          color: oklch(37.3% 0.034 259.733);
+          transition: color 0.3s ease;
+        }
+
+        .otherm:hover {
+          color: oklch(54.6% 0.245 262.881)
+        }
+
         .other {
           color: oklch(37.3% 0.034 259.733);
           transition: color 0.3s ease;
         }
 
         .other:hover {
-          color: oklch(54.6% 0.245 262.881)
+          color: oklch(54.6% 0.245 262.881);
         }
 
         h1 {
-            font-family: 'Georgia', serif;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
             background: linear-gradient(45deg, #362f2f, #0f1011);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -268,15 +285,19 @@
             font-size: 0.9rem;
         }
 
-        @media (max-width: 420px) {
+        @media (max-width: 424px) {
             .btn {
                 margin-bottom: 20px;
             }
 
             .dropdown {
               margin-bottom: 2px;
+            } 
+
+            .dropdown-box {
+              margin-bottom: 0;
             }
-          
+
         }
 
         @media (max-width: 768px) {
@@ -381,7 +402,7 @@
 
   </style>
 </head>
-<body class="pt-16">
+<body class="pt-16" id="appBody">
 <nav id="navbar" class="bg-white shadow-md fixed top-0 w-full transition-transform duration-300">
     <div class="max-w-8xl mx-auto px-3 sm:px-4 lg:px-4">
         <div class="flex justify-between h-16 items-center">
@@ -392,6 +413,9 @@
         <!-- <span class="font-semibold text-lg text-gray-800">KPPN</span> -->
       </a>
 
+      <!-- Right side: Menu + Profile -->
+      <div class="flex items-center space-x-6">
+
       <!-- Right side: Menu -->
       <div class="hidden md:flex space-x-6">
         <a href="index.html" class="current" id="link">Beranda</a>
@@ -401,31 +425,54 @@
         <a href="TKG.html" class="other" id="link">Tunj. ASN Daerah</a>
       </div>
 
-      <!-- Mobile menu button -->
-      <div class="md:hidden">
-        <button id="mobileMenuButton" class="text-gray-700 hover:text-blue-600 focus:outline-none">
-          <!-- Hamburger Icon -->
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
+            <!-- Mobile menu button -->
+            <div class="md:hidden">
+              <button id="mobileMenuButton" class="text-gray-700 hover:text-blue-600 focus:outline-none">
+                <!-- Hamburger Icon -->
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+            
+            <!-- Right side: Profile -->
+            <div class="relative inline-block text-left">
+              <button id="profileBtn" class="flex items-center focus:outline-none">
+                <img 
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s" 
+                  alt="Profile" 
+                  class="w-11 h-11 rounded-full"
+                />
+              </button>
 
+              <!-- Log out -->
+              <div id="dropdownMenu" 
+                  class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50 transform scale-95 opacity-0 transition-all duration-200 origin-top-right hidden">
+                <button 
+                  id="logoutLink" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none">
+                  <i class="fa-solid fa-right-from-bracket"></i> 
+                  Logout
+                </button>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+        
   <!-- Mobile menu dropdown -->
   <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2">
-    <a href="index.html" class="block text-blue-600 font-semibold border-b-2 border-blue-600" id="link">Beranda</a>
-    <a href="SP2D.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">SP2D</a>
-    <a href="BOSP.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">BOSP</a>
-    <a href="BOK.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">BOK</a>
-    <a href="TKG.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">Tunj. ASN Daerah</a>
+    <a href="index.html" class="currentm">Beranda</a>
+    <a href="SP2D.html" class="otherm">SP2D</a>
+    <a href="BOSP.html" class="otherm">BOSP</a>
+    <a href="BOK.html" class="otherm">BOK</a>
+    <a href="TKG.html" class="otherm">Tunj. ASN Daerah</a>
   </div>
+  
 </nav>
 <div class="dashboard-container">
 
-  <h1 class="text-center pt-1">MATOA</h1>
+  <h1 class="text-center pt-1">MATOA 063</h1>
   <p class="sub-header text-center pb-3 text-lg italic font-bold">Monitoring Anggaran Transfer dan Otonomi Papua</p>
 
 <!-- Alert Banner -->
@@ -444,7 +491,7 @@
                         <i class="fas fa-map-marker-alt text-primary me-1"></i>Kab / Kota
                     </label>
                       
-                    <div class="flex justify-center sm:mb-8">
+                    <div class="dropdown-box flex justify-center mb-8">
                     <div class="relative inline-block text-left">
                     
                       <button id="regionDropdownButton" class="inline-flex w-64 justify-between rounded-pill bg-white px-3 py-1 text-sm font-medium text-gray-700 shadow-md ring-1 ring-gray-300 hover:bg-gray-50 focus:outline-none"
@@ -458,7 +505,7 @@
 
                       <div id="regionDropdownMenu"
                         class="mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 hidden">
-                        <div class="py-1 max-h-60 overflow-y-auto">
+                        <div class="py-1 max-h-60 overflow-y-auto hover:cursor-pointer">
                           <!-- Regions will be injected here by JS -->
                         </div>
                       </div>

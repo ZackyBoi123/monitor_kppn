@@ -1,33 +1,19 @@
 // Supabase configuration
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";  
+
 const SUPABASE_URL = 'https://kntomoredgduvwbovgpx.supabase.co';    // Supabase URL
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtudG9tb3JlZGdkdXZ3Ym92Z3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MzI0NzcsImV4cCI6MjA3MDIwODQ3N30.Ei7vJ8RQCiz7KPXis6He8dVzL91Euocxzxzg1ptg1_U'; // Replace with your Supabase anon key
 const BUDGET_TABLE_NAME = 'paguRealisasi';                          // table for pie/doughnut charts
 const COMPARISON_TABLE_NAME = 'barPaguRealisasi';                   // table for bar chart
 
 // Initialize Supabase client
-const { createClient } = supabase;
-let supabaseClient = null;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 document.addEventListener('DOMContentLoaded', function() {
     // Check if libraries are loaded
     if (typeof Chart === 'undefined') {
         console.error('Chart.js not loaded');
         showAlert('Error: Chart.js library failed to load', 'error');
-        return;
-    }
-    if (typeof supabase === 'undefined') {
-        console.error('Supabase not loaded');
-        showAlert('Error: Supabase library failed to load', 'error');
-        return;
-    }
-
-    // Initialize Supabase client
-    try {
-        supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('Supabase client initialized');
-    } catch (error) {
-        console.error('Failed to initialize Supabase client:', error);
-        showAlert('Error: Failed to initialize Supabase client. Check your configuration.', 'error');
         return;
     }
 
@@ -268,8 +254,8 @@ function populateRegionDropdown() {
 
   // Default selection
   if (regions.length > 0) {
-    label.textContent = regions[5];
-    updateCharts(regions[5]);
+    label.textContent = regions[6];
+    updateCharts(regions[6]);
   }
 }
 
@@ -361,6 +347,58 @@ function initializeEventListeners() {
     }
 }
 
+// ! Toggle profile dropdown
+const profileBtn = document.getElementById("profileBtn");
+  const dropdownMenu = document.getElementById("dropdownMenu");
+
+  profileBtn.addEventListener("click", () => {
+    if (dropdownMenu.classList.contains("hidden")) {
+      dropdownMenu.classList.remove("hidden");
+      setTimeout(() => {
+        dropdownMenu.classList.remove("scale-95", "opacity-0");
+        dropdownMenu.classList.add("scale-100", "opacity-100");
+      }, 10);
+    } else {
+      dropdownMenu.classList.remove("scale-100", "opacity-100");
+      dropdownMenu.classList.add("scale-95", "opacity-0");
+      setTimeout(() => dropdownMenu.classList.add("hidden"), 200);
+    }
+  });
+
+  // Close when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!profileBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownMenu.classList.remove("scale-100", "opacity-100");
+      dropdownMenu.classList.add("scale-95", "opacity-0");
+      setTimeout(() => dropdownMenu.classList.add("hidden"), 200);
+    }
+  });
+
+
+// ! Check session on page load
+    async function checkSession() {
+    const {
+      data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("appBody").style.display = "block"; // show only if logged in
+    }
+  }
+
+  checkSession();
+
+// Log out function
+  document.getElementById("logoutLink").addEventListener("click", async (e) => {
+    e.preventDefault(); // prevent link navigation
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+  });
+
+
+  
 function refreshDataHandler() {
     
     // Hide content and show skeleton
