@@ -6,14 +6,11 @@
     "buildLocal": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify",
     "watch": "npx tailwindcss -i ./src/input.css -o ./public/output.css --watch",
     "dev": "npm run watch",
-
-    "prebuild": "mkdir -p public",
     "build:css": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify && npx glob './src/!(input).css' -- npx tailwindcss -i {file} -o ./public/{base} --minify",
     "build:js": "npx glob './src/*.js' -- npx terser {file} -o ./public/{base} -c -m",
     "build:html": "npx glob './src/*.html' -- npx html-minifier-terser {file} -o ./public/{base} --collapse-whitespace --remove-comments --minify-css true --minify-js true",
     "build:images": "npx cpx './src/images/**/*' ./public/images",
-
-    "build": "npm run prebuild && npm run build:css && npm run build:js && npm run build:html && npm run build:images"
+    "build": "npx mkdirp public && npm run build:css && npm run build:js && npm run build:html && npm run build:images"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +24,7 @@
   },
   "devDependencies": {
     "cpx": "^1.5.0",
+    "mkdirp": "^3.0.1",
     "tailwindcss": "^4.1.12"
   }
 }
