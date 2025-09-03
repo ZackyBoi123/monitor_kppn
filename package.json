@@ -10,7 +10,6 @@
   "build:js": "for f in src/*.js; do npx terser $f -o public/$(basename $f) -c -m; done",
   "build:html": "for f in src/*.html; do npx html-minifier-terser $f -o public/$(basename $f) --collapse-whitespace --remove-comments --minify-css true --minify-js true; done",
   "build:assets": "cp -r src/images public/images || true"
-
   },
   "keywords": [],
   "author": "",
