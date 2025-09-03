@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "main": "TPG.js",
   "scripts": {
+    
+  "build:css": "npx tailwindcss -i ./src/input.css -o ./public/style.css --minify && npx tailwindcss -i ./src/BOK.css -o ./public/BOK.css --minify",
+  "build:js": "npx terser ./src/script.js -o ./public/script.js -c -m && npx terser ./src/BOK.js -o ./public/BOK.js -c -m",
+  "build:html": "npx html-minifier-terser ./src/index.html -o ./public/index.html --collapse-whitespace --remove-comments --minify-css true --minify-js true && npx html-minifier-terser ./src/BOK.html -o ./public/BOK.html --collapse-whitespace --remove-comments --minify-css true --minify-js true",
+  "build": "npm run build:css && npm run build:js && npm run build:html"
 
-  "build": "mkdir -p public && npm run build:css && npm run build:extra-css && npm run build:js && npm run build:html && npm run build:assets",
-  "build:css": "npx tailwindcss -i ./src/input.css -o ./public/style.css --minify",
-  "build:extra-css": "for f in src/*.css; do [ \"$f\" != \"src/input.css\" ] && npx cleancss -o public/$(basename $f) $f; done",
-  "build:js": "for f in src/*.js; do npx terser $f -o public/$(basename $f) -c -m; done",
-  "build:html": "for f in src/*.html; do npx html-minifier-terser $f -o public/$(basename $f) --collapse-whitespace --remove-comments --minify-css true --minify-js true; done",
-  "build:assets": "cp -r src/images public/images || true"
   },
   "keywords": [],
   "author": "",
