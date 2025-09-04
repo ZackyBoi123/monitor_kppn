@@ -48,14 +48,19 @@ a {
 .currentm {
   display: block;
   color: oklch(54.6% 0.245 262.881);
-  border-bottom: 2px solid oklch(54.6% 0.245 262.881);
+  border-bottom: 1px solid  oklch(54.6% 0.245 262.881);
   font-weight: 600;
+  padding-bottom: 7px;
+  margin-bottom: 10px;
 }
 
 .otherm {
   display: block;
   color: oklch(37.3% 0.034 259.733);
   transition: color 0.3s ease;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 7px;
+  margin-bottom: 10px;
 }
 
 .otherm:hover {

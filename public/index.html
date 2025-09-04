@@ -54,14 +54,19 @@
         .currentm {
           display: block;
           color: oklch(54.6% 0.245 262.881);
-          border-bottom: 2px solid oklch(54.6% 0.245 262.881);
+          border-bottom: 1px solid  oklch(54.6% 0.245 262.881);
           font-weight: 600;
+          padding-bottom: 7px;
+          margin-bottom: 10px;
         }
 
         .otherm {
           display: block;
           color: oklch(37.3% 0.034 259.733);
           transition: color 0.3s ease;
+          border-bottom: 1px solid #e5e7eb;
+          padding-bottom: 7px;
+          margin-bottom: 10px;
         }
 
         .otherm:hover {
@@ -402,23 +407,23 @@
     <div class="max-w-8xl mx-auto px-3 sm:px-4 lg:px-4">
         <div class="flex justify-between h-16 items-center">
 
-      <!-- Left side: Logo + Title -->
-      <a href="#" class="flex items-center space-x-2">
-        <img src="images/LOGO_KPPN_JAYAPURA_FIX.png" alt="Logo" class="h-12 w-35">
-        <!-- <span class="font-semibold text-lg text-gray-800">KPPN</span> -->
-      </a>
+        <!-- Left side: Logo + Title -->
+        <a href="#" class="flex items-center space-x-2">
+          <img src="images/LOGO_KPPN_JAYAPURA_FIX.png" alt="Logo" class="h-12 w-35">
+          <!-- <span class="font-semibold text-lg text-gray-800">KPPN</span> -->
+        </a>
 
-      <!-- Right side: Menu + Profile -->
-      <div class="flex items-center space-x-6">
+        <!-- Right side: Menu + Profile -->
+        <div class="flex items-center space-x-6">
 
-      <!-- Right side: Menu -->
-      <div class="hidden md:flex space-x-6">
-        <a href="index.html" class="current">Beranda</a>
-        <a href="SP2D.html" class="other">SP2D</a>
-        <a href="BOSP.html" class="other">BOSP</a>
-        <a href="BOK.html" class="other">BOK</a>
-        <a href="TKG.html" class="other">Tunj. ASN Daerah</a>
-      </div>
+        <!-- Right side: Menu -->
+        <div class="hidden md:flex space-x-6">
+          <a href="index.html" class="current">Beranda</a>
+          <a href="SP2D.html" class="other">SP2D</a>
+          <a href="BOSP.html" class="other">BOSP</a>
+          <a href="BOK.html" class="other">BOK</a>
+          <a href="TKG.html" class="other">Tunj. ASN Daerah</a>
+        </div>
 
             <!-- Mobile menu button -->
             <div class="md:hidden">
@@ -451,20 +456,20 @@
                 </button>
               </div>
             </div>
-            </div>
           </div>
         </div>
         
-  <!-- Mobile menu dropdown -->
-  <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2">
-    <a href="index.html" class="currentm">Beranda</a>
-    <a href="SP2D.html" class="otherm">SP2D</a>
-    <a href="BOSP.html" class="otherm">BOSP</a>
-    <a href="BOK.html" class="otherm">BOK</a>
-    <a href="TKG.html" class="otherm">Tunj. ASN Daerah</a>
+    <!-- Mobile menu dropdown -->
+    <div id="mobileMenu" class="hidden md:hidden pb-2 pt-2 space-y-2 text-right">
+      <a href="index.html" class="currentm">Beranda</a>
+      <a href="SP2D.html" class="otherm">SP2D</a>
+      <a href="BOSP.html" class="otherm">BOSP</a>
+      <a href="BOK.html" class="otherm">BOK</a>
+      <a href="TKG.html" class="otherm">Tunj. ASN Daerah</a>
+    </div>
   </div>
-  
 </nav>
+
 <div class="dashboard-container">
 
   <h1 class="text-center pt-1">MATOA 063</h1>
