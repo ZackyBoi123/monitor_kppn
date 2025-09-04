@@ -34,6 +34,43 @@ body {
   z-index: 9999;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.current { 
+  color: oklch(54.6% 0.245 262.881);
+  border-bottom: 2px solid oklch(54.6% 0.245 262.881);
+  font-weight: 600;
+}
+
+.currentm {
+  display: block;
+  color: oklch(54.6% 0.245 262.881);
+  border-bottom: 2px solid oklch(54.6% 0.245 262.881);
+  font-weight: 600;
+}
+
+.otherm {
+  display: block;
+  color: oklch(37.3% 0.034 259.733);
+  transition: color 0.3s ease;
+}
+
+.otherm:hover {
+  color: oklch(54.6% 0.245 262.881)
+}
+
+.other {
+  color: oklch(37.3% 0.034 259.733);
+  transition: color 0.3s ease;
+}
+
+.other:hover {
+  color: oklch(54.6% 0.245 262.881);
+}
+
 .filter-row {
   display: flex;
   flex-wrap: wrap;

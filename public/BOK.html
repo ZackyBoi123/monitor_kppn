@@ -1,15 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoring BOK</title>
-    <link href="./output.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-    <link rel="shortcut icon" href="images/logo-kementerian-keuangan-356.png" type="image/x-icon">
-    <link rel="stylesheet" href="BOK.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="images/logo-kementerian-keuangan-356.png" type="image/x-icon">
+  <title>Monitoring BOK</title>
+
+  <!-- CSS -->
+  <link href="./output.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="BOK.css">
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script type="module" src="BOK.js"></script>
+
 </head>
-<body class="pt-16 bg-base-100">
+<body class="pt-16 bg-base-100" id="appBody">
 <nav id="navbar" class="bg-white shadow-md fixed z-20 top-0 w-full transition-transform duration-300">
     <div class="max-w-8xl mx-auto px-3 sm:px-4 lg:px-4">
         <div class="flex justify-between h-16 items-center">
@@ -20,13 +33,16 @@
         <!-- <span class="font-semibold text-lg text-gray-800">KPPN</span> -->
       </a>
 
+      <!-- Right side: Menu + Profile -->
+      <div class="flex items-center space-x-6">
+
       <!-- Right side: Menu -->
       <div class="hidden md:flex space-x-6">
-        <a href="index.html" class="text-gray-700 hover:text-blue-600 transition" id="link">Beranda</a>
-        <a href="SP2D.html" class="text-gray-700 hover:text-blue-600 transition" id="link">SP2D</a>
-        <a href="BOSP.html" class="text-gray-700 hover:text-blue-600 transition" id="link">BOSP</a>
-        <a href="BOK.html" class="text-blue-600 font-semibold border-b-2 border-blue-600" id="link">BOK</a>
-        <a href="TKG.html" class="text-gray-700 hover:text-blue-600 transition" id="link">Tunj. ASN Daerah</a>
+        <a href="index.html" class="other">Beranda</a>
+        <a href="SP2D.html" class="other">SP2D</a>
+        <a href="BOSP.html" class="other">BOSP</a>
+        <a href="BOK.html" class="current">BOK</a>
+        <a href="TKG.html" class="other">Tunj. ASN Daerah</a>
       </div>
 
       <!-- Mobile menu button -->
@@ -39,16 +55,37 @@
           </svg>
         </button>
       </div>
+       <!-- Right side: Profile -->
+            <div class="relative inline-block text-left">
+              <button id="profileBtn" class="flex items-center focus:outline-none">
+                <img 
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s" 
+                  alt="Profile" 
+                  class="w-11 h-11 rounded-full"
+                />
+              </button>
+
+              <!-- Log out -->
+              <div id="dropdownMenu" 
+                  class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50 transform scale-95 opacity-0 transition-all duration-200 origin-top-right hidden">
+                <button 
+                  id="logoutLink" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none">
+                  <i class="fa-solid fa-right-from-bracket"></i> 
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
     </div>
   </div>
 
   <!-- Mobile menu dropdown -->
   <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2">
-    <a href="index.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">Beranda</a>
-    <a href="SP2D.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">SP2D</a>
-    <a href="BOSP.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">BOSP</a>
-    <a href="BOK.html" class="block text-blue-600 font-semibold border-b-2 border-blue-600" id="link">BOK</a>
-    <a href="TKG.html" class="block text-gray-700 hover:text-blue-600 transition" id="link">Tunj. ASN Daerah</a>
+    <a href="index.html" class="otherm">Beranda</a>
+    <a href="SP2D.html" class="otherm">SP2D</a>
+    <a href="BOSP.html" class="otherm">BOSP</a>
+    <a href="BOK.html" class="currentm">BOK</a>
+    <a href="TKG.html" class="otherm">Tunj. ASN Daerah</a>
   </div>
 </nav>
 
@@ -129,12 +166,5 @@
     <div id="toast" role="alert" aria-live="polite" aria-atomic="true"></div>
     <div id="toastCopy"></div>
     
-    <script src="https://unpkg.com/@supabase/supabase-js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
-    <script defer src="/_vercel/insights/script.js"></script>
-    <script type="module" src="BOK.js"></script>
 </body>
 </html>

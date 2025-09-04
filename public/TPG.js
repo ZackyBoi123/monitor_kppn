@@ -1,6 +1,8 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";  
+
 const SUPABASE_URL = "https://kntomoredgduvwbovgpx.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtudG9tb3JlZGdkdXZ3Ym92Z3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MzI0NzcsImV4cCI6MjA3MDIwODQ3N30.Ei7vJ8RQCiz7KPXis6He8dVzL91Euocxzxzg1ptg1_U";
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ---------- Column list (exact DB names; spaces quoted) ----------
@@ -147,6 +149,7 @@ async function getLastUpdated() {
 
 getLastUpdated();
 
+// ---------- Fetch ALL rows (batched) ----------
 async function fetchAllRowsBatched(batchSize = 1000) {
   // Get exact count first
   const headRes = await supabase
@@ -611,6 +614,56 @@ $("#filterJenisSatdik, #filterJenisTriwulan, #filterJenisPemda, #filterJenisTunj
     }
 
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative
+  });
+
+  // ! Toggle profile dropdown
+const profileBtn = document.getElementById("profileBtn");
+  const dropdownMenu = document.getElementById("dropdownMenu");
+
+  profileBtn.addEventListener("click", () => {
+    if (dropdownMenu.classList.contains("hidden")) {
+      dropdownMenu.classList.remove("hidden");
+      setTimeout(() => {
+        dropdownMenu.classList.remove("scale-95", "opacity-0");
+        dropdownMenu.classList.add("scale-100", "opacity-100");
+      }, 10);
+    } else {
+      dropdownMenu.classList.remove("scale-100", "opacity-100");
+      dropdownMenu.classList.add("scale-95", "opacity-0");
+      setTimeout(() => dropdownMenu.classList.add("hidden"), 200);
+    }
+  });
+
+  // Close when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!profileBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownMenu.classList.remove("scale-100", "opacity-100");
+      dropdownMenu.classList.add("scale-95", "opacity-0");
+      setTimeout(() => dropdownMenu.classList.add("hidden"), 200);
+    }
+  });
+
+
+// * Check session on page load
+    async function checkSession() {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("appBody").style.display = "block"; // show only if logged in
+    }
+  }
+
+  checkSession();
+
+// Log out function
+  document.getElementById("logoutLink").addEventListener("click", async (e) => {
+    e.preventDefault(); // prevent link navigation
+    await supabase.auth.signOut();
+    window.location.href = "login.html";
   });
 
 // ---------- Initialization ----------

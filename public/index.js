@@ -375,7 +375,7 @@ const profileBtn = document.getElementById("profileBtn");
   });
 
 
-// ! Check session on page load
+// * Check session on page load
     async function checkSession() {
     const {
       data: { user }
@@ -397,8 +397,6 @@ const profileBtn = document.getElementById("profileBtn");
     window.location.href = "login.html";
   });
 
-
-  
 function refreshDataHandler() {
     
     // Hide content and show skeleton
