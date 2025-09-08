@@ -5,6 +5,18 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Debug RLS
+async function debugAuthAndRLS() {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError) {
+    console.error("❌ Failed to get user:", userError.message);
+    return;
+  }
+}
+
+// Call this once when page loads
+debugAuthAndRLS();
+
 // ---------- Column list (exact DB names; spaces quoted) ----------
 const COLUMNS = `
   ID,
@@ -92,7 +104,7 @@ function loadState() {
     if(state.filters) {
       $("#filterJenisSatdik").val(state.filters.satdik).trigger("change");
       $("#filterJenisTriwulan").val(state.filters.triwulan).trigger("change");
-      $("#filterJenisPemda").val(state.filters.pemda).trigger("change");
+      // $("#filterJenisPemda").val(state.filters.pemda).trigger("change");
       $("#filterJenisTunjangan").val(state.filters.tunj).trigger("change");
     }
     if(state.searchTerm) {
@@ -205,14 +217,14 @@ function fillSelect(selector, values, placeholderText){
 function applyFiltersSearchAndSort(){
   const satdik = $("#filterJenisSatdik").val();
   const triwulan = $("#filterJenisTriwulan").val();
-  const pemda = $("#filterJenisPemda").val();
+  // const pemda = $("#filterJenisPemda").val();
   const tunj = $("#filterJenisTunjangan").val();
   const searchTerm = (document.getElementById("searchInput").value || "").trim().toLowerCase();
 
   filteredData = allData.filter(row => {
     if (satdik && row.SATDIK !== satdik) return false;
     if (triwulan && row.TRIWULAN !== triwulan) return false;
-    if (pemda && row.PEMDA !== pemda) return false;
+    // if (pemda && row.PEMDA !== pemda) return false;
     if (tunj && row["JENIS TUNJANGAN"] !== tunj) return false;
 
     if (!searchTerm) return true;
@@ -330,11 +342,11 @@ function renderTable(rows){
   const headers = [
     { key: "No", label: "#", sortable: false },
     { key: "NIP", label: "NIP", sortable: false },
-    { key: "NAMA", label: "Nama", sortable: true },
+    { key: "NAMA", label: "Nama", sortable: false },
     { key: "NO REKENING", label: "No. Rekening", sortable: false },
-    { key: "SATDIK", label: "Satdik", sortable: true },
-    { key: "JENIS TUNJANGAN", label: "Jenis Tunjangan", sortable: true },
-    { key: "PEMDA", label: "Kab / Kota", sortable: true },
+    { key: "SATDIK", label: "Satdik", sortable: false },
+    { key: "JENIS TUNJANGAN", label: "Jenis Tunjangan", sortable: false },
+    { key: "PEMDA", label: "Kab / Kota", sortable: false },
     { key: "SALUR BRUTO", label: "Salur Bruto", sortable: false },
     { key: "PPH", label: "PPH", sortable: false },
     { key: "POT JKN", label: "Pot. JKN", sortable: false },
@@ -519,7 +531,7 @@ function renderPaginationControls(totalPages){
 
 // ---------- Reset handler ----------
 function resetAll(){
-  ["#filterJenisSatdik", "#filterJenisTriwulan", "#filterJenisPemda", "#filterJenisTunjangan"].forEach(sel => {
+  ["#filterJenisSatdik", "#filterJenisTriwulan", "#filterJenisTunjangan"].forEach(sel => {
     $(sel).val("").trigger("change");
   });
   document.getElementById("searchInput").value = "";
@@ -593,7 +605,7 @@ document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
 document.getElementById("resetFilters").addEventListener("click", resetAll);
 
 // apply filters on change
-$("#filterJenisSatdik, #filterJenisTriwulan, #filterJenisPemda, #filterJenisTunjangan").on("change", () => {
+$("#filterJenisSatdik, #filterJenisTriwulan, #filterJenisTunjangan").on("change", () => {
   currentPage = 1;
   applyFiltersSearchAndSort();
 });
@@ -643,7 +655,6 @@ const profileBtn = document.getElementById("profileBtn");
     }
   });
 
-
 // * Check session on page load
     async function checkSession() {
     const {
@@ -678,12 +689,12 @@ const profileBtn = document.getElementById("profileBtn");
     // populate filter dropdowns
     const satdik = [...new Set(allData.map(r => r.SATDIK).filter(Boolean))].sort();
     const triw = [...new Set(allData.map(r => r.TRIWULAN).filter(Boolean))].sort();
-    const pem = [...new Set(allData.map(r => r.PEMDA).filter(Boolean))].sort();
+    // const pem = [...new Set(allData.map(r => r.PEMDA).filter(Boolean))].sort();
     const tun = [...new Set(allData.map(r => r["JENIS TUNJANGAN"]).filter(Boolean))].sort();
 
     fillSelect("#filterJenisSatdik", satdik, "[ Pilih Satdik ]");
     fillSelect("#filterJenisTriwulan", triw, "[ Pilih Triwulan ]");
-    fillSelect("#filterJenisPemda", pem, "[ Pilih Kab / Kota ]");
+    // fillSelect("#filterJenisPemda", pem, "[ Pilih Kab / Kota ]");
     fillSelect("#filterJenisTunjangan", tun, "[ Pilih Tunjangan ]");
 
     // load persistent UI state

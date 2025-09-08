@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - Welcome Back</title>
+  <title>Sign in</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -162,225 +162,135 @@
           </span>
         </div>
 
-        <!-- Remember Me & Forgot Password -->
-        <div class="flex items-center justify-between">
-          <a href="#" class="link link-primary text-sm hover:text-primary-focus">Forgot password?</a>
-        </div>
-
+        <!-- Submit Button -->
         <button id="loginBtn" class="btn btn-primary w-full h-12 text-base font-medium" type="submit">
           <span id="loginBtnText">Sign In</span>
         </button>
       </form>
-
-      <!-- <p class="text-center text-gray-600">
-        Don't have an account?
-        <a href="register.html" class="link link-primary font-medium hover:text-primary-focus">Create account</a>
-      </p> -->
     </div>
   </div>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    
-    const SUPABASE_URL = "https://kntomoredgduvwbovgpx.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtudG9tb3JlZGdkdXZ3Ym92Z3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MzI0NzcsImV4cCI6MjA3MDIwODQ3N30.Ei7vJ8RQCiz7KPXis6He8dVzL91Euocxzxzg1ptg1_U";
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    const loginForm = document.getElementById("loginForm");
-    const loginBtn = document.getElementById("loginBtn");
-    const loginBtnText = document.getElementById("loginBtnText");
-    const errorAlert = document.getElementById("errorAlert");
-    const successAlert = document.getElementById("successAlert");
-
-    // Event listener for toggle password
-    document.addEventListener('DOMContentLoaded', function() {
-      const passwordInput = document.getElementById('passwordInput');
-      const passwordToggle = document.getElementById('passwordToggle');
-
-      passwordToggle.addEventListener('click', function() {
-        if (passwordInput.type === 'password') {
-          passwordInput.type = 'text';
-          this.innerHTML = '<i class="fas fa-eye-slash"></i>';  // Change to closed eye icon
-        } else {
-          passwordInput.type = 'password';
-          this.innerHTML = '<i class="fas fa-eye"></i>';        // Change back to open eye icon
-        }
-      });
-    });
-
-    function showError(message) {
-      document.getElementById("errorMessage").textContent = message;
-      errorAlert.classList.remove("hidden");
-      successAlert.classList.add("hidden");
-      setTimeout(() => errorAlert.classList.add("hidden"), 5000);
-    }
-
-    function showSuccess(message) {
-      document.getElementById("successMessage").textContent = message;
-      successAlert.classList.remove("hidden");
-      errorAlert.classList.add("hidden");
-    }
-
-    function setLoading(loading) {
-      if (loading) {
-        loginBtn.classList.add("btn-loading");
-        loginBtn.disabled = true;
-        loginBtnText.textContent = "Signing in...";
-      } else {
-        loginBtn.classList.remove("btn-loading");
-        loginBtn.disabled = false;
-        loginBtnText.textContent = "Sign In";
-      }
-    }
-
-    function validateEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
-    }
-
-    loginForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
   
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("passwordInput").value;
+  const SUPABASE_URL = "https://kntomoredgduvwbovgpx.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtudG9tb3JlZGdkdXZ3Ym92Z3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MzI0NzcsImV4cCI6MjA3MDIwODQ3N30.Ei7vJ8RQCiz7KPXis6He8dVzL91Euocxzxzg1ptg1_U"; 
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Client-side validation
+  const loginForm = document.getElementById("loginForm");
+  const loginBtn = document.getElementById("loginBtn");
+  const loginBtnText = document.getElementById("loginBtnText");
+  const errorAlert = document.getElementById("errorAlert");
+  const successAlert = document.getElementById("successAlert");
+
+  // Event listener for toggle password
+  document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('passwordInput');
+    const passwordToggle = document.getElementById('passwordToggle');
+
+    passwordToggle.addEventListener('click', function() {
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        this.innerHTML = '<i class="fas fa-eye-slash"></i>';  // Change to closed eye icon
+      } else {
+        passwordInput.type = 'password';
+        this.innerHTML = '<i class="fas fa-eye"></i>';        // Change back to open eye icon
+      }
+    });
+  });
+
+  function showError(message) {
+    document.getElementById("errorMessage").textContent = message;
+    errorAlert.classList.remove("hidden");
+    successAlert.classList.add("hidden");
+    setTimeout(() => errorAlert.classList.add("hidden"), 5000);
+  }
+
+  function showSuccess(message) {
+    document.getElementById("successMessage").textContent = message;
+    successAlert.classList.remove("hidden");
+    errorAlert.classList.add("hidden");
+  }
+
+  function setLoading(loading) {
+    if (loading) {
+      loginBtn.classList.add("btn-loading");
+      loginBtn.disabled = true;
+      loginBtnText.textContent = "Signing in...";
+    } else {
+      loginBtn.classList.remove("btn-loading");
+      loginBtn.disabled = false;
+      loginBtnText.textContent = "Sign In";
+    }
+  }
+  
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+      loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("passwordInput").value;
+
+    // Client-side validation
   if (!validateEmail(email)) {
     showError("Please enter a valid email address");
     return;
   }
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    // Sign in the user
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ 
-      email, 
-      password 
-    });
-    
-    if (authError) {
-      throw authError;
-    }
+    try {
+      //  Sign in user
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password 
+      });
 
-    console.log("Login successful for user:", authData.user.id);
+      if (authError) throw authError;
 
-    // Get user profile and role
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("role, username")
-      .eq("id", authData.user.id)
-      .single();
+      console.log("Login successful:", authData.user);
 
-    console.log("Profile fetch result:", { profile, profileError });
+      // 🔹 Get region (or other custom data) from metadata
+      const region = authData.user.user_metadata?.region || "Unknown";
 
-    if (profileError) {
-      console.error("Profile fetch error:", profileError);
-      
-      // If profile doesn't exist, create one with default role
-      if (profileError.code === 'PGRST116') { // No rows found
-        console.log("Profile not found, creating default profile...");
-        
-        const { error: createError } = await supabase
-          .from("profiles")
-          .insert([{
-            id: authData.user.id,
-            email: authData.user.email,
-            role: "user" // Default role
-          }]);
-        
-        if (createError) {
-          console.error("Failed to create profile:", createError);
-        }
-        
-        // Redirect to user dashboard
-        showSuccess("Login successful! Welcome!");
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 1000);
-        return;
-      }
-      
-      // For other errors, still try to redirect to user dashboard
-      showSuccess("Login successful! Redirecting...");
+      showSuccess(`Welcome! Region: ${region}`);
+
+      // 🔹 Redirect (customize this as you like)
       setTimeout(() => {
         window.location.href = "index.html";
-      }, 1000);
-      return;
-    }
+      }, 1500);
 
-    // Profile found successfully
-    const userRole = profile.role;
-    const userName = profile.username || authData.user.email;
-    
-    console.log(`User ${userName} logged in with role: ${userRole}`);
-
-    // Show personalized success message
-    showSuccess(`Welcome back, ${userName}!`);
-
-    // Redirect based on role with smooth transition
-    setTimeout(() => {
-      switch (userRole) {
-        case "admin":
-          console.log("Redirecting to admin dashboard...");
-          window.location.href = "admin.html";
-          break;
-        case "user":
-        default:
-          console.log("Redirecting to user dashboard...");
-          window.location.href = "index.html";
-          break;
-      }
-    }, 1500); // Slightly longer delay for better UX
-
-  } catch (error) {
-    console.error("Login error:", error);
-    let errorMessage = "An error occurred during login";
-    
-    if (error.message.includes("Invalid login credentials")) {
-      errorMessage = "Invalid email or password";
-    } else if (error.message.includes("Email not confirmed")) {
-      errorMessage = "Please check your email and confirm your account before signing in";
-    } else if (error.message.includes("Too many requests")) {
+    } catch (error) {
+      console.error("Login error:", error);
+      let errorMessage = "An error occurred during login";
+      
+      if (error.message.includes("Invalid login credentials")) {
+        errorMessage = "Invalid email or password";
+      } else if (error.message.includes("Too many requests")) {
       errorMessage = "Too many login attempts. Please wait a moment and try again";
     } else if (error.message) {
       errorMessage = error.message;
     }
-    
-    showError(errorMessage);
-  } finally {
-    setLoading(false);
-  }
-});
 
-// Enhanced auth state change handler
-supabase.auth.onAuthStateChange(async (event, session) => {
-  console.log("Auth state changed:", event, session?.user?.id);
-  
-  if (event === 'SIGNED_IN' && session) {
-    // Check if this is a fresh login or just a page refresh
-    const isLoginPage = window.location.pathname.includes('login.html');
-    
-    if (!isLoginPage) {
-      // User is already logged in and not on login page, get their role and redirect appropriately
-      try {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", session.user.id)
-          .single();
-        
-        if (profile?.role === "admin" && !window.location.pathname.includes('admin.html')) {
-          window.location.href = "admin.html";
-        } else if (profile?.role === "user" && !window.location.pathname.includes('index.html')) {
-          window.location.href = "index.html";
-        }
-      } catch (error) {
-        console.error("Error checking user role:", error);
-      }
+      showError(errorMessage);
+    } finally {
+      setLoading(false);
     }
-  }
-});
-  </script>
+  });
+
+  // Auto-redirect if user already signed in
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log("Auth state changed:", event, session?.user?.id);
+    
+    if (event === 'SIGNED_IN' && session) {
+      console.log("Already signed in:", session.user);
+      window.location.href = "index.html";
+    }
+  });
+</script>
 </body>
 </html>
