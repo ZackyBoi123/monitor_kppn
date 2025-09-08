@@ -12,17 +12,21 @@
     
     body {
       font-family: 'Inter', sans-serif;
-    }
-    
-    .glass-card {
-      backdrop-filter: blur(16px);
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .gradient-bg {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-image: url('images/KPPN\ omaga.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
       min-height: 100vh;
+    }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.1);
+      -webkit-backdrop-filter: blur(10px); /* For Safari */
+      backdrop-filter: blur(7px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 20px;
     }
     
     .input-group {
@@ -45,8 +49,12 @@
     .input-bordered:not(:placeholder-shown) + .floating-label {
       top: -10px;
       font-size: 12px;
-      color: #3b82f6;
-      background: white;
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+      -webkit-backdrop-filter: blur(10px); /* For Safari */
+      backdrop-filter: blur(7px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
       padding: 0 4px;
     }
 
@@ -104,9 +112,9 @@
     }
   </style>
 </head>
-<body class="gradient-bg flex items-center justify-center">
+<body class="flex items-center justify-center">
 
-  <div class="card w-full max-w-md mx-4 bg-white shadow-2xl fade-in">
+  <div class="card w-full max-w-md mx-4 fade-in">
     <div class="card-body p-8">
       <!-- Header -->
       <div class="text-center mb-6">
@@ -115,8 +123,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
           </svg>
         </div>
-        <h2 class="text-2xl font-bold text-gray-800">Selamat Datang!</h2>
-        <p class="text-gray-600 mt-1">Masuk ke akun Anda untuk melanjutkan.</p>
+        <h2 class="text-2xl text-white">Selamat Datang!</h2>
+        <p class="text-gray-300 mt-1">Masuk ke akun Anda untuk melanjutkan.</p>
       </div>
 
       <!-- Error Alert -->
@@ -142,10 +150,10 @@
             type="email" 
             id="email" 
             placeholder=" " 
-            class="input input-bordered w-full bg-transparent pt-3 pb-2 text-black" 
+            class="input input-bordered w-full bg-transparent pt-3 pb-2 text-white" 
             required 
           />
-          <label class="floating-label">Email Address</label>
+          <label class="floating-label text-white">Email Address</label>
         </div>
 
         <!-- Password Input -->
@@ -154,17 +162,17 @@
             type="password" 
             id="passwordInput" 
             placeholder=" " 
-            class="input input-bordered w-full bg-transparent pt-3 pb-2 text-black" 
+            class="input input-bordered w-full bg-transparent pt-3 pb-2 text-white" 
             required />
-          <label class="floating-label">Password</label>
+          <label class="floating-label text-white">Password</label>
           <span class="password-toggle z-50" id="passwordToggle">
-            <i class="fas fa-eye"></i>
+            <i class="fas fa-eye text-white"></i>
           </span>
         </div>
 
         <!-- Submit Button -->
         <button id="loginBtn" class="btn btn-primary w-full h-12 text-base font-medium" type="submit">
-          <span id="loginBtnText">Sign In</span>
+          <span id="loginBtnText" class="text-white">Sign In</span>
         </button>
       </form>
     </div>
@@ -191,10 +199,10 @@
     passwordToggle.addEventListener('click', function() {
       if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
-        this.innerHTML = '<i class="fas fa-eye-slash"></i>';  // Change to closed eye icon
+        this.innerHTML = '<i class="fas fa-eye-slash text-white"></i>';  // Change to closed eye icon
       } else {
         passwordInput.type = 'password';
-        this.innerHTML = '<i class="fas fa-eye"></i>';        // Change back to open eye icon
+        this.innerHTML = '<i class="fas fa-eye text-white"></i>';        // Change back to open eye icon
       }
     });
   });
