@@ -8,5 +8,3 @@ package-lock.json
 # IDE/editor settings
 .vscode/
 .idea/
-
-public/register.html

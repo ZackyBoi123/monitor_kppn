@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="shortcut icon" href="images/logo-kementerian-keuangan-356.png" type="image/x-icon">
   <title>Sign in</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -17,6 +18,17 @@
       background-size: cover;
       background-position: center;
       min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45); /* dark overlay */
     }
 
     .card {
@@ -60,7 +72,7 @@
 
     .password-toggle {
       position: absolute;
-      right: 15px; /* Adjust as needed */
+      right: 20px; /* Adjust as needed */
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
@@ -79,7 +91,7 @@
       height: 16px;
       margin: auto;
       border: 2px solid transparent;
-      border-top-color: black;
+      border-top-color: white;
       border-radius: 50%;
       animation: spin 0.5s ease infinite;
     }
@@ -115,7 +127,7 @@
 <body class="flex items-center justify-center">
 
   <div class="card w-full max-w-md mx-4 fade-in">
-    <div class="card-body p-8">
+    <div class="px-8 py-4">
       <!-- Header -->
       <div class="text-center mb-6">
         <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
@@ -144,16 +156,16 @@
       </div>
 
       <form id="loginForm" class="space-y-6">
-        <!-- Email Input -->
+        <!-- Username Input -->
         <div class="input-group">
           <input 
-            type="email" 
-            id="email" 
+            type="text" 
+            id="username" 
             placeholder=" " 
             class="input input-bordered w-full bg-transparent pt-3 pb-2 text-white" 
             required 
           />
-          <label class="floating-label text-white">Email Address</label>
+          <label class="floating-label text-white">Username</label>
         </div>
 
         <!-- Password Input -->
@@ -231,23 +243,21 @@
       loginBtnText.textContent = "Sign In";
     }
   }
-  
-    function validateEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
 
       loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     
-    const email = document.getElementById("email").value.trim();
+    const username = document.getElementById("username").value.trim();
     const password = document.getElementById("passwordInput").value;
 
-    // Client-side validation
-  if (!validateEmail(email)) {
-    showError("Please enter a valid email address");
-    return;
-  }
+    // Convert username → fake email
+    const email = `${username}@myapp.local`;
+
+    // Simple validation
+    if (username.length < 3) {
+      showError("Username must be at least 3 characters");
+      return;
+    }
 
     setLoading(true);
 
@@ -277,7 +287,7 @@
       let errorMessage = "An error occurred during login";
       
       if (error.message.includes("Invalid login credentials")) {
-        errorMessage = "Invalid email or password";
+        errorMessage = "Invalid username or password";
       } else if (error.message.includes("Too many requests")) {
       errorMessage = "Too many login attempts. Please wait a moment and try again";
     } else if (error.message) {
