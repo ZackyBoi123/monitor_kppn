@@ -20,9 +20,14 @@
   <script defer src="/_vercel/speed-insights/script.js"></script>
   <script defer src="/_vercel/insights/script.js"></script>
   <script type="module" src="SP2D.js"></script>  
-</head>
 
-<body class="pt-16" id="appBody">
+</head>
+<body id="appBody">
+
+<p id="last-updated" class="text-sm mb-3 text-gray-300">
+  Last Updated: loading...
+</p>
+
 <nav id="navbar" class="bg-white shadow-md fixed z-20 top-0 w-full transition-transform duration-300">
     <div class="max-w-8xl mx-auto px-3 sm:px-4 lg:px-4">
         <div class="flex justify-between h-16 items-center">
@@ -90,39 +95,37 @@
   </div>
 </nav>
 
-<p id="last-updated" class="text-left text-sm text-gray-500 mb-6">
-  Last Updated: loading...
-</p>
+<!-- Hero Header -->
+<div class="header pt-16 hero-section">
+  <div class="header-content pt-10">
+    <h1 class="text-3xl font-bold text-center">
+      Surat Perintah Pencairan Dana (SP2D)
+    </h1>
 
-<h1 class="text-center my-3 text-2xl font-bold"> Surat Perintah Pencairan Dana (SP2D)</h1>
-  <div id="mainContent" style="display: none;">
-      <div class="header-bar">
-        <div class="filter-row">
-        <div class="chip-filter-group">
-
-          <!-- <div class="chip-filter">
-            <select id="filterJenisSPM" style="width: 230px;">
-              <option value="" >[ Pilih SPM ]</option>
-            </select>
+  <div class="header-bar filter-section">
+    <div class="filter-row">
+      <div class="chip-filter-group">
+        <div class="search-reset">
+          <div class="search-container">
+            <input 
+              type="text" 
+              class="search-input" 
+              id="searchInput" 
+              placeholder="Search..." 
+              oninput="debounceSearch(); toggleClear()"
+            >
+            <button class="clear-btn" onclick="clearSearch()" id="clearBtn">&times;</button>
           </div>
-
-          <div class="chip-filter">
-          <select id="filterJenisSP2D" style="width: 230px;">
-            <option value="" >[ Pilih SP2D ]</option>
-          </select>
-        </div> -->
-
-      <div class ="search-reset">
-        <div class="search-container">
-          <input type="text" class="search-input" id="searchInput" placeholder="Search..." oninput="debounceSearch(); toggleClear()">
-          <button class="clear-btn" onclick="clearSearch()" id="clearBtn">&times;</button>
-        </div>
           <button id="resetFilters" type="button">Reset</button>
-        </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
+</div>
 
+<!-- Main content -->
+<div id="mainContent">
     <div id="tableScrollWrapper" class="max-h-[500px] overflow-y-auto">
       <div id="tableContainer" class="fade-in"></div>
     </div>
@@ -146,9 +149,9 @@
     </div>
 
     <div id="loader" class="loader-overlay" style="display:none;">
-      <div>
+      <div class="loader-content">
         <div class="spinner"></div>
-        <!-- <p style="text-align:center; font-size: 1.5rem; color:#555;">Loading data...</p> -->
+        <!-- Progress bar will be added by JavaScript -->
       </div>
     </div>
 

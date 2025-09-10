@@ -118,11 +118,38 @@ function capitalizeWords(str) {
     .join(' ');
 }
 
+// Staggered animations function
+function showContentWithStaggeredAnimation() {
+  const heroSection = document.querySelector('.header');
+  const filterSection = document.querySelector('.header-bar');
+  const mainContent = document.getElementById('mainContent');
+  
+  // Show hero first
+  heroSection.classList.add('visible');
+  
+  // Then filter section
+  setTimeout(() => {
+    filterSection.classList.add('visible');
+  }, 25);
+  
+  // Finally main content
+  setTimeout(() => {
+    mainContent.style.display = 'block';
+    mainContent.classList.add('visible');
+  }, 50);
+}
 
-function showMainContent() {
-  const main = document.getElementById("mainContent");
-  main.style.display = "block";
-  setTimeout(()=> main.classList.add("visible"), 40);
+// Smooth loader hiding
+function hideLoaderSmoothly() {
+  const loader = document.getElementById('loader');
+  
+  // Add fade-out class instead of immediately hiding
+  loader.classList.add('fade-out');
+  
+  // Actually hide after transition completes
+  setTimeout(() => {
+    loader.style.display = 'none';
+  }, 600);
 }
 
 // ---------- Get Last Updated ----------
@@ -407,9 +434,9 @@ function renderTable(rows){
   // Headers with sortable columns
   const headers = [
     { key: "No", label: "#", sortable: false },
-    { key: "LOKASI SEKOLAH", label: "Lokasi Sekolah", sortable: true },
-    { key: "NAMA SEKOLAH", label: "Nama Sekolah", sortable: true },
-    { key: "STS SEKOLAH", label: "Status Sekolah", sortable: true },
+    { key: "LOKASI SEKOLAH", label: "Lokasi Sekolah", sortable: false },
+    { key: "NAMA SEKOLAH", label: "Nama Sekolah", sortable: false },
+    { key: "STS SEKOLAH", label: "Status Sekolah", sortable: false },
     { key: "TGL SP2D DETAIL", label: "Tanggal SP2D", sortable: false },
     { key: "TAHAP", label: "Tahap", sortable: false },
     { key: "GEL", label: "Gelombang", sortable: false },
@@ -737,7 +764,8 @@ const profileBtn = document.getElementById("profileBtn");
 (async function init(){
   try {
     showToast("Loading data, please wait...");
-    document.getElementById("loader").style.display = "flex";
+    document.getElementById("loader").style.display = "grid";
+
     allData = await fetchAllRowsBatched(1000); // fetch all rows in batches of 1000
     allData.sort((a,b) => (Number(a.ID) || 0) - (Number(b.ID) || 0));
     filteredData = [...allData];
@@ -759,13 +787,13 @@ const profileBtn = document.getElementById("profileBtn");
     applyFiltersSearchAndSort();
 
     showToast("Data loaded successfully!");
+    showContentWithStaggeredAnimation();
 
-    showMainContent();
   } catch (err) {
     console.error("Init error:", err);
     document.getElementById("tableContainer").innerHTML = `<p style="color:red;">Failed to load data. See console.</p>`;
-    showMainContent();
+    showContentWithStaggeredAnimation();
   } finally {
-    document.getElementById("loader").style.display = "none";
+    hideLoaderSmoothly();
   }
 })();

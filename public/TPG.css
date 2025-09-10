@@ -30,6 +30,45 @@ body {
   margin-bottom: 1rem;
 }
 
+.header {
+  position: relative;
+  width: 100%;
+  height: 63vh; /* hero height, adjust as needed */
+  background-image: url('images/dashboard.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-radius: 0; /* remove rounding for full banner */
+}
+
+/* dark overlay for better contrast */
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 0;
+}
+
+.header p {
+  position: relative;
+  z-index: 1; /* make sure text sits above overlay */
+}
+
+/* content inside hero */
+.header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.header-content p {
+  color: #e5e7eb; /* light gray text */
+}
+
 #navbar {
   z-index: 9999;
 }
@@ -220,31 +259,6 @@ a {
     color: #333;
     outline: none;
   }
-
-/* Loader overlay */
-.loader-overlay {
-  position: fixed;
-  inset: 0;
-  /* background: #fff; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.spinner {
-  border: 5px solid #e0e0e0;
-  border-top: 5px solid var(--blue-500);
-  border-radius: 50%;
-  width: 70px;
-  height: 70px;
-  animation: spin 0.9s linear infinite;
-  margin: auto;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 /* Table styling */
 table {
@@ -469,20 +483,96 @@ input[type="search"]:focus, select:focus {
   transition: background-color 0.3s ease;
 }
 
-/* Content fade */
+/* Staggered fade-in animation */
+.hero-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transition-delay: 0.1s;
+}
+
+.hero-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.filter-section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  transition-delay: 0.3s;
+}
+
+.filter-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 #mainContent {
   opacity: 0;
-  transition: opacity 0.7s ease;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transition-delay: 0.5s;
 }
 
 #mainContent.visible {
   opacity: 1;
+  transform: translateY(0);
+}
+
+/* Smooth loader overlay fade */
+.loader-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-overlay {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  width: 100vw;               /* full viewport width */
+  height: calc(100vh - 64px); /* full viewport minus navbar */
+  background: rgba(255, 255, 255); /* or rgba(0,0,0,0.5) */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  border: 4px solid rgba(59, 130, 246, 0.1);
+  border-top: 6px solid var(--blue-500);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: spin 0.75s ease-in-out infinite;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#last-updated {
+  position: absolute;
+  top: 72px;      /* adjust so it sits just under navbar (which is 64px tall) */
+  left: 7px;
+  font-size: 14px;
+  z-index: 2;      /* above overlay */
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .header-bar {
     flex-direction: column;
+  }
+
+  .header {
+    height: 500px;
+  }
+
+  #last-updated {
+    top: 70px;
   }
   
   .pagination-container {
@@ -631,11 +721,3 @@ input[type="search"]:focus, select:focus {
   #tableScrollWrapper.scrolling-right::after {
     opacity: 1;
   }
-
-  #last-updated {
-    font-size: 14px;
-    color: #6b7280; /* Tailwind's gray-500 */
-    margin-bottom: 1.5rem;
-    padding-top: 3px;
-    padding-left: 4px;
-}
