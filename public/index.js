@@ -521,150 +521,422 @@ function updateChart(canvasId, labels, data, type) {
     }
 }
 
-// // Map chart function start
-// function getColorByRatio(ratio){
-//     if (ratio == null || isNaN(ratio)) return "#999999"; // unknown
-//     if (ratio >= 0.9) return "#006837";
-//     if (ratio >= 0.75) return "#31a354";
-//     if (ratio >= 0.5) return "#78c679";
-//     if (ratio >= 0.25) return "#fecc5c";
-//     return "#e31a1c";
-// }
+// Map chart function start point
+function getColorByRatio(ratio){
+    if (ratio == null || isNaN(ratio)) return "#6c757d"; // Gray for no data
+    if (ratio >= 0.9) return "#006837";   // Dark green - 90%+
+    if (ratio >= 0.75) return "#31a354";  // Medium green - 75-89%
+    if (ratio >= 0.5) return "#78c679";   // Light green - 50-74%
+    if (ratio >= 0.25) return "#fecc5c";  // Yellow/Orange - 25-49%
+    return "#e31a1c";                     // Red - 0-24%
+}
 
-// // --- Fetch region budget data from Supabase ---
-//   // Adjust table and column names to match your DB.
-//   async function fetchRegionBudgets() {
-//     const { data, error } = await supabaseClient
-//       .from('mapPaguRealisasi')
-//       .select('region, pagu, realisasi');
+// Function to get Bootstrap color class based on ratio
+function getBootstrapColorClass(ratio) {
+    if (ratio == null || isNaN(ratio)) return "secondary"; // Gray for no data
+    if (ratio >= 0.9) return "success";    // Dark green
+    if (ratio >= 0.75) return "success";   // Medium green  
+    if (ratio >= 0.5) return "info";       // Light green/blue
+    if (ratio >= 0.25) return "warning";   // Yellow/Orange
+    return "danger";                       // Red
+}
 
-//     if (error) {
-//       console.error("Supabase error:", error);
-//       return {};
-//     }
-//     const map = {};
-//     for (const row of data) {
-//       if (!row.region) continue;
-//       map[String(row.region).trim().toLowerCase()] = {
-//         pagu: Number(row.pagu) || 0,
-//         realisasi: Number(row.realisasi) || 0
-//       };
-//     }
-//     return map;
-//   }
+function addLegend(map) {
+  const legend = L.control({ position: 'bottomleft' });
 
-//   async function initMap() {
-//     const map = L.map('papuaMap', { zoomControl: true }).setView([-3, 138.5], 6);
+  legend.onAdd = function () {
+    const div = L.DomUtil.create('div', 'legend');
+    div.style.background = 'rgba(255,255,255,0.95)';
+    div.style.padding = '10px';
+    div.style.borderRadius = '8px';
+    div.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+    div.style.fontSize = '12px';
+    div.style.lineHeight = '1.4';
+    
+    const grades = [0.9, 0.75, 0.5, 0.25, 0];
+    div.innerHTML = '<strong style="margin-bottom: 8px; display: block;"><i class="fas fa-info-circle me-1 text-blue-700"></i>Tingkat Realisasi</strong>';
 
-//     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//       attribution: '&copy; OpenStreetMap contributors'
-//     }).addTo(map);
+    for (let i = 0; i < grades.length; i++) {
+      const from = grades[i];
+      const to = grades[i + 1];
+      const color = getColorByRatio(from + 0.001);
+      const label = to
+        ? `${Math.round(from * 100)}–${Math.round(to * 100)}%`
+        : `${Math.round(from * 100)}%+`;
+      
+      div.innerHTML += `<div class="legend-row" style="display: flex; align-items: center; margin-bottom: 4px;">
+                          <i style="background:${color}; width:18px; height:12px; margin-right:8px; display:inline-block; border-radius:2px;"></i> 
+                          <span>${label}</span>
+                        </div>`;
+    }
 
-//     // Load Supabase data first
-//     const regionData = await fetchRegionBudgets();
+    // Add "No data" entry
+    div.innerHTML += `<div class="legend-row" style="display: flex; align-items: center; margin-top: 6px;">
+                        <i style="background:${getColorByRatio(null)}; width:18px; height:12px; margin-right:8px; display:inline-block; border-radius:2px;"></i> 
+                        <span>No Data</span>
+                      </div>`;
 
-//     // Helper to look up region data (case-insensitive)
-//     const lookup = (name) => regionData[String(name || "").trim().toLowerCase()] || null;
+    return div;
+  };
 
-//     // Load province outline (ADM1) first so it's under kabupaten
-//     const provinceResp = await fetch('geoBoundaries-IDN-ADM1.json');
-//     const provinceGeo = await provinceResp.json();
+  legend.addTo(map);
+}
 
-//     const provinceLayer = L.geoJSON(provinceGeo, {
-//       style: (f) => ({
-//         color: '#1f78b4',
-//         weight: 2,
-//         fillOpacity: 0 // transparent fill so it won't block child polygons
-//       }),
-//       onEachFeature: (feature, layer) => {
-//         // show province totals (lookup by exact name used in your DB e.g., "Provinsi Papua")
-//         const data = lookup(feature.properties.name) || { pagu: null, realisasi: null };
-//         const popupHtml = `<strong>${feature.properties.name}</strong><br>
-//                            Pagu: ${data.pagu != null ? data.pagu.toLocaleString() : 'N/A'}<br>
-//                            Realisasi: ${data.realisasi != null ? data.realisasi.toLocaleString() : 'N/A'}`;
-//         layer.bindPopup(popupHtml);
-//       }
-//     }).addTo(map);
+// --- Fetch region budget data from Supabase ---
+  // Adjust table and column names to match your DB.
+  async function fetchRegionBudgets() {
+  const { data, error } = await supabaseClient
+    .from('mapPaguRealisasi')
+    .select('region, pagu, realisasi'); 
 
-//     // Load kabupaten file (ADM2)
-//     const kabResp = await fetch('geoBoundaries-IDN-ADM2.json');
-//     const kabGeo = await kabResp.json();
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return {};
+  }
 
-//     // Keep original style so we can reset after hover
-//     function defaultStyle(feature){
-//       const data = lookup(feature.properties.name);
-//       const ratio = data && data.pagu ? data.realisasi / (data.pagu || 1) : null;
-//       return {
-//         color: '#333',
-//         weight: 1,
-//         fillColor: getColorByRatio(ratio),
-//         fillOpacity: 0.7
-//       };
-//     }
-//     function highlightStyle(){
-//       return { weight: 3, color: '#000', fillOpacity: 0.9 };
-//     }
+  if (!data || data.length === 0) {
+    console.warn("Supabase returned no rows. Check table name/columns.");
+    return {};
+  }
 
-//     const kabLayer = L.geoJSON(kabGeo, {
-//       style: defaultStyle,
-//       onEachFeature: (feature, layer) => {
-//         const data = lookup(feature.properties.name) || { pagu: null, realisasi: null };
-//         const ratio = (data && data.pagu) ? ( (data.realisasi / data.pagu) || 0 ) : null;
-//         const popupHtml = `<strong>${feature.properties.name}</strong><br>
-//                            Pagu: ${data.pagu != null ? data.pagu.toLocaleString() : 'N/A'}<br>
-//                            Realisasi: ${data.realisasi != null ? data.realisasi.toLocaleString() : 'N/A'}<br>
-//                            Rate: ${ratio != null ? (ratio*100).toFixed(1)+'%' : 'N/A'}`;
-//         layer.bindPopup(popupHtml);
+  const map = {};
+  for (const row of data) {
+    // handle both lowercase and uppercase column names
+    const region = row.region || row.Region;
+    const pagu = row.pagu ?? row.Pagu;
+    const realisasi = row.realisasi ?? row.Realisasi;
 
-//         layer.on('mouseover', (e) => {
-//           layer.setStyle(highlightStyle());
-//           layer.openPopup();
-//         });
-//         layer.on('mouseout', (e) => {
-//           kabLayer.resetStyle(layer);
-//           layer.closePopup();
-//         });
+    if (!region) continue;
 
-//         // Optional click handler
-//         layer.on('click', (e) => {
-//           // e.g., zoom to feature bounds
-//           map.fitBounds(layer.getBounds().pad(0.6));
-//         });
-//       }
-//     }).addTo(map);
+    map[region.trim().toLowerCase()] = {
+      pagu: Number(pagu) || 0,
+      realisasi: Number(realisasi) || 0
+    };
+  }
+  return map;
+}
 
-//     // Optional: add a control that shows region info on hover (top-right)
-//     const info = L.control({ position: 'topright' });
-//     info.onAdd = function () {
-//       this._div = L.DomUtil.create('div', 'info-control');
-//       this.update();
-//       return this._div;
-//     };
-//     info.update = function (props) {
-//       this._div.innerHTML = props ? `<h4>${props.name}</h4>
-//         Pagu: ${props.pagu != null ? props.pagu.toLocaleString() : 'N/A'}<br>
-//         Realisasi: ${props.realisasi != null ? props.realisasi.toLocaleString() : 'N/A'}` 
-//       : '<h4>Hover a region</h4>';
-//     };
-//     info.addTo(map);
 
-//     // Update info on hover
-//     kabLayer.eachLayer(layer => {
-//       layer.on('mouseover', () => {
-//         const p = lookup(layer.feature.properties.name) || { pagu:null, realisasi:null };
-//         info.update({ name: layer.feature.properties.name, pagu: p.pagu, realisasi: p.realisasi });
-//       });
-//       layer.on('mouseout', () => info.update());
-//     });
+  async function initMap() {
+  const map = L.map('papuaMap', { 
+    zoomControl: true,
+    // Add attribution control with custom position and prefix
+    attributionControl: false // We'll add our own
+  }).setView([-3, 138.5], 6);
 
-//     // Add layer control (toggle province/kabupaten)
-//     const overlays = { "Province outline": provinceLayer, "Kabupaten": kabLayer };
-//     L.control.layers(null, overlays, { collapsed: false }).addTo(map);
-//   }
+  // Add custom attribution control
+  L.control.attribution({
+    position: 'bottomright',
+    prefix: false // This removes the "Powered by Leaflet" text
+  }).addTo(map);
 
-//   // start
-//   initMap().catch(err => console.error(err));
+  // Clean/light basemap with custom attribution
+  const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: 'KPPN Jayapura &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19,
+    subdomains: 'abcd'
+  }).addTo(map);
 
+  // Add custom map control
+  map.addControl(new CustomMapControl({ position: 'topleft' }));
+
+  try {
+    // Load Supabase data first with error handling
+    const regionData = await fetchRegionBudgets();
+    console.log("Region data loaded:", Object.keys(regionData).length, "regions");
+
+    // Helper to look up region data (case-insensitive)
+    const lookup = (name) => regionData[String(name || "").trim().toLowerCase()] || null;
+
+    // Load and add province layer
+    try {
+      const provinceResp = await fetch('geoBoundaries-IDN-ADM1.json');
+      if (!provinceResp.ok) {
+        throw new Error(`Failed to load province boundaries: ${provinceResp.status}`);
+      }
+      const provinceGeo = await provinceResp.json();
+
+      const provinceLayer = L.geoJSON(provinceGeo, {
+        style: (f) => ({
+          color: '#1f78b4',
+          weight: 2,
+          fillOpacity: 0,
+          dashArray: '5, 5' // Make it dashed to distinguish from kabupaten
+        }),
+        onEachFeature: (feature, layer) => {
+          const shapeName = feature.properties.shapeName || feature.properties.ADM1_NAME || feature.properties.NAME_1;
+          const data = lookup(shapeName) || { pagu: null, realisasi: null };
+          const popupHtml = `<div class="popup-card">
+                               <strong>${shapeName}</strong><br>
+                               Pagu: ${data.pagu != null ? data.pagu.toLocaleString('id-ID') : 'N/A'}<br>
+                               Realisasi: ${data.realisasi != null ? data.realisasi.toLocaleString('id-ID') : 'N/A'}
+                             </div>`;
+          layer.bindPopup(popupHtml);
+        }
+      }).addTo(map);
+
+      console.log("Province layer loaded successfully");
+    } catch (error) {
+      console.error("Error loading province boundaries:", error);
+      // Continue without province layer
+    }
+
+    // Load and add kabupaten layer
+    try {
+      const kabResp = await fetch('geoBoundaries-IDN-ADM2.json');
+      if (!kabResp.ok) {
+        throw new Error(`Failed to load kabupaten boundaries: ${kabResp.status}`);
+      }
+      const kabGeo = await kabResp.json();
+      console.log("Kabupaten GeoJSON loaded, features:", kabGeo.features.length);
+
+      // Default style function
+      function defaultStyle(feature) {
+        const shapeName = feature.properties.shapeName || feature.properties.ADM2_NAME || feature.properties.NAME_2;
+        const data = lookup(shapeName);
+        const ratio = data && data.pagu > 0 ? data.realisasi / data.pagu : null;
+        
+        return {
+          color: '#333',
+          weight: 1,
+          fillColor: getColorByRatio(ratio),
+          fillOpacity: 0.7,
+          className: 'leaflet-interactive' // Add CSS class for better styling
+        };
+      }
+
+      // Highlight style
+      function highlightStyle() {
+        return { 
+          weight: 3, 
+          color: '#000', 
+          fillOpacity: 0.9 
+        };
+      }
+
+      const kabLayer = L.geoJSON(kabGeo, {
+        style: defaultStyle,
+        onEachFeature: (feature, layer) => {
+            const shapeName = feature.properties.shapeName || feature.properties.ADM2_NAME || feature.properties.NAME_2;
+            const data = lookup(shapeName) || { pagu: null, realisasi: null };
+            const ratio = (data && data.pagu > 0) ? (data.realisasi / data.pagu) : null;
+            
+            // Create badge with exact color matching
+            let badgeHtml = '';
+            if (ratio != null) {
+                const percentage = (ratio * 100).toFixed(1);
+                const bgColor = getColorByRatio(ratio);
+                const textColor = ratio >= 0.25 ? '#fff' : '#000'; // White text for dark colors, black for light
+                badgeHtml = `<span style="background-color: ${bgColor}; color: ${textColor}; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">
+                                <i class="fas fa-percentage" style="margin-right: 4px;"></i>${percentage}%
+                            </span>`;
+            } else {
+                badgeHtml = `<span style="background-color: #6c757d; color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">
+                                N/A
+                            </span>`;
+            }
+
+            const popupHtml = `
+                <div style="min-width: 200px;">
+                    <h5 style="margin-bottom: 10px; color: #333; border-bottom: 2px solid #667eea; padding-bottom: 5px;">
+                        <i class="fas fa-map-marker-alt me-2"></i>${shapeName}
+                    </h5>
+                    <div style="margin: 8px 0;">
+                        <strong><i class="fas fa-wallet me-1"></i>Pagu:</strong> 
+                        <span style="color: #0066cc;">${data.pagu != null ? formatCurrency(data.pagu) : 'N/A'}</span>
+                    </div>
+                    <div style="margin: 8px 0;">
+                        <strong><i class="fas fa-chart-line me-1"></i>Realisasi:</strong> 
+                        <span style="color: #28a745;">${data.realisasi != null ? formatCurrency(data.realisasi) : 'N/A'}</span>
+                    </div>
+                    <div style="margin: 12px 0; text-align: center;">
+                        <strong>Tingkat Realisasi:</strong><br>
+                        ${badgeHtml}
+                    </div>
+                </div>
+            `;
+            
+            layer.bindPopup(popupHtml, {
+                maxWidth: 300,
+                className: 'custom-popup'
+            });
+
+            layer.on({
+                mouseover: function(e) {
+                    const layer = e.target;
+                    layer.setStyle(highlightStyle());
+                    info.update({
+                        name: shapeName,
+                        pagu: data.pagu,
+                        realisasi: data.realisasi,
+                        ratio: ratio
+                    });
+                    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                        layer.bringToFront();
+                    }
+                },
+                mouseout: function(e) {
+                    kabLayer.resetStyle(e.target);
+                    info.update();
+                },
+                click: function(e) {
+                    map.fitBounds(e.target.getBounds(), { padding: [20, 20] });
+                }
+            });
+        }
+    }).addTo(map);
+
+      console.log("Kabupaten layer loaded successfully");
+      
+      // Add legend after kabupaten layer is loaded
+      addLegend(map);
+
+      // Add info control
+      const info = L.control({ position: 'topright' });
+      info.onAdd = function () {
+        this._div = L.DomUtil.create('div', 'info-control');
+        this.update();
+        return this._div;
+      };
+      
+      info.update = function (props) {
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        };
+        
+        if (props) {
+            let rateBadge = '';
+            if (props.ratio != null) {
+              
+                const percentage = (props.ratio * 100).toFixed(1);
+                const bgColor = getColorByRatio(props.ratio);
+                const textColor = props.ratio >= 0.25 ? '#fff' : '#000';
+                rateBadge = `<div style="margin-top: 8px;"><strong>Rate:</strong> 
+                            <span style="background-color: ${bgColor}; color: ${textColor}; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem;">
+                                ${percentage}%
+                            </span></div>`;
+            } 
+            else {
+                rateBadge = `<div style="margin-top: 8px;"><strong>Rate:</strong> 
+                            <span style="background-color: #6c757d; color: #fff; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem;">
+                                N/A
+                            </span></div>`;
+            }
+
+            this._div.innerHTML = `
+                <h6 class="fw-bold"><i class="fa-solid fa-location-dot text-blue-700"></i> ${props.name}</h6>
+                <div><strong>Pagu:</strong><span class="text-primary fw-bold"> ${props.pagu != null ? formatCurrency(props.pagu) : 'N/A'}</span></div>
+                <div><strong>Realisasi:</strong><span class="text-success fw-bold"> ${props.realisasi != null ? formatCurrency(props.realisasi) : 'N/A'}</span></div>
+                ${rateBadge}
+            `;
+        } else {
+            this._div.innerHTML = `
+                <h6><i class="fas fa-info-circle me-1"></i>Hover pada wilayah</h6>
+                <div class="opacity-50 text-xs">untuk melihat detail anggaran</div>
+            `;
+        }
+    };
+      info.addTo(map);
+
+      // Update info control on hover
+      kabLayer.eachLayer(layer => {
+        layer.on('mouseover', () => {
+        });
+        layer.on('mouseout', () => info.update());
+      });
+
+    } catch (error) {
+      console.error("Error loading kabupaten boundaries:", error);
+      // Show error message to user
+      const errorControl = L.control({ position: 'topleft' });
+      errorControl.onAdd = function() {
+        const div = L.DomUtil.create('div', 'leaflet-control leaflet-bar');
+        div.style.background = '#ffebee';
+        div.style.padding = '10px';
+        div.innerHTML = '<strong>Error:</strong> Could not load map boundaries';
+        return div;
+      };
+      errorControl.addTo(map);
+    }
+
+    // Force map to invalidate size after everything loads
+    setTimeout(() => {
+      map.invalidateSize();
+      console.log("Map size invalidated");
+    }, 100);
+
+  } catch (error) {
+    console.error("Error in map initialization:", error);
+    // Show error in map container
+    const mapContainer = document.getElementById('papuaMap');
+    mapContainer.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; color: #666;">
+        <div style="text-align: center;">
+          <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+          <p>Failed to load map data</p>
+          <small>${error.message}</small>
+        </div>
+      </div>
+    `;
+  }
+}
+
+  // Custom map control with two buttons (Reset, Fullscreen)
+const CustomMapControl = L.Control.extend({
+  onAdd: function(map) {
+    const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+    div.style.background = 'white';
+    div.style.cursor = 'pointer';
+
+    // Reset button
+    const resetBtn = L.DomUtil.create('a', 'map-btn', div);
+    resetBtn.innerHTML = '⟳'; // Home icon
+    resetBtn.href = '#';
+    resetBtn.title = 'Reset View';
+    resetBtn.style.display = 'block';
+    resetBtn.style.padding = '5px';
+    resetBtn.style.textAlign = 'center';
+    resetBtn.onclick = (e) => {
+      e.preventDefault();
+      map.setView([-3, 138.5], 6);
+    };
+
+    // Fullscreen button
+    const fullBtn = L.DomUtil.create('a', 'map-btn', div);
+    fullBtn.innerHTML = '⛶'; // Fullscreen icon
+    fullBtn.href = '#';
+    fullBtn.title = 'Toggle Fullscreen';
+    fullBtn.style.display = 'block';
+    fullBtn.style.padding = '5px';
+    fullBtn.style.textAlign = 'center';
+    fullBtn.style.borderTop = '1px solid #ccc';
+    fullBtn.onclick = async (e) => {
+      e.preventDefault();
+      try {
+        const mapElement = document.getElementById('papuaMap');
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
+        } else if (mapElement.requestFullscreen) {
+          await mapElement.requestFullscreen();
+        }
+        // Invalidate size after fullscreen change
+        setTimeout(() => map.invalidateSize(), 100);
+      } catch (error) {
+        console.log('Fullscreen not supported or failed');
+      }
+    };
+
+    return div;
+  }
+});
+
+  // start
+  initMap().catch(err => console.error(err));
 
 // Updated function for bar chart - now shows all categories without region filter
 function updateBarChart() {

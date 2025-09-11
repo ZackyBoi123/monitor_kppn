@@ -593,6 +593,10 @@ input[type="search"]:focus, select:focus {
     width: 100%; 
   }
 
+  table.compact .deskripsi-cell {
+    font-size: 7px;
+  }
+
   /* Fix table text wrapping on mobile */
   table.compact td {
     max-width: none;            /* Remove max-width restriction */
