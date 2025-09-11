@@ -3,8 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL = 'https://kntomoredgduvwbovgpx.supabase.co';    // Supabase URL
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtudG9tb3JlZGdkdXZ3Ym92Z3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MzI0NzcsImV4cCI6MjA3MDIwODQ3N30.Ei7vJ8RQCiz7KPXis6He8dVzL91Euocxzxzg1ptg1_U'; // Replace with your Supabase anon key
-const BUDGET_TABLE_NAME = 'paguRealisasi';                          // table for pie/doughnut charts
-const COMPARISON_TABLE_NAME = 'barPaguRealisasi';                   // table for bar chart
+const BUDGET_TABLE_NAME = 'donatPaguRealisasi';                     // table for pie/doughnut charts
+const COMPARISON_TABLE_NAME = 'barChartPaguRealisasi';              // table for bar chart
 
 // Initialize Supabase client
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -262,7 +262,7 @@ function populateRegionDropdown() {
 // Last updated timestamp
 async function getLastUpdated() {
   const { data, error } = await supabaseClient
-    .from('barPaguRealisasi')
+    .from('barChartPaguRealisasi')
     .select('updated_at')
     .order('updated_at', { ascending: false })
     .limit(1);
@@ -520,6 +520,151 @@ function updateChart(canvasId, labels, data, type) {
         realisasiChart = new Chart(ctx, config);
     }
 }
+
+// // Map chart function start
+// function getColorByRatio(ratio){
+//     if (ratio == null || isNaN(ratio)) return "#999999"; // unknown
+//     if (ratio >= 0.9) return "#006837";
+//     if (ratio >= 0.75) return "#31a354";
+//     if (ratio >= 0.5) return "#78c679";
+//     if (ratio >= 0.25) return "#fecc5c";
+//     return "#e31a1c";
+// }
+
+// // --- Fetch region budget data from Supabase ---
+//   // Adjust table and column names to match your DB.
+//   async function fetchRegionBudgets() {
+//     const { data, error } = await supabaseClient
+//       .from('mapPaguRealisasi')
+//       .select('region, pagu, realisasi');
+
+//     if (error) {
+//       console.error("Supabase error:", error);
+//       return {};
+//     }
+//     const map = {};
+//     for (const row of data) {
+//       if (!row.region) continue;
+//       map[String(row.region).trim().toLowerCase()] = {
+//         pagu: Number(row.pagu) || 0,
+//         realisasi: Number(row.realisasi) || 0
+//       };
+//     }
+//     return map;
+//   }
+
+//   async function initMap() {
+//     const map = L.map('papuaMap', { zoomControl: true }).setView([-3, 138.5], 6);
+
+//     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//       attribution: '&copy; OpenStreetMap contributors'
+//     }).addTo(map);
+
+//     // Load Supabase data first
+//     const regionData = await fetchRegionBudgets();
+
+//     // Helper to look up region data (case-insensitive)
+//     const lookup = (name) => regionData[String(name || "").trim().toLowerCase()] || null;
+
+//     // Load province outline (ADM1) first so it's under kabupaten
+//     const provinceResp = await fetch('geoBoundaries-IDN-ADM1.json');
+//     const provinceGeo = await provinceResp.json();
+
+//     const provinceLayer = L.geoJSON(provinceGeo, {
+//       style: (f) => ({
+//         color: '#1f78b4',
+//         weight: 2,
+//         fillOpacity: 0 // transparent fill so it won't block child polygons
+//       }),
+//       onEachFeature: (feature, layer) => {
+//         // show province totals (lookup by exact name used in your DB e.g., "Provinsi Papua")
+//         const data = lookup(feature.properties.name) || { pagu: null, realisasi: null };
+//         const popupHtml = `<strong>${feature.properties.name}</strong><br>
+//                            Pagu: ${data.pagu != null ? data.pagu.toLocaleString() : 'N/A'}<br>
+//                            Realisasi: ${data.realisasi != null ? data.realisasi.toLocaleString() : 'N/A'}`;
+//         layer.bindPopup(popupHtml);
+//       }
+//     }).addTo(map);
+
+//     // Load kabupaten file (ADM2)
+//     const kabResp = await fetch('geoBoundaries-IDN-ADM2.json');
+//     const kabGeo = await kabResp.json();
+
+//     // Keep original style so we can reset after hover
+//     function defaultStyle(feature){
+//       const data = lookup(feature.properties.name);
+//       const ratio = data && data.pagu ? data.realisasi / (data.pagu || 1) : null;
+//       return {
+//         color: '#333',
+//         weight: 1,
+//         fillColor: getColorByRatio(ratio),
+//         fillOpacity: 0.7
+//       };
+//     }
+//     function highlightStyle(){
+//       return { weight: 3, color: '#000', fillOpacity: 0.9 };
+//     }
+
+//     const kabLayer = L.geoJSON(kabGeo, {
+//       style: defaultStyle,
+//       onEachFeature: (feature, layer) => {
+//         const data = lookup(feature.properties.name) || { pagu: null, realisasi: null };
+//         const ratio = (data && data.pagu) ? ( (data.realisasi / data.pagu) || 0 ) : null;
+//         const popupHtml = `<strong>${feature.properties.name}</strong><br>
+//                            Pagu: ${data.pagu != null ? data.pagu.toLocaleString() : 'N/A'}<br>
+//                            Realisasi: ${data.realisasi != null ? data.realisasi.toLocaleString() : 'N/A'}<br>
+//                            Rate: ${ratio != null ? (ratio*100).toFixed(1)+'%' : 'N/A'}`;
+//         layer.bindPopup(popupHtml);
+
+//         layer.on('mouseover', (e) => {
+//           layer.setStyle(highlightStyle());
+//           layer.openPopup();
+//         });
+//         layer.on('mouseout', (e) => {
+//           kabLayer.resetStyle(layer);
+//           layer.closePopup();
+//         });
+
+//         // Optional click handler
+//         layer.on('click', (e) => {
+//           // e.g., zoom to feature bounds
+//           map.fitBounds(layer.getBounds().pad(0.6));
+//         });
+//       }
+//     }).addTo(map);
+
+//     // Optional: add a control that shows region info on hover (top-right)
+//     const info = L.control({ position: 'topright' });
+//     info.onAdd = function () {
+//       this._div = L.DomUtil.create('div', 'info-control');
+//       this.update();
+//       return this._div;
+//     };
+//     info.update = function (props) {
+//       this._div.innerHTML = props ? `<h4>${props.name}</h4>
+//         Pagu: ${props.pagu != null ? props.pagu.toLocaleString() : 'N/A'}<br>
+//         Realisasi: ${props.realisasi != null ? props.realisasi.toLocaleString() : 'N/A'}` 
+//       : '<h4>Hover a region</h4>';
+//     };
+//     info.addTo(map);
+
+//     // Update info on hover
+//     kabLayer.eachLayer(layer => {
+//       layer.on('mouseover', () => {
+//         const p = lookup(layer.feature.properties.name) || { pagu:null, realisasi:null };
+//         info.update({ name: layer.feature.properties.name, pagu: p.pagu, realisasi: p.realisasi });
+//       });
+//       layer.on('mouseout', () => info.update());
+//     });
+
+//     // Add layer control (toggle province/kabupaten)
+//     const overlays = { "Province outline": provinceLayer, "Kabupaten": kabLayer };
+//     L.control.layers(null, overlays, { collapsed: false }).addTo(map);
+//   }
+
+//   // start
+//   initMap().catch(err => console.error(err));
+
 
 // Updated function for bar chart - now shows all categories without region filter
 function updateBarChart() {
