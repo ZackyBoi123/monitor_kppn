@@ -324,6 +324,10 @@
               display: none;
             }
 
+            .hoverinfo {
+              display: none;
+            }
+
         }
 
         @media (max-width: 768px) {

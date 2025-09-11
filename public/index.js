@@ -828,16 +828,18 @@ function addLegend(map) {
                             </span></div>`;
             }
 
-            this._div.innerHTML = `
+            this._div.innerHTML = `<div class="hoverinfo">
                 <h6 class="fw-bold"><i class="fa-solid fa-location-dot text-blue-700"></i> ${props.name}</h6>
                 <div><strong>Pagu:</strong><span class="text-primary fw-bold"> ${props.pagu != null ? formatCurrency(props.pagu) : 'N/A'}</span></div>
                 <div><strong>Realisasi:</strong><span class="text-success fw-bold"> ${props.realisasi != null ? formatCurrency(props.realisasi) : 'N/A'}</span></div>
                 ${rateBadge}
+                </div>
             `;
         } else {
-            this._div.innerHTML = `
+            this._div.innerHTML = `<div class="hovertip">
                 <h6><i class="fas fa-info-circle me-1"></i>Hover pada wilayah</h6>
                 <div class="opacity-50 text-xs">untuk melihat detail anggaran</div>
+                </div>
             `;
         }
     };
