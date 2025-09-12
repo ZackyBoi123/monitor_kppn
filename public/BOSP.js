@@ -230,14 +230,14 @@ function applyFiltersSearchAndSort(){
   const lokasii = $("#filterJenisLokasi").val();
   const sekolahh = $("#filterJenisSekolah").val();
   const tahapp = $("#filterJenisTahap").val();
-  const gemm = $("#filterJenisGelombang").val();
+  // const gemm = $("#filterJenisGelombang").val();
   const searchTerm = (document.getElementById("searchInput").value || "").trim().toLowerCase();
 
   filteredData = allData.filter(row => {
     if (lokasii && row["LOKASI SEKOLAH"] !== lokasii) return false;
     if (sekolahh && row["NAMA SEKOLAH"] !== sekolahh) return false;
     if (tahapp && row["TAHAP"] !== tahapp) return false;
-    if (gemm && row["GEL"] !== gemm) return false;
+    // if (gemm && row["GEL"] !== gemm) return false;
 
     if (!searchTerm) return true;
 
@@ -434,12 +434,12 @@ function renderTable(rows){
   // Headers with sortable columns
   const headers = [
     { key: "No", label: "#", sortable: false },
-    { key: "LOKASI SEKOLAH", label: "Lokasi Sekolah", sortable: false },
+    { key: "LOKASI SEKOLAH", label: "Kab / Kota", sortable: false },
     { key: "NAMA SEKOLAH", label: "Nama Sekolah", sortable: false },
     { key: "STS SEKOLAH", label: "Status Sekolah", sortable: false },
     { key: "TGL SP2D DETAIL", label: "Tanggal SP2D", sortable: false },
     { key: "TAHAP", label: "Tahap", sortable: false },
-    { key: "GEL", label: "Gelombang", sortable: false },
+    // { key: "GEL", label: "Gelombang", sortable: false },
     { key: "NILAI", label: "Nilai", sortable: false },
     { key: "JMLH SISWA", label: "Jumlah Siswa", sortable: false },
   ];
@@ -497,11 +497,11 @@ function renderTable(rows){
         <td class="" data-fulltext="${escapeHTML(row["STS SEKOLAH"])}">${highlightHTML(capitalizeWords(row["STS SEKOLAH"]), searchTerm)}</td>
         <td class="" data-fulltext="${escapeHTML(row["TGL SP2D DETAIL"])}">${highlightHTML(row["TGL SP2D DETAIL"], searchTerm)}</td>
         <td class="" data-fulltext="${escapeHTML(row.TAHAP)}">${highlightHTML(row.TAHAP, searchTerm)}</td>
-        <td class="" data-fulltext="${escapeHTML(row.GEL)}">${highlightHTML(row.GEL, searchTerm)}</td>
         <td class="currency" data-fulltext="${escapeHTML(row.NILAI)}">${formatRupiahWithHighlight(row.NILAI, searchTerm)}</td>
         <td class="" data-fulltext="${escapeHTML(row["JMLH SISWA"])}">${highlightHTML(row["JMLH SISWA"], searchTerm)}</td>
         `;
-
+        // <td class="" data-fulltext="${escapeHTML(row.GEL)}">${highlightHTML(row.GEL, searchTerm)}</td>
+        
       tbody.appendChild(tr);
 
       // Set tooltips for overflowed content
@@ -613,7 +613,7 @@ function renderPaginationControls(totalPages){
 
 // ---------- Reset handler ----------
 function resetAll(){
-  ["#filterJenisLokasi", "#filterJenisSekolah", "#filterJenisTahap", "#filterJenisGelombang"].forEach(sel => {
+  ["#filterJenisLokasi", "#filterJenisSekolah", "#filterJenisTahap"].forEach(sel => {
     $(sel).val("").trigger("change");
   });
   document.getElementById("searchInput").value = "";
@@ -687,7 +687,7 @@ document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
 document.getElementById("resetFilters").addEventListener("click", resetAll);
 
 // apply filters on change
-$("#filterJenisLokasi, #filterJenisSekolah, #filterJenisTahap, filterJenisGelombang").on("change", () => {
+$("#filterJenisLokasi, #filterJenisSekolah, #filterJenisTahap").on("change", () => {
   currentPage = 1;
   applyFiltersSearchAndSort();
 });
@@ -774,12 +774,12 @@ const profileBtn = document.getElementById("profileBtn");
     const lokasi = [...new Set(allData.map(r => r["LOKASI SEKOLAH"]).filter(Boolean))].sort();
     const sekolah = [...new Set(allData.map(r => r["NAMA SEKOLAH"]).filter(Boolean))].sort();
     const tahap = [...new Set(allData.map(r => r["TAHAP"]).filter(Boolean))].sort();
-    const gem = [...new Set(allData.map(r => r["GEL"]).filter(Boolean))].sort();
+    // const gem = [...new Set(allData.map(r => r["GEL"]).filter(Boolean))].sort();
 
-    fillSelect("#filterJenisLokasi", lokasi, "[ Pilih Lokasi ]");
+    fillSelect("#filterJenisLokasi", lokasi, "[ Pilih Kab / Kota ]");
     fillSelect("#filterJenisSekolah", sekolah, "[ Pilih Sekolah ]");
     fillSelect("#filterJenisTahap", tahap, "[ Pilih Tahap ]");
-    fillSelect("#filterJenisGelombang", gem, "[ Pilih Gelombang ]");
+    // fillSelect("#filterJenisGelombang", gem, "[ Pilih Gelombang ]");
 
     // load persistent UI state
     loadState();

@@ -23,9 +23,7 @@ const COLUMNS = `
   NIP,  
   NAMA,
   "NAMA PEMILIK REKENING",
-  "NO REKENING",
   SATDIK,
-  "JENIS TUNJANGAN",
   PEMDA,
   "SALUR BRUTO",
   PPH,
@@ -105,7 +103,7 @@ function loadState() {
       $("#filterJenisSatdik").val(state.filters.satdik).trigger("change");
       $("#filterJenisTriwulan").val(state.filters.triwulan).trigger("change");
       // $("#filterJenisPemda").val(state.filters.pemda).trigger("change");
-      $("#filterJenisTunjangan").val(state.filters.tunj).trigger("change");
+      // $("#filterJenisTunjangan").val(state.filters.tunj).trigger("change");
     }
     if(state.searchTerm) {
       document.getElementById("searchInput").value = state.searchTerm;
@@ -246,14 +244,14 @@ function applyFiltersSearchAndSort(){
   const satdik = $("#filterJenisSatdik").val();
   const triwulan = $("#filterJenisTriwulan").val();
   // const pemda = $("#filterJenisPemda").val();
-  const tunj = $("#filterJenisTunjangan").val();
+  // const tunj = $("#filterJenisTunjangan").val();
   const searchTerm = (document.getElementById("searchInput").value || "").trim().toLowerCase();
 
   filteredData = allData.filter(row => {
     if (satdik && row.SATDIK !== satdik) return false;
     if (triwulan && row.TRIWULAN !== triwulan) return false;
     // if (pemda && row.PEMDA !== pemda) return false;
-    if (tunj && row["JENIS TUNJANGAN"] !== tunj) return false;
+    // if (tunj && row["JENIS TUNJANGAN"] !== tunj) return false;
 
     if (!searchTerm) return true;
 
@@ -371,9 +369,9 @@ function renderTable(rows){
     { key: "No", label: "#", sortable: false },
     { key: "NIP", label: "NIP", sortable: false },
     { key: "NAMA", label: "Nama", sortable: false },
-    { key: "NO REKENING", label: "No. Rekening", sortable: false },
+    // { key: "NO REKENING", label: "No. Rekening", sortable: false },
     { key: "SATDIK", label: "Satdik", sortable: false },
-    { key: "JENIS TUNJANGAN", label: "Jenis Tunjangan", sortable: false },
+    // { key: "JENIS TUNJANGAN", label: "Jenis Tunjangan", sortable: false },
     { key: "PEMDA", label: "Kab / Kota", sortable: false },
     { key: "SALUR BRUTO", label: "Salur Bruto", sortable: false },
     { key: "PPH", label: "PPH", sortable: false },
@@ -434,16 +432,16 @@ function renderTable(rows){
         <td>${displayIndex}</td>
         <td class="nip-cell" data-fulltext="${escapeHTML(row.NIP)}">${highlightHTML(row.NIP, searchTerm)}</td>
         <td class="nama-cell" data-fulltext="${escapeHTML(row.NAMA)}">${highlightHTML(capitalizeWords(row.NAMA), searchTerm)}</td>
-        <td class="norek-cell" data-fulltext="${escapeHTML(row["NO REKENING"])}">${highlightHTML(row["NO REKENING"], searchTerm)}</td>
         <td class="satdik-cell" data-fulltext="${escapeHTML(row.SATDIK)}">${highlightHTML(capitalizeWords(row.SATDIK), searchTerm)}</td>
-        <td class="jenistunjangan-cell" data-fulltext="${escapeHTML(row["JENIS TUNJANGAN"])}">${highlightHTML(capitalizeWords(row["JENIS TUNJANGAN"]), searchTerm)}</td>
         <td class="pemda-cell" data-fulltext="${escapeHTML(row.PEMDA)}">${highlightHTML(capitalizeWords(row.PEMDA), searchTerm)}</td>
         <td class="salurbrut-cell currency" data-fulltext="${escapeHTML(row["SALUR BRUTO"])}">${formatRupiahWithHighlight(row["SALUR BRUTO"], searchTerm)}</td>
         <td class="pph-cell currency" data-fulltext="${escapeHTML(row.PPH)}">${formatRupiahWithHighlight(row.PPH, searchTerm)}</td>
         <td class="jkn-cell currency" data-fulltext="${escapeHTML(row["POT JKN"])}">${formatRupiahWithHighlight(row["POT JKN"], searchTerm)}</td>
         <td class="salurnet-cell currency" data-fulltext="${escapeHTML(row["SALUR NETTO"])}">${formatRupiahWithHighlight(row["SALUR NETTO"], searchTerm)}</td>
         <td class="triwulan-cell" data-fulltext="${escapeHTML(row.TRIWULAN)}">${highlightHTML(row.TRIWULAN, searchTerm)}</td>
-      `;
+        `;
+        // <td class="jenistunjangan-cell" data-fulltext="${escapeHTML(row["JENIS TUNJANGAN"])}">${highlightHTML(capitalizeWords(row["JENIS TUNJANGAN"]), searchTerm)}</td>
+        // <td class="norek-cell" data-fulltext="${escapeHTML(row["NO REKENING"])}">${highlightHTML(row["NO REKENING"], searchTerm)}</td>
       tbody.appendChild(tr);
 
       // After inserting row to tbody:
@@ -559,7 +557,7 @@ function renderPaginationControls(totalPages){
 
 // ---------- Reset handler ----------
 function resetAll(){
-  ["#filterJenisSatdik", "#filterJenisTriwulan", "#filterJenisTunjangan"].forEach(sel => {
+  ["#filterJenisSatdik", "#filterJenisTriwulan"].forEach(sel => {
     $(sel).val("").trigger("change");
   });
   document.getElementById("searchInput").value = "";
@@ -633,7 +631,7 @@ document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
 document.getElementById("resetFilters").addEventListener("click", resetAll);
 
 // apply filters on change
-$("#filterJenisSatdik, #filterJenisTriwulan, #filterJenisTunjangan").on("change", () => {
+$("#filterJenisSatdik, #filterJenisTriwulan").on("change", () => {
   currentPage = 1;
   applyFiltersSearchAndSort();
 });
@@ -719,12 +717,12 @@ const profileBtn = document.getElementById("profileBtn");
     const satdik = [...new Set(allData.map(r => r.SATDIK).filter(Boolean))].sort();
     const triw = [...new Set(allData.map(r => r.TRIWULAN).filter(Boolean))].sort();
     // const pem = [...new Set(allData.map(r => r.PEMDA).filter(Boolean))].sort();
-    const tun = [...new Set(allData.map(r => r["JENIS TUNJANGAN"]).filter(Boolean))].sort();
+    // const tun = [...new Set(allData.map(r => r["JENIS TUNJANGAN"]).filter(Boolean))].sort();
 
     fillSelect("#filterJenisSatdik", satdik, "[ Pilih Satdik ]");
     fillSelect("#filterJenisTriwulan", triw, "[ Pilih Triwulan ]");
     // fillSelect("#filterJenisPemda", pem, "[ Pilih Kab / Kota ]");
-    fillSelect("#filterJenisTunjangan", tun, "[ Pilih Tunjangan ]");
+    // fillSelect("#filterJenisTunjangan", tun, "[ Pilih Tunjangan ]");
 
     // load persistent UI state
     loadState();

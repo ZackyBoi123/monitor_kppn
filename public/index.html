@@ -23,7 +23,7 @@
 </head>
 
 <body id="appBody">
-  <div class="header pt-16 pb-24">
+  <div class="header pt-16 pb-18">
   <nav id="navbar" class="bg-white shadow-md fixed top-0 w-full transition-transform duration-300">
       <div class="max-w-8xl mx-auto px-3 sm:px-4 lg:px-4">
           <div class="flex justify-between h-16 items-center">
@@ -105,8 +105,16 @@
         </div>
     </div>
 
+    <!-- Map Chart -->
+    <div class="map-card rounded-2xl p-3 mt-4 shadow-xl bg-white">
+      <div class="mb-3 p-1 rounded-2xl text-center shadow-md">
+        <h3 class="text-lg font-semibold"><i class="fa-solid fa-map-location-dot text-success"></i> Peta Pagu & Realisasi</h3>
+      </div>
+    <div id="papuaMap" class="rounded-xl overflow-hidden" style="height:425px;"></div>
+    </div>
+
     <!-- Controls Panel -->
-        <div class="controls-panel fade-in" id="controlsPanel" style="display: none;">
+    <div class="controls-panel fade-in" id="controlsPanel" style="display: none;">
             <div class="control-group">
                 <div>
                     <label class="form-label font-bold">
@@ -139,13 +147,6 @@
                     <i class="fas fa-sync-alt me-1"></i>Refresh
                 </button>
             </div>
-      <div class="map-card bg-white rounded-2xl shadow-md p-3">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-lg font-semibold">Peta Pagu & Realisasi — WORK IN PROGRESS</h3>
-        </div>
-        <div id="papuaMap" class="rounded-xl overflow-hidden" style="height:520px;"></div>
-      </div>
-
         </div>
 
   <!-- Skeleton Loader -->

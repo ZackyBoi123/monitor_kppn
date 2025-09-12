@@ -531,16 +531,6 @@ function getColorByRatio(ratio){
     return "#e31a1c";                     // Red - 0-24%
 }
 
-// Function to get Bootstrap color class based on ratio
-function getBootstrapColorClass(ratio) {
-    if (ratio == null || isNaN(ratio)) return "secondary"; // Gray for no data
-    if (ratio >= 0.9) return "success";    // Dark green
-    if (ratio >= 0.75) return "success";   // Medium green  
-    if (ratio >= 0.5) return "info";       // Light green/blue
-    if (ratio >= 0.25) return "warning";   // Yellow/Orange
-    return "danger";                       // Red
-}
-
 function addLegend(map) {
   const legend = L.control({ position: 'bottomleft' });
 
@@ -554,7 +544,7 @@ function addLegend(map) {
     div.style.lineHeight = '1.4';
     
     const grades = [0.9, 0.75, 0.5, 0.25, 0];
-    div.innerHTML = '<strong style="margin-bottom: 8px; display: block;"><i class="fas fa-info-circle me-1 text-blue-700"></i>Tingkat Realisasi</strong>';
+    div.innerHTML = '<strong class="legend-row" style="margin-bottom: 8px; display: block;"><i class="fas fa-info-circle me-1 text-blue-700"></i>Tingkat Realisasi</strong>';
 
     for (let i = 0; i < grades.length; i++) {
       const from = grades[i];
@@ -622,7 +612,7 @@ function addLegend(map) {
     zoomControl: true,
     // Add attribution control with custom position and prefix
     attributionControl: false // We'll add our own
-  }).setView([-3, 138.5], 6);
+  }).setView([-5, 138.5], 6);
 
   // Add custom attribution control
   L.control.attribution({
@@ -727,18 +717,18 @@ function addLegend(map) {
                 const percentage = (ratio * 100).toFixed(1);
                 const bgColor = getColorByRatio(ratio);
                 const textColor = ratio >= 0.25 ? '#fff' : '#000'; // White text for dark colors, black for light
-                badgeHtml = `<span style="background-color: ${bgColor}; color: ${textColor}; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">
+                badgeHtml = `<span class="popupinfo-badge" style="background-color: ${bgColor}; color: ${textColor};>
                                 <i class="fas fa-percentage" style="margin-right: 4px;"></i>${percentage}%
                             </span>`;
             } else {
-                badgeHtml = `<span style="background-color: #6c757d; color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">
+                badgeHtml = `<span class="popupinfo-badge" style="background-color: #6c757d; color: #fff;>
                                 N/A
                             </span>`;
             }
 
             const popupHtml = `
-                <div style="min-width: 200px;">
-                    <h5 style="margin-bottom: 10px; color: #333; border-bottom: 2px solid #667eea; padding-bottom: 5px;">
+                <div class="popupinfo" style="min-width: 200px;">
+                    <h5 style="margin-bottom: 10px; color: #333; border-bottom: 2px solid #667eea; padding-bottom: 5px;" class="popupinfo">
                         <i class="fas fa-map-marker-alt me-2"></i>${shapeName}
                     </h5>
                     <div style="margin: 8px 0;">
@@ -749,7 +739,7 @@ function addLegend(map) {
                         <strong><i class="fas fa-chart-line me-1"></i>Realisasi:</strong> 
                         <span style="color: #28a745;">${data.realisasi != null ? formatCurrency(data.realisasi) : 'N/A'}</span>
                     </div>
-                    <div style="margin: 12px 0; text-align: center;">
+                    <div style="margin: 4px 0;text-align: center;">
                         <strong>Tingkat Realisasi:</strong><br>
                         ${badgeHtml}
                     </div>
@@ -832,9 +822,9 @@ function addLegend(map) {
                 <h6 class="fw-bold"><i class="fa-solid fa-location-dot text-blue-700"></i> ${props.name}</h6>
                 <div><strong>Pagu:</strong><span class="text-primary fw-bold"> ${props.pagu != null ? formatCurrency(props.pagu) : 'N/A'}</span></div>
                 <div><strong>Realisasi:</strong><span class="text-success fw-bold"> ${props.realisasi != null ? formatCurrency(props.realisasi) : 'N/A'}</span></div>
-                ${rateBadge}
                 </div>
-            `;
+                `;
+                // ${rateBadge}
         } else {
             this._div.innerHTML = `<div class="hovertip">
                 <h6><i class="fas fa-info-circle me-1"></i>Hover pada wilayah</h6>
@@ -905,7 +895,7 @@ const CustomMapControl = L.Control.extend({
     resetBtn.style.textAlign = 'center';
     resetBtn.onclick = (e) => {
       e.preventDefault();
-      map.setView([-3, 138.5], 6);
+      map.setView([-5, 138.5], 6);
     };
 
     // Fullscreen button

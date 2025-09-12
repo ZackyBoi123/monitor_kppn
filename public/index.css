@@ -122,7 +122,11 @@
         }
 
         #navbar {
-            z-index: 1000;
+            z-index: 2000 !important; /* Higher than all Leaflet controls */
+        }
+
+        #mobileMenu, #dropdownMenu {
+            z-index: 2001 !important; /* Even higher for dropdowns */
         }
 
         .controls {
@@ -319,15 +323,6 @@
             .dropdown-box {
               margin-bottom: 0;
             }
-
-            .hovertip {
-              display: none;
-            }
-
-            .hoverinfo {
-              display: none;
-            }
-
         }
 
         @media (max-width: 768px) {
@@ -352,14 +347,30 @@
               font-size: 3.5rem;
             }
 
-            .legend {
+            .legend,
+            .layers,
+            .legend-row {
+              font-size: 0.7rem;
+            }
+
+            .hovertip, 
+            .hoverinfo {
               display: none;
             }
-            
-            .layers {
-              display: none;
+
+            .popupinfo,
+            .popupinfo-badge {
+              font-size: 0.8rem !important;
+              padding: 2px 4px !important;
             }
           }
+
+        .popupinfo-badge {
+          padding: 4px 8px; 
+          border-radius: 4px; 
+          font-weight: bold; 
+          font-size: 0.9rem;
+        }
 
         .table-header {
             background: white;
@@ -435,6 +446,7 @@
 
 /* container polish */
 .leaflet-container {
+   z-index: 1000 !important; /* Lower than navbar */
   border-radius: 12px;
   box-shadow: 0 12px 30px rgba(12, 20, 30, 0.12);
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
@@ -456,9 +468,6 @@
 .custom-popup .leaflet-popup-content {
   margin: 0;
 }
-/* .custom-popup .leaflet-popup-tip {
-  display: none;
-} */
 
 /* small card inside popups */
 .popup-card {
@@ -475,12 +484,25 @@
   font-size: 0.9rem;
   color: #111;
 }
-.legend .legend-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
-.legend i { width:18px; height:12px; border-radius:3px; display:inline-block; }
+
+.legend .legend-row { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  margin-bottom: 6px; 
+
+}
+
+.legend i { 
+  width: 18px; 
+  height: 12px; 
+  border-radius: 3px; 
+  display: inline-block; 
+}
 
 /* responsive map height */
 @media (max-width: 767px) {
-  #papuaMap { height: clamp(260px, 40vh, 360px) !important; }
+  #papuaMap { height: clamp(375px, 40vh, 360px) !important; }
 }
 
 .map-btn {
