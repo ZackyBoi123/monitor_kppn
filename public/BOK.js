@@ -235,7 +235,7 @@ function applyFiltersSearchAndSort(){
   filteredData = allData.filter(row => {
     if (pemda && row.PEMDA !== pemda) return false;
     if (tahap && row["NAMA TAHAP"] !== tahap) return false;
-    if (gelombang && row.GELOMBANG !== gelombang) return false;
+    if (gelombang && String(row.GELOMBANG) !== gelombang) return false;
     if (pusk && row.PUSKESMAS !== pusk) return false;
 
     if (!searchTerm) return true;

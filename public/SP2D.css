@@ -594,7 +594,7 @@ input[type="search"]:focus, select:focus {
   }
 
   table.compact .deskripsi-cell {
-    font-size: 7px;
+    font-size: 9px;
   }
 
   /* Fix table text wrapping on mobile */

@@ -236,7 +236,7 @@ function applyFiltersSearchAndSort(){
   filteredData = allData.filter(row => {
     if (lokasii && row["LOKASI SEKOLAH"] !== lokasii) return false;
     if (sekolahh && row["NAMA SEKOLAH"] !== sekolahh) return false;
-    if (tahapp && row["TAHAP"] !== tahapp) return false;
+    if (tahapp && String(row["TAHAP"]) !== tahapp) return false;
     // if (gemm && row["GEL"] !== gemm) return false;
 
     if (!searchTerm) return true;

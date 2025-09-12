@@ -622,7 +622,7 @@ function addLegend(map) {
 
   // Clean/light basemap with custom attribution
   const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: 'KPPN Jayapura &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    attribution: '<div style="font-size: 0.65rem;">KPPN Jayapura &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a></div>',
     maxZoom: 19,
     subdomains: 'abcd'
   }).addTo(map);
@@ -717,11 +717,11 @@ function addLegend(map) {
                 const percentage = (ratio * 100).toFixed(1);
                 const bgColor = getColorByRatio(ratio);
                 const textColor = ratio >= 0.25 ? '#fff' : '#000'; // White text for dark colors, black for light
-                badgeHtml = `<span class="popupinfo-badge" style="background-color: ${bgColor}; color: ${textColor};>
+                badgeHtml = `<span class="popupinfo-badge" style="background-color: ${bgColor}; color: ${textColor};">
                                 <i class="fas fa-percentage" style="margin-right: 4px;"></i>${percentage}%
                             </span>`;
             } else {
-                badgeHtml = `<span class="popupinfo-badge" style="background-color: #6c757d; color: #fff;>
+                badgeHtml = `<span class="popupinfo-badge" style="background-color: #6c757d; color: #fff;">
                                 N/A
                             </span>`;
             }
