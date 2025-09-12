@@ -25,7 +25,7 @@
 <body id="appBody">
   <div class="header pt-16 pb-18">
   <nav id="navbar" class="bg-white shadow-md fixed top-0 w-full transition-transform duration-300">
-      <div class="max-w-8xl mx-auto px-3 sm:px-4 lg:px-4">
+      <div class="max-w-8xl mx-auto px-3 sm:px-4 lg:px-4 max-w-7xl">
           <div class="flex justify-between h-16 items-center">
 
           <!-- Left side: Logo + Title -->
@@ -95,18 +95,51 @@
     <p class="sub-header text-center pb-3 text-lg italic font-bold">Monitoring Anggaran Transfer dan Otonomi Papua</p>
   </div>
 
-  <div class="dashboard-container px-4 pb-4">
+  <div class="dashboard-container px-4 pb-4 max-w-7xl">
   
-<!-- Alert Banner -->
-    <div id="alertBanner" class="alert alert-info alert-banner" style="display: none;">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-info-circle me-2"></i>
-            <span id="alertMessage"></span>
-        </div>
+<!-- Skeleton Loader -->
+<div id="skeletonLoader">
+
+  <div class="chart-card mt-10" style="grid-column: 1 / -1;">
+    <div class="skeleton skeleton-chart"></div>
+  </div>
+
+  <!-- controls-panel -->
+  <div class="controls-panel skeleton skeleton-panel"></div>
+
+  <!-- KPI Cards -->
+  <div class="stats-container">
+    <div class="stat-card skeleton skeleton-card"></div>
+    <div class="stat-card skeleton skeleton-card"></div>
+    <div class="stat-card skeleton skeleton-card"></div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-container">
+    <div class="chart-card">
+      <div class="skeleton skeleton-chart"></div>
     </div>
+    <div class="chart-card">
+      <div class="skeleton skeleton-chart"></div>
+    </div>
+    <div class="chart-card" style="grid-column: 1 / -1;">
+      <div class="skeleton skeleton-chart"></div>
+    </div>
+    <div class="chart-card" style="grid-column: 1 / -1;">
+      <div class="skeleton skeleton-chart"></div>
+    </div>
+  </div>
+
+  <!-- Table -->
+   <div class="table-container">
+    <div class="table-card">
+      <div class="skeleton skeleton-chart"></div>
+    </div>
+   </div>
+</div>
 
     <!-- Map Chart -->
-    <div class="map-card rounded-2xl p-3 mt-4 shadow-xl bg-white">
+    <div class="map-card fade-in rounded-2xl p-3 mt-4 shadow-xl bg-white" id="mapContainer">
       <div class="mb-3 p-1 rounded-2xl text-center shadow-md">
         <h3 class="text-lg font-semibold"><i class="fa-solid fa-map-location-dot text-success"></i> Peta Pagu & Realisasi</h3>
       </div>
@@ -148,40 +181,6 @@
                 </button>
             </div>
         </div>
-
-  <!-- Skeleton Loader -->
-<div id="skeletonLoader">
-
-  <!-- controls-panel -->
-  <div class="controls-panel skeleton skeleton-panel"></div>
-
-  <!-- KPI Cards -->
-  <div class="stats-container">
-    <div class="stat-card skeleton skeleton-card"></div>
-    <div class="stat-card skeleton skeleton-card"></div>
-    <div class="stat-card skeleton skeleton-card"></div>
-  </div>
-
-  <!-- Charts -->
-  <div class="charts-container">
-    <div class="chart-card">
-      <div class="skeleton skeleton-chart"></div>
-    </div>
-    <div class="chart-card">
-      <div class="skeleton skeleton-chart"></div>
-    </div>
-    <div class="chart-card" style="grid-column: 1 / -1;">
-      <div class="skeleton skeleton-chart"></div>
-    </div>
-  </div>
-
-  <!-- Table -->
-   <div class="table-container">
-    <div class="table-card">
-      <div class="skeleton skeleton-chart"></div>
-    </div>
-   </div>
-</div>
 
       <div id="statsContainer" class="stats-container fade-in" style="display: none;">
         <div class="stat-card success">
@@ -236,19 +235,33 @@
     
     <div class="chart-card" style="grid-column: 1 / -1;">
         <h5 class="fw-bold mb-3 text-center">
-            <i class="fas fa-chart-bar text-info me-2"></i>Pagu & Realisasi | 16 Juli 2025
+            <i class="fas fa-chart-bar text-primary me-2"></i>
+            <span id="barTable">
+              Pagu & Realisasi
+            </span>
         </h5>
-        <div class="chart-wrapper">
+        <div class="chart-wrapper" style="height: 300px;">
             <canvas id="comparisonChart"></canvas>
         </div>
        </div>
+
+      <div class="chart-card" style="grid-column: 1 / -1;">
+        <h5 class="fw-bold mb-3 text-center">
+          <i class="fas fa-chart-line text-info me-2"></i>Work in Progress
+        </h5>
+          <div class="chart-wrapper" style="height: 300px;">
+            <canvas id="monthlyLineChart"></canvas>
+        </div>
       </div>
+    </div>
 
         <!-- Data Table -->
         <div id="tableContainer" class="table-container fade-in" style="display: none; margin-top: 20px;">
             <div class="table-card">
               <div class="table-header">
-                <h2 class="table-title-left">Tabel data Pagu & Realisasi (16 Juli 2025)</h2>
+                <h2 class="table-title-left text-center" id="tableData">
+                  <!-- Loaded via JS -->
+                </h2>
                   </div>
                     <div class="table-wrapper" style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
                       <table id="budgetTable" class="table table-striped table-bordered">
@@ -274,5 +287,9 @@
             </small>
         </div>
     </div>
+
+    <!-- Show toast -->
+    <div id="toast" role="alert" aria-live="polite" aria-atomic="true"></div>
+
 </body>
 </html>

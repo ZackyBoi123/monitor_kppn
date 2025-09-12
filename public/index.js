@@ -1,4 +1,4 @@
-// Supabase configuration
+//* SUPABASE CONFIGURATION
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";  
 
 const SUPABASE_URL = 'https://kntomoredgduvwbovgpx.supabase.co';    // Supabase URL
@@ -6,21 +6,19 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const BUDGET_TABLE_NAME = 'donatPaguRealisasi';                     // table for pie/doughnut charts
 const COMPARISON_TABLE_NAME = 'barChartPaguRealisasi';              // table for bar chart
 
-// Initialize Supabase client
+//* INITIALIZE SUPABASE CLIENT
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if libraries are loaded
+    //* CHECK IF LIBRARY IS LOADED
     if (typeof Chart === 'undefined') {
         console.error('Chart.js not loaded');
-        showAlert('Error: Chart.js library failed to load', 'error');
+        showToast('Error: Chart.js library failed to load', 'error');
         return;
     }
 
-    // Initialize event listeners
+    //* INITIALIZE EVENT LISTENERS & START LOADING DATA
     initializeEventListeners();
-    
-    // Start loading data
     loadDataFromSupabase();
 });
 
@@ -30,14 +28,23 @@ let paguChart = null;
 let realisasiChart = null;
 let comparisonChart = null;
 
-// Color palette for charts
+//* COLOR PALLETE FOR CHARTS
 const colors = [
     '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
-    '#9966FF', '#FF9F40', '#f097abff', '#C9CBCF',
+    '#9966FF', '#FF9F40', '#f097abff', '#68f5d2',
     '#4BC0C0', '#d37c8fff', '#36A2EB', '#FFCE56'
 ];
 
-// Chart configuration
+//* MONTHS FOR LINE CHART
+const monthlyLabels = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+
+const monthlyPagu = [150, 430, 270, 400, 600, 800, 500, 560, 700, 500, 800, 1000];
+const monthlyRealisasi = [500, 700, 800, 650, 900, 1200, 1000, 950, 1100, 1250, 1300, 1400];
+
+//* PIE + DOUGHNUT CHART CONFIG
 const chartConfig = {
     type: 'doughnut',
     options: {
@@ -82,7 +89,76 @@ const chartConfig = {
     }
 };
 
-// Format currency
+const ctxMonthly = document.getElementById("monthlyLineChart").getContext("2d");
+const gradient = ctxMonthly.createLinearGradient(0, 0, 0, 400);
+gradient.addColorStop(0, "rgba(75, 192, 192, 0.4)");
+gradient.addColorStop(1, "rgba(75, 192, 192, 0)");
+
+//* LINE CHART BUILDER
+const monthlyLineChart = new Chart(ctxMonthly, {
+  type: "line",
+  data: {
+    labels: monthlyLabels,
+    datasets: [
+      {
+        label: "Dummy data",
+        data: monthlyRealisasi,
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: gradient,
+        fill: false,
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: "#fff",
+        pointBorderWidth: 2
+      },
+      {
+        label: "Dummy data",
+        data: monthlyPagu, // e.g. [1000, 1200, 1100, ...]
+        borderColor: "rgba(255, 99, 132, 1)", // different color
+        borderWidth: 2,
+        fill: false,
+        tension: 0.4,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "rgba(255, 99, 132, 1)",
+        pointBorderWidth: 2
+      }
+    ]
+  },
+  options: {
+    maintainAspectRatio: false,
+    responsive: true,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return "Rp " + context.formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          }
+        }
+      }
+    },
+    interaction: {
+      mode: "nearest",
+      axis: "x",
+      intersect: false
+    },
+    scales: {
+      x: {
+        grid: { color: "rgba(200,200,200,0.2)" },
+        title: { display: true, text: "Bulan" }
+      },
+      y: {
+        grid: { color: "rgba(200,200,200,0.2)" },
+        title: { display: true, text: "Realisasi (Rp)" },
+        beginAtZero: true
+      }
+    }
+  }
+});
+
+//* FORMAT CURRENCY
 function formatCurrency(amount) {
     return new Intl.NumberFormat('id-ID', {
         style: 'currency',
@@ -92,36 +168,32 @@ function formatCurrency(amount) {
     }).format(amount);
 }
 
-// Show alert function
-function showAlert(message, type = 'info') {
-    const alertBanner = document.getElementById('alertBanner');
-    const alertMessage = document.getElementById('alertMessage');
-    
-    alertBanner.className = `alert alert-${type} alert-banner`;
-    alertMessage.textContent = message;
-    alertBanner.style.display = 'block';
-    
-    setTimeout(() => {
-        alertBanner.style.display = 'none';
-    }, 5000);
+//* SHOW ALERT MESSAGE
+function showToast(msg){
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2325);
 }
 
-// Load data from Supabase - both tables
+//* LOAD DATA FROM SUPABASE - both tables
 async function loadDataFromSupabase() {
     try {
         
-        // Fetch data from both tables simultaneously
+        //* FETCH DATA FROM BOTH TABLES SIMULTANEOUSLY
         const [budgetResponse, comparisonResponse] = await Promise.all([
             supabaseClient.from(BUDGET_TABLE_NAME).select('*'),
             supabaseClient.from(COMPARISON_TABLE_NAME).select('*')
         ]);
 
-        // Check for errors in budget table
+        //* CHECK FOR ERRORS IN BUDGET TABLE
         if (budgetResponse.error) {
             throw new Error(`Budget table query error: ${budgetResponse.error.message}`);
         }
 
-        // Check for errors in comparison table
+        //* CHECK FOR ERRORS IN COMPARISON TABLE
         if (comparisonResponse.error) {
             throw new Error(`Comparison table query error: ${comparisonResponse.error.message}`);
         }
@@ -134,7 +206,7 @@ async function loadDataFromSupabase() {
             throw new Error(`No data found in comparison table: ${COMPARISON_TABLE_NAME}`);
         }
         
-        // Process budget data (for pie/doughnut charts)
+        //* PROCESS BUDGET DATA (for pie/doughnut charts)
         budgetData = budgetResponse.data.map((row) => {
             const processedRow = {
                 Region: row.region || row.Region || '',
@@ -143,7 +215,7 @@ async function loadDataFromSupabase() {
                 Realisasi: 0
             };
 
-            // Parse Pagu
+            //* PARSE PAGU
             const paguValue = row.pagu || row.Pagu;
             if (paguValue !== null && paguValue !== undefined) {
                 const paguNum = typeof paguValue === 'string' ? 
@@ -154,7 +226,7 @@ async function loadDataFromSupabase() {
                 }
             }
 
-            // Parse Realisasi
+            //* PARSE REALISASI
             const realisasiValue = row.realisasi || row.Realisasi;
             if (realisasiValue !== null && realisasiValue !== undefined) {
                 const realisasiNum = typeof realisasiValue === 'string' ? 
@@ -170,7 +242,7 @@ async function loadDataFromSupabase() {
             return row.Region && row.Category && row.Region !== '' && row.Category !== '';
         });
 
-        // Process comparison data (for bar chart)
+        //* PROCESS COMPARISON DATA (for bar chart)
         comparisonData = comparisonResponse.data.map((row, index) => {
             const processedRow = {
                 Category: row.category || row.Category || '',
@@ -178,7 +250,7 @@ async function loadDataFromSupabase() {
                 Realisasi: 0
             };
 
-            // Parse Pagu
+            //* PARSE PAGU
             const paguValue = row.pagu || row.Pagu;
             if (paguValue !== null && paguValue !== undefined) {
                 const paguNum = typeof paguValue === 'string' ? 
@@ -189,7 +261,7 @@ async function loadDataFromSupabase() {
                 }
             }
 
-            // Parse Realisasi
+            //* PARSE REALISASI
             const realisasiValue = row.realisasi || row.Realisasi;
             if (realisasiValue !== null && realisasiValue !== undefined) {
                 const realisasiNum = typeof realisasiValue === 'string' ? 
@@ -207,33 +279,34 @@ async function loadDataFromSupabase() {
         
         populateRegionDropdown();
         
-        // Hide skeleton and show content
+        //* HIDE SKELETON AND SHOW CONTENT
         document.getElementById('skeletonLoader').style.display = 'none';
         
-        // Fade-in dashboard sections
-        const sections = ['statsContainer', 'chartsContainer', 'tableContainer', 'controlsPanel'];
+        //* FADE-IN DASHBOARD SECTIONS
+        const sections = ['statsContainer','mapContainer', 'chartsContainer', 'tableContainer', 'controlsPanel'];
         sections.forEach(id => {
             const el = document.getElementById(id);
-            el.style.display = ''; // remove display:none
-            setTimeout(() => el.classList.add('show'), 50); // slight delay so transition triggers
+            el.style.display = '';                          //? remove display:none
+            setTimeout(() => el.classList.add('show'), 50); //? slight delay so transition triggers
         });
         
-        showAlert('Data loaded successfully!', 'success');
+        showToast('Data loaded successfully!', 'success');
 
     } catch (error) {
         console.error('❌ Error:', error);
-        showAlert(`Error loading data: ${error.message}`, 'error');
+        showToast(`Error loading data: ${error.message}`, 'error');
         document.getElementById('skeletonLoader').style.display = 'none';
     }
 }
 
+//* FILL DROPDOWN WITH REGION
 function populateRegionDropdown() {
   const regions = [...new Set(budgetData.map(item => item.Region))].sort();
 
   const menu = document.querySelector("#regionDropdownMenu .py-1");
   const label = document.getElementById("regionDropdownLabel");
 
-  // Clear old items
+  //* CLEAR OLD ITEMS
   menu.innerHTML = "";
 
   regions.forEach(region => {
@@ -244,22 +317,22 @@ function populateRegionDropdown() {
 
     item.addEventListener("click", e => {
       e.preventDefault();
-      label.textContent = region;   // update button label
-      updateCharts(region);         // update dashboard
+      label.textContent = region;   //? update button label
+      updateCharts(region);         //? update dashboard
       document.getElementById("regionDropdownMenu").classList.add("hidden");
     });
 
     menu.appendChild(item);
   });
 
-  // Default selection
+  //* DEFAULT SELECTION
   if (regions.length > 0) {
-    label.textContent = regions[6];
-    updateCharts(regions[6]);
+    label.textContent = regions[5];
+    updateCharts(regions[5]);
   }
 }
 
-// Last updated timestamp
+//* LAST UPDATED TIMESTAMP
 async function getLastUpdated() {
   const { data, error } = await supabaseClient
     .from('barChartPaguRealisasi')
@@ -275,15 +348,17 @@ async function getLastUpdated() {
     if (data.length > 0) {
       const lastUpdated = new Date(data[0].updated_at);
       document.getElementById("last-Updated").textContent = "Last Updated: " + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'numeric', day: 'numeric',  hour: 'numeric', minute: 'numeric', hour12: true});
+      document.getElementById("barTable").textContent = "Pagu & Realisasi (" + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'numeric', day: 'numeric'}) + ")";
+      document.getElementById("tableData").textContent = "Tabel Data Pagu & Realisasi (" + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'numeric', day: 'numeric'}) + ")";
     }
 }
 
-// Toggle dropdown open/close
+//* Toggle dropdown open/close
 document.getElementById("regionDropdownButton").addEventListener("click", () => {
   document.getElementById("regionDropdownMenu").classList.toggle("hidden");
 });
 
-// Close dropdown when clicking outside
+//* Close dropdown when clicking outside
 document.addEventListener("click", e => {
   const dropdown = document.getElementById("regionDropdownMenu");
   if (!dropdown.contains(e.target) && !document.getElementById("regionDropdownButton").contains(e.target)) {
@@ -291,13 +366,14 @@ document.addEventListener("click", e => {
   }
 });
 
-// Wire up Vercel Analytics
+//* Wire up Vercel Analytics
 window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
 window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 
-// Initialize all event listeners
+//* Initialize all event listeners
 function initializeEventListeners() {
-    // Region selector
+
+    //* Region selector
     const regionSelector = document.getElementById('regionSelector');
     if (regionSelector) {
         regionSelector.addEventListener('change', function() {
@@ -307,47 +383,47 @@ function initializeEventListeners() {
         });
     }
 
-    // Refresh button
+    //* Refresh button
     document.getElementById('refreshData').addEventListener('click', () => {
-        showAlert('Refreshing data...', 'info');
+        showToast('Refreshing data...', 'info');
         loadDataFromSupabase();
     });
 
-    // Export buttons
-    const refreshData = document.getElementById('refreshData');
+  //* Export buttons
+  const refreshData = document.getElementById('refreshData');
     
     if (refreshData) refreshData.addEventListener('click', refreshDataHandler);
 
-    // Mobile menu toggle
-    const mobileMenuButton = document.getElementById("mobileMenuButton");
+  //* Mobile menu toggle
+  const mobileMenuButton = document.getElementById("mobileMenuButton");
     if (mobileMenuButton) {
         mobileMenuButton.addEventListener("click", () => {
             document.getElementById("mobileMenu").classList.toggle("hidden");
         });
     }
 
-    // Auto-hide navbar on scroll
-    let lastScrollTop = 0;
-    const navbar = document.getElementById("navbar");
+  //* Auto-hide navbar on scroll
+  let lastScrollTop = 0;
+  const navbar = document.getElementById("navbar");
 
     if (navbar) {
         window.addEventListener("scroll", () => {
             let scrollTop = window.scrollY || document.documentElement.scrollTop;
 
             if (scrollTop > lastScrollTop) {
-                // Scrolling down → hide navbar
+                //* Scrolling down → hide navbar
                 navbar.style.transform = "translateY(-100%)";
             } else {
-                // Scrolling up → show navbar
+                //* Scrolling up → show navbar
                 navbar.style.transform = "translateY(0)";
             }
 
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; //? avoid negative
         });
     }
 }
 
-// ! Toggle profile dropdown
+//* Toggle profile dropdown
 const profileBtn = document.getElementById("profileBtn");
   const dropdownMenu = document.getElementById("dropdownMenu");
 
@@ -365,7 +441,7 @@ const profileBtn = document.getElementById("profileBtn");
     }
   });
 
-  // Close when clicking outside
+  //* Close when clicking outside
   document.addEventListener("click", (e) => {
     if (!profileBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
       dropdownMenu.classList.remove("scale-100", "opacity-100");
@@ -375,7 +451,7 @@ const profileBtn = document.getElementById("profileBtn");
   });
 
 
-// * Check session on page load
+//* Check session on page load
     async function checkSession() {
     const {
       data: { user }
@@ -384,42 +460,43 @@ const profileBtn = document.getElementById("profileBtn");
     if (!user) {
       window.location.href = "login.html";
     } else {
-      document.getElementById("appBody").style.display = "block"; // show only if logged in
+      document.getElementById("appBody").style.display = "block"; //? show only if logged in
     }
   }
 
   checkSession();
 
-// Log out function
+//* Log out function
   document.getElementById("logoutLink").addEventListener("click", async (e) => {
-    e.preventDefault(); // prevent link navigation
+    e.preventDefault(); //? prevent link navigation
     await supabaseClient.auth.signOut();
     window.location.href = "login.html";
   });
 
 function refreshDataHandler() {
     
-    // Hide content and show skeleton
+    //* Hide content and show skeleton
     document.getElementById('statsContainer').style.display = 'none';
     document.getElementById('chartsContainer').style.display = 'none';
+    document.getElementById('papuaMap').style.display = 'none';
+    document.getElementById('mapContainer').style.display = 'none';
     document.getElementById('tableContainer').style.display = 'none';
     document.getElementById('controlsPanel').style.display = 'none';
     document.getElementById('skeletonLoader').style.display = 'block';
-
     
-    // Clear existing data
+    //* Clear existing data
     budgetData = [];
     comparisonData = [];
     
-    // Reload data
+    //* Reload data
     loadDataFromSupabase();
 }
 
-// Update charts based on selected region
+//* Update charts based on selected region
 function updateCharts(selectedRegion) {
     const regionData = budgetData.filter(item => item.Region === selectedRegion);
     
-    // Process data for charts
+    //* Process data for charts
     const paguCategories = [];
     const paguValues = [];
     const realisasiCategories = [];
@@ -436,45 +513,47 @@ function updateCharts(selectedRegion) {
         }
     });
 
-    // Update charts - pie/doughnut use budget data with region filter, bar chart shows all categories
+    //* Update charts - pie/doughnut use budget data with region filter, bar chart shows all categories
     updateChart('paguChart', paguCategories, paguValues, 'Pagu');
     updateChart('realisasiChart', realisasiCategories, realisasiValues, 'Realisasi');
-    updateBarChart(); // No parameters - shows all categories
-    updateDataTable(selectedRegion); // Pass selectedRegion parameter
+    updateBarChart();                 //? No parameters - shows all categories
+    updateDataTable(selectedRegion);  //? Pass selectedRegion parameter
     updateStats(regionData);
     getLastUpdated();
 
-    // Show charts and table
+    //* Show charts and table
     document.getElementById('chartsContainer').style.display = 'grid';
     document.getElementById('statsContainer').style.display = 'grid';
     document.getElementById('tableContainer').style.display = 'block';
+    document.getElementById('mapContainer').style.display = 'block';
+    document.getElementById('papuaMap').style.display = 'block';
     document.getElementById('controlsPanel').style.display = 'block';
 }
 
-// Update chart function - handles both Pagu and Realisasi charts
+//* Update chart function - handles both Pagu and Realisasi charts
 function updateChart(canvasId, labels, data, type) {
     const ctx = document.getElementById(canvasId).getContext('2d');
 
-    // Destroy existing chart
+    //* Destroy existing chart
     if (canvasId === 'paguChart' && paguChart) {
         paguChart.destroy();
     } else if (canvasId === 'realisasiChart' && realisasiChart) {
         realisasiChart.destroy();
     }
 
-    // Detect if on mobile
+    //* Detect if on mobile
     const isMobile = window.innerWidth < 768;
 
-    // Shared dataset styling
+    //* Shared dataset styling
     const datasetConfig = {
         data: data,
         backgroundColor: colors.slice(0, labels.length),
         borderColor: '#fff',
-        borderWidth: isMobile ? 1 : 2,      // ✅ lighter borders on mobile
-        hoverOffset: isMobile ? 4 : 8       // ✅ smaller offset on mobile
+        borderWidth: isMobile ? 1 : 2,      //? ✅ lighter borders on mobile
+        hoverOffset: isMobile ? 4 : 8       //? ✅ smaller offset on mobile
     };
 
-    // Animation settings
+    //* Animation settings
     const animationConfig = isMobile ? false : {
         animateRotate: true,
         animateScale: true,
@@ -485,7 +564,7 @@ function updateChart(canvasId, labels, data, type) {
     let config;
 
     if (canvasId === 'paguChart') {
-        // Doughnut chart for Pagu
+        //* Doughnut chart for Pagu
         config = {
             type: 'doughnut',
             data: {
@@ -499,7 +578,7 @@ function updateChart(canvasId, labels, data, type) {
             }
         };
     } else {
-        // Pie chart for Realisasi
+        //* Pie chart for Realisasi
         config = {
             type: 'pie',
             data: {
@@ -521,16 +600,17 @@ function updateChart(canvasId, labels, data, type) {
     }
 }
 
-// Map chart function start point
+//* Map chart function start point
 function getColorByRatio(ratio){
-    if (ratio == null || isNaN(ratio)) return "#6c757d"; // Gray for no data
-    if (ratio >= 0.9) return "#006837";   // Dark green - 90%+
-    if (ratio >= 0.75) return "#31a354";  // Medium green - 75-89%
-    if (ratio >= 0.5) return "#78c679";   // Light green - 50-74%
-    if (ratio >= 0.25) return "#fecc5c";  // Yellow/Orange - 25-49%
-    return "#e31a1c";                     // Red - 0-24%
+    if (ratio == null || isNaN(ratio)) return "#6c757d";  //? Gray for no data
+    if (ratio >= 0.9) return "#006837";                   //? Dark green - 90%+
+    if (ratio >= 0.75) return "#31a354";                  //? Medium green - 75-89%
+    if (ratio >= 0.5) return "#78c679";                   //? Light green - 50-74%
+    if (ratio >= 0.25) return "#fecc5c";                  //? Yellow/Orange - 25-49%
+    return "#e31a1c";                                     //? Red - 0-24%
 }
 
+//* Add legends to map
 function addLegend(map) {
   const legend = L.control({ position: 'bottomleft' });
 
@@ -560,7 +640,7 @@ function addLegend(map) {
                         </div>`;
     }
 
-    // Add "No data" entry
+    //* Add "No data" entry
     div.innerHTML += `<div class="legend-row" style="display: flex; align-items: center; margin-top: 6px;">
                         <i style="background:${getColorByRatio(null)}; width:18px; height:12px; margin-right:8px; display:inline-block; border-radius:2px;"></i> 
                         <span>No Data</span>
@@ -572,12 +652,11 @@ function addLegend(map) {
   legend.addTo(map);
 }
 
-// --- Fetch region budget data from Supabase ---
-  // Adjust table and column names to match your DB.
-  async function fetchRegionBudgets() {
+//* --- Fetch region budget data from Supabase ---
+async function fetchRegionBudgets() {
   const { data, error } = await supabaseClient
-    .from('mapPaguRealisasi')
-    .select('region, pagu, realisasi'); 
+    .from('donatPaguRealisasi')  // <- Changed table name here
+    .select('Region, Pagu, Realisasi'); 
 
   if (error) {
     console.error("Supabase error:", error.message);
@@ -589,56 +668,65 @@ function addLegend(map) {
     return {};
   }
 
-  const map = {};
+  // Group data by region and sum totals
+  const regionTotals = {};
+  
   for (const row of data) {
-    // handle both lowercase and uppercase column names
-    const region = row.region || row.Region;
-    const pagu = row.pagu ?? row.Pagu;
-    const realisasi = row.realisasi ?? row.Realisasi;
+    const region = (row.region || row.Region || '').trim();
+    const pagu = Number(row.pagu ?? row.Pagu) || 0;
+    const realisasi = Number(row.realisasi ?? row.Realisasi) || 0;
 
     if (!region) continue;
 
-    map[region.trim().toLowerCase()] = {
-      pagu: Number(pagu) || 0,
-      realisasi: Number(realisasi) || 0
-    };
+    const regionKey = region.toLowerCase();
+    
+    if (!regionTotals[regionKey]) {
+      regionTotals[regionKey] = {
+        pagu: 0,
+        realisasi: 0
+      };
+    }
+    
+    // Sum the values for each region
+    regionTotals[regionKey].pagu += pagu;
+    regionTotals[regionKey].realisasi += realisasi;
   }
-  return map;
+  
+  return regionTotals;
 }
-
 
   async function initMap() {
   const map = L.map('papuaMap', { 
     zoomControl: true,
-    // Add attribution control with custom position and prefix
-    attributionControl: false // We'll add our own
+    //* Add attribution control with custom position and prefix
+    attributionControl: false //? We'll add our own
   }).setView([-5, 138.5], 6);
 
-  // Add custom attribution control
+  //* Add custom attribution control
   L.control.attribution({
     position: 'bottomright',
-    prefix: false // This removes the "Powered by Leaflet" text
+    prefix: false //? This removes the "Powered by Leaflet" text
   }).addTo(map);
 
-  // Clean/light basemap with custom attribution
+  //* Clean/light basemap with custom attribution
   const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '<div style="font-size: 0.65rem;">KPPN Jayapura &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a></div>',
     maxZoom: 19,
     subdomains: 'abcd'
   }).addTo(map);
 
-  // Add custom map control
+  //* Add custom map control
   map.addControl(new CustomMapControl({ position: 'topleft' }));
 
   try {
-    // Load Supabase data first with error handling
+    //* Load Supabase data first with error handling
     const regionData = await fetchRegionBudgets();
     console.log("Region data loaded:", Object.keys(regionData).length, "regions");
 
-    // Helper to look up region data (case-insensitive)
+    //* Helper to look up region data (case-insensitive)
     const lookup = (name) => regionData[String(name || "").trim().toLowerCase()] || null;
 
-    // Load and add province layer
+    //* Load and add province layer
     try {
       const provinceResp = await fetch('geoBoundaries-IDN-ADM1.json');
       if (!provinceResp.ok) {
@@ -651,7 +739,7 @@ function addLegend(map) {
           color: '#1f78b4',
           weight: 2,
           fillOpacity: 0,
-          dashArray: '5, 5' // Make it dashed to distinguish from kabupaten
+          dashArray: '5, 5' //? Make it dashed to distinguish from kabupaten
         }),
         onEachFeature: (feature, layer) => {
           const shapeName = feature.properties.shapeName || feature.properties.ADM1_NAME || feature.properties.NAME_1;
@@ -668,10 +756,10 @@ function addLegend(map) {
       console.log("Province layer loaded successfully");
     } catch (error) {
       console.error("Error loading province boundaries:", error);
-      // Continue without province layer
+      //? Continue without province layer
     }
 
-    // Load and add kabupaten layer
+    //* Load and add kabupaten layer
     try {
       const kabResp = await fetch('geoBoundaries-IDN-ADM2.json');
       if (!kabResp.ok) {
@@ -680,7 +768,7 @@ function addLegend(map) {
       const kabGeo = await kabResp.json();
       console.log("Kabupaten GeoJSON loaded, features:", kabGeo.features.length);
 
-      // Default style function
+      //* Default style function
       function defaultStyle(feature) {
         const shapeName = feature.properties.shapeName || feature.properties.ADM2_NAME || feature.properties.NAME_2;
         const data = lookup(shapeName);
@@ -691,11 +779,11 @@ function addLegend(map) {
           weight: 1,
           fillColor: getColorByRatio(ratio),
           fillOpacity: 0.7,
-          className: 'leaflet-interactive' // Add CSS class for better styling
+          className: 'leaflet-interactive' //? Add CSS class for better styling
         };
       }
 
-      // Highlight style
+      //* Highlight style
       function highlightStyle() {
         return { 
           weight: 3, 
@@ -711,12 +799,12 @@ function addLegend(map) {
             const data = lookup(shapeName) || { pagu: null, realisasi: null };
             const ratio = (data && data.pagu > 0) ? (data.realisasi / data.pagu) : null;
             
-            // Create badge with exact color matching
+            //* Create badge with exact color matching
             let badgeHtml = '';
             if (ratio != null) {
                 const percentage = (ratio * 100).toFixed(1);
                 const bgColor = getColorByRatio(ratio);
-                const textColor = ratio >= 0.25 ? '#fff' : '#000'; // White text for dark colors, black for light
+                const textColor = ratio >= 0.25 ? '#fff' : '#000'; //? White text for dark colors, black for light
                 badgeHtml = `<span class="popupinfo-badge" style="background-color: ${bgColor}; color: ${textColor};">
                                 <i class="fas fa-percentage" style="margin-right: 4px;"></i>${percentage}%
                             </span>`;
@@ -778,10 +866,10 @@ function addLegend(map) {
 
       console.log("Kabupaten layer loaded successfully");
       
-      // Add legend after kabupaten layer is loaded
+      //* Add legend after kabupaten layer is loaded
       addLegend(map);
 
-      // Add info control
+      //* Add info control
       const info = L.control({ position: 'topright' });
       info.onAdd = function () {
         this._div = L.DomUtil.create('div', 'info-control');
@@ -824,7 +912,6 @@ function addLegend(map) {
                 <div><strong>Realisasi:</strong><span class="text-success fw-bold"> ${props.realisasi != null ? formatCurrency(props.realisasi) : 'N/A'}</span></div>
                 </div>
                 `;
-                // ${rateBadge}
         } else {
             this._div.innerHTML = `<div class="hovertip">
                 <h6><i class="fas fa-info-circle me-1"></i>Hover pada wilayah</h6>
@@ -835,7 +922,7 @@ function addLegend(map) {
     };
       info.addTo(map);
 
-      // Update info control on hover
+      //* Update info control on hover
       kabLayer.eachLayer(layer => {
         layer.on('mouseover', () => {
         });
@@ -844,7 +931,7 @@ function addLegend(map) {
 
     } catch (error) {
       console.error("Error loading kabupaten boundaries:", error);
-      // Show error message to user
+      //* Show error message to user
       const errorControl = L.control({ position: 'topleft' });
       errorControl.onAdd = function() {
         const div = L.DomUtil.create('div', 'leaflet-control leaflet-bar');
@@ -856,7 +943,7 @@ function addLegend(map) {
       errorControl.addTo(map);
     }
 
-    // Force map to invalidate size after everything loads
+    //* Force map to invalidate size after everything loads
     setTimeout(() => {
       map.invalidateSize();
       console.log("Map size invalidated");
@@ -864,7 +951,7 @@ function addLegend(map) {
 
   } catch (error) {
     console.error("Error in map initialization:", error);
-    // Show error in map container
+    //* Show error in map container
     const mapContainer = document.getElementById('papuaMap');
     mapContainer.innerHTML = `
       <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; color: #666;">
@@ -878,16 +965,16 @@ function addLegend(map) {
   }
 }
 
-  // Custom map control with two buttons (Reset, Fullscreen)
+  //* Custom map control with two buttons (Reset, Fullscreen)
 const CustomMapControl = L.Control.extend({
   onAdd: function(map) {
     const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
     div.style.background = 'white';
     div.style.cursor = 'pointer';
 
-    // Reset button
+    //* Reset button
     const resetBtn = L.DomUtil.create('a', 'map-btn', div);
-    resetBtn.innerHTML = '⟳'; // Home icon
+    resetBtn.innerHTML = '⟳'; //? Home icon
     resetBtn.href = '#';
     resetBtn.title = 'Reset View';
     resetBtn.style.display = 'block';
@@ -898,9 +985,9 @@ const CustomMapControl = L.Control.extend({
       map.setView([-5, 138.5], 6);
     };
 
-    // Fullscreen button
+    //* Fullscreen button
     const fullBtn = L.DomUtil.create('a', 'map-btn', div);
-    fullBtn.innerHTML = '⛶'; // Fullscreen icon
+    fullBtn.innerHTML = '⛶'; //? Fullscreen icon
     fullBtn.href = '#';
     fullBtn.title = 'Toggle Fullscreen';
     fullBtn.style.display = 'block';
@@ -916,7 +1003,7 @@ const CustomMapControl = L.Control.extend({
         } else if (mapElement.requestFullscreen) {
           await mapElement.requestFullscreen();
         }
-        // Invalidate size after fullscreen change
+        //* Invalidate size after fullscreen change
         setTimeout(() => map.invalidateSize(), 100);
       } catch (error) {
         console.log('Fullscreen not supported or failed');
@@ -927,22 +1014,22 @@ const CustomMapControl = L.Control.extend({
   }
 });
 
-  // start
+  //* start
   initMap().catch(err => console.error(err));
 
-// Updated function for bar chart - now shows all categories without region filter
+//* Updated function for bar chart - now shows all categories without region filter
 function updateBarChart() {
     const ctx = document.getElementById('comparisonChart').getContext('2d');
     
-    // Destroy existing chart
+    //* Destroy existing chart
     if (comparisonChart) {
         comparisonChart.destroy();
     }
 
-    // Use ALL data from comparison table (no region filter)
+    //* Use ALL data from comparison table (no region filter)
     const allComparisonData = comparisonData;
 
-    // Prepare data for bar chart
+    //* Prepare data for bar chart
     const categories = allComparisonData.map(item => item.Category);
     const paguData = allComparisonData.map(item => item.Pagu || 0);
     const realisasiData = allComparisonData.map(item => item.Realisasi || 0);
@@ -1037,12 +1124,12 @@ function updateBarChart() {
     comparisonChart = new Chart(ctx, config);
 }
 
-// Update data table  
+//* Update data table  
 function updateDataTable() {
     const tableBody = document.querySelector('#budgetTable tbody');
     tableBody.innerHTML = '';
 
-    // Use data from comparisonData 
+    //* Use data from comparisonData 
     comparisonData.forEach(item => {
         const row = document.createElement('tr');
         const realizationRate = item.Pagu > 0 ? ((item.Realisasi / item.Pagu) * 100).toFixed(1) : 0;
@@ -1061,7 +1148,7 @@ function updateDataTable() {
     });
 }
 
-// Update stats section with totals and realization rate
+//* Update stats section with totals and realization rate
 function updateStats(regionData) {
     const totalPagu = regionData.reduce((sum, item) => sum + (item.Pagu || 0), 0);
     const totalRealisasi = regionData.reduce((sum, item) => sum + (item.Realisasi || 0), 0);

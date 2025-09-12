@@ -1,4 +1,4 @@
-:root {
+        :root {
             --primary-color: #3b82f6;
             --secondary-color: #8b5cf6;
             --success-color: #10b981;
@@ -7,7 +7,19 @@
             --dark-bg: #1f2937;
             --dark-card: #374151;
             --dark-text: #f9fafb;
+            --blue-50:#eff6ff;
+            --blue-100:#dbeafe;
+            --blue-200:#bfdbfe;
+            --blue-500:#3b82f6;   /* Tailwind blue-500 */
+            --blue-600:#2563eb;   /* Tailwind blue-600 (primary) */
+            --blue-700:#1d4ed8;   /* Tailwind blue-700 */
+            --sky-400: #38bdf8;   /* Tailwind sky-400 */
+            --sky-500: #0ea5e9;   /* Tailwind sky-500 */
+            --sky-600: #0284c7;   /* Tailwind sky-600 */
+            --slate-800:#1e293b;
+            --gray-200:#e5e7eb;
         }
+
         body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           /* padding: 0.75rem; */
@@ -18,7 +30,6 @@
         }
 
         .dashboard-container {
-            max-width: 1400px;
             margin: 0 auto;
             min-height: 100vh;
         }
@@ -189,13 +200,34 @@
             align-items: center;
         }
 
-        .alert-banner {
-            border-radius: 12px;
-            border: none;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            margin-top: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        /* Toast notification */
+        #toast {
+          position: fixed;
+          bottom: 13px;
+          left: 50%;
+          min-width: 200px;
+          max-width: 90vw;
+          width: auto;
+          right: auto;
+          margin: 0 auto;
+          text-align: center;
+          background: var(--blue-500);
+          color: white;
+          padding: 14px 22px;
+          border-radius: 12px;
+          font-weight: 600;
+          box-shadow: 0 6px 12px rgba(59,130,246,0.4);
+          opacity: 0;
+          pointer-events: none;
+          transform: translateX(-50%) translateY(50%);
+          transition: opacity 0.3s ease, transform 0.3s ease;
+          z-index: 10500;
+        }
+
+        #toast.show {
+          opacity: 1;
+          pointer-events: auto;
+          transform: translateX(-50%) translateY(0);
         }
 
         .charts-container {
@@ -386,7 +418,6 @@
             font-weight: 600;
             color: #333;
             text-align: left;
-            padding-left: 15px;
         }
 
         .table-wrapper table th {
