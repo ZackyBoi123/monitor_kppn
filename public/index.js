@@ -3,8 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL = 'https://kntomoredgduvwbovgpx.supabase.co';    // Supabase URL
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtudG9tb3JlZGdkdXZ3Ym92Z3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MzI0NzcsImV4cCI6MjA3MDIwODQ3N30.Ei7vJ8RQCiz7KPXis6He8dVzL91Euocxzxzg1ptg1_U'; // Replace with your Supabase anon key
-const BUDGET_TABLE_NAME = 'donatPaguRealisasi';                     // table for pie/doughnut charts
-const COMPARISON_TABLE_NAME = 'barChartPaguRealisasi';              // table for bar chart
+const BUDGET_TABLE_NAME = 'tabel_donatPaguRealisasi';                     // table for pie/doughnut charts
+const COMPARISON_TABLE_NAME = 'tabel_barChartPaguRealisasi';              // table for bar chart
 
 //* INITIALIZE SUPABASE CLIENT
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -335,7 +335,7 @@ function populateRegionDropdown() {
 //* LAST UPDATED TIMESTAMP
 async function getLastUpdated() {
   const { data, error } = await supabaseClient
-    .from('barChartPaguRealisasi')
+    .from('tabel_barChartPaguRealisasi')
     .select('updated_at')
     .order('updated_at', { ascending: false })
     .limit(1);
@@ -655,7 +655,7 @@ function addLegend(map) {
 //* --- Fetch region budget data from Supabase ---
 async function fetchRegionBudgets() {
   const { data, error } = await supabaseClient
-    .from('donatPaguRealisasi')  // <- Changed table name here
+    .from('tabel_donatPaguRealisasi')  // <- Changed table name here
     .select('Region, Pagu, Realisasi'); 
 
   if (error) {

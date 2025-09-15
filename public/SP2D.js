@@ -153,7 +153,7 @@ function hideLoaderSmoothly() {
 // ---------- Get Last Updated ----------
 async function getLastUpdated() {
   const { data, error } = await supabase
-    .from('SP2D')
+    .from('tabel_SP2D')
     .select('updated_at')
     .order('updated_at', { ascending: false })
     .limit(1);
@@ -175,7 +175,7 @@ getLastUpdated();
 async function fetchAllRowsBatched(batchSize = 1000) {
   // Get exact count first
   const headRes = await supabase
-    .from('SP2D')
+    .from('tabel_SP2D')
     .select('ID', { head: true, count: 'exact' });
 
   if (headRes.error) throw headRes.error;
@@ -184,7 +184,7 @@ async function fetchAllRowsBatched(batchSize = 1000) {
 
   if (total <= batchSize) {
     const { data, error } = await supabase
-      .from('SP2D')
+      .from('tabel_SP2D')
       .select(COLUMNS)
       .order('ID', { ascending: true })
       .range(0, total - 1);
@@ -198,7 +198,7 @@ async function fetchAllRowsBatched(batchSize = 1000) {
     const from = i * batchSize;
     const to = Math.min(from + batchSize - 1, total - 1);
     const { data, error } = await supabase
-      .from('SP2D')
+      .from('tabel_SP2D')
       .select(COLUMNS)
       .order('ID', { ascending: true })
       .range(from, to);
