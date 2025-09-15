@@ -35,84 +35,38 @@ const colors = [
     '#4BC0C0', '#d37c8fff', '#36A2EB', '#FFCE56'
 ];
 
-// --- Add this function to index.js ---
+//* LINE CHART DATA FETCH
 async function updateLineChartFromSP2D() {
   try {
     const { data, error } = await supabaseClient
-      .from('tabel_SP2D')
-      .select('"Tanggal SP2D","Nilai SP2D"');
+      .from("tabel_totalrealisasi")
+      .select("*")
+      .order("month");
 
     if (error) {
-      console.error("Error fetching SP2D data:", error);
-      return;
-    }
-    if (!data || data.length === 0) {
-      console.warn("No SP2D rows returned.");
-      // zero out chart if you like:
-      const zero = Array(12).fill(0);
-      if (typeof monthlyLineChart !== 'undefined' && monthlyLineChart) {
-        monthlyLineChart.data.datasets[0].data = zero;
-        monthlyLineChart.update();
-      }
+      console.error("Error fetching tabel_totalrealisasi:", error);
       return;
     }
 
-    // local monthlyTotals (fixes 'monthlyTotals is not defined' error)
+    //* Initialize with 0 for all months
     const monthlyTotals = Array(12).fill(0);
 
-    // robust parsing for date strings like "11/09/2025" or ISO "2025-09-11"
-    data.forEach(row => {
-      const rawDate = row['Tanggal SP2D'] ?? row['TanggalSP2D'] ?? row.TanggalSP2D;
-      const rawValue = row['Nilai SP2D'] ?? row['NilaiSP2D'] ?? row.NilaiSP2D;
-
-      if (!rawDate) return;
-
-      let dateObj = null;
-
-      if (typeof rawDate === 'string') {
-        // try DD/MM/YYYY or D/M/YYYY
-        const dmy = rawDate.trim().match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-        if (dmy) {
-          const day = dmy[1].padStart(2, '0');
-          const month = dmy[2].padStart(2, '0');
-          const year = dmy[3];
-          dateObj = new Date(`${year}-${month}-${day}`); // ISO safe
-        } else {
-          // fallback: try Date constructor (handles ISO)
-          dateObj = new Date(rawDate);
-          if (isNaN(dateObj)) {
-            // try replace dots/spaces and reparse
-            const alt = rawDate.replace(/\./g, '-').replace(/\s+/g, '');
-            dateObj = new Date(alt);
-          }
-        }
-      } else if (rawDate instanceof Date) {
-        dateObj = rawDate;
-      }
-
-      if (!dateObj || isNaN(dateObj)) return;
-
-      const monthIndex = dateObj.getMonth(); // 0..11
-
-      // parse numeric value safely (strip currency symbols, dots, commas)
-      const numeric = Number(String(rawValue ?? 0).replace(/[^\d\-\.]/g, '')) || 0;
-      monthlyTotals[monthIndex] += numeric;
+    //* Fill with data from Supabase
+    data.forEach(r => {
+      const d = new Date(r.month);      //? e.g. "2025-03-01"
+      const monthIndex = d.getMonth();  //? 0 = Jan
+      monthlyTotals[monthIndex] = r.total_realisasi || 0;
     });
 
-    // Update the chart (monthlyLineChart is created earlier in your file)
-    if (typeof monthlyLineChart !== 'undefined' && monthlyLineChart) {
-      monthlyLineChart.data.datasets[0].data = monthlyTotals;
-      monthlyLineChart.update();
-    } else {
-      // Optional: create chart if not exist — but you already create it earlier
-      console.warn("monthlyLineChart is not defined yet.");
-    }
+    //* Update chart (all 12 months always included)
+    monthlyLineChart.data.labels = monthLabels;
+    monthlyLineChart.data.datasets[0].data = monthlyTotals;
+    monthlyLineChart.update();
 
   } catch (err) {
     console.error("updateLineChartFromSP2D error:", err);
   }
 }
-
 
 //* PIE + DOUGHNUT CHART CONFIG
 const chartConfig = {
@@ -173,13 +127,13 @@ const monthLabels = [
 const monthlyLineChart = new Chart(ctxMonthly, {
   type: "line",
   data: {
-    labels: monthLabels,
+    labels: [], // will be filled by updater
     datasets: [
       {
         label: "Realisasi",
-        data:  Array(12).fill(0),
+        data: [], // will be filled by updater
         borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: gradient,
+        borderWidth: 2,
         fill: false,
         tension: 0.4,
         pointRadius: 5,
@@ -195,30 +149,20 @@ const monthlyLineChart = new Chart(ctxMonthly, {
     plugins: {
       tooltip: {
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             return "Rp " + context.formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
           }
         }
       }
     },
-    interaction: {
-      mode: "nearest",
-      axis: "x",
-      intersect: false
-    },
+    interaction: { mode: "nearest", axis: "x", intersect: false },
     scales: {
-      x: {
-        grid: { color: "rgba(200,200,200,0.2)" },
-        title: { display: true, text: "Bulan" }
-      },
-      y: {
-        grid: { color: "rgba(200,200,200,0.2)" },
-        title: { display: true, text: "Realisasi (Rp)" },
-        beginAtZero: true
-      }
+      x: { grid: { color: "rgba(200,200,200,0.2)" }, title: { display: true, text: "Bulan" } },
+      y: { grid: { color: "rgba(200,200,200,0.2)" }, title: { display: true, text: "Realisasi (Rp)" }, beginAtZero: true }
     }
   }
 });
+
 
 //* FORMAT CURRENCY
 function formatCurrency(amount) {
