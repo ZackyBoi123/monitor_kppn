@@ -104,6 +104,10 @@
     <div class="skeleton skeleton-chart"></div>
   </div>
 
+    <div class="chart-card" style="grid-column: 1 / -1;">
+      <div class="skeleton skeleton-chart"></div>
+    </div>
+
   <!-- controls-panel -->
   <div class="controls-panel skeleton skeleton-panel"></div>
 
@@ -125,9 +129,6 @@
     <div class="chart-card" style="grid-column: 1 / -1;">
       <div class="skeleton skeleton-chart"></div>
     </div>
-    <div class="chart-card" style="grid-column: 1 / -1;">
-      <div class="skeleton skeleton-chart"></div>
-    </div>
   </div>
 
   <!-- Table -->
@@ -139,11 +140,26 @@
 </div>
 
     <!-- Map Chart -->
-    <div class="map-card fade-in rounded-2xl p-3 mt-4 shadow-xl bg-white" id="mapContainer">
+<div id="maplineContainer" class="fade-in" style="display: none;">
+  <div class="chart-card mt-8">
+    <div class="map-card rounded-2xl">
       <div class="mb-3 p-1 rounded-2xl text-center shadow-md">
-        <h3 class="text-lg font-semibold"><i class="fa-solid fa-map-location-dot text-success"></i> Peta Pagu & Realisasi</h3>
+        <h3 class="text-lg font-semibold"><i class="fa-solid fa-map-location-dot text-success"></i> Peta Pagu & Realisasi Papua</h3>
       </div>
     <div id="papuaMap" class="rounded-xl overflow-hidden" style="height:425px;"></div>
+    </div>
+  </div>
+
+  <div class="chart-card mt-6">
+    <div id="lineChart" style="grid-column: 1 / -1;">
+        <h5 class="fw-bold mb-3 text-center">
+          <i class="fas fa-chart-line text-info me-2"></i>Realisasi SP2D
+        </h5>
+          <div class="chart-wrapper" style="height: 300px;">
+            <canvas id="monthlyLineChart"></canvas>
+        </div>
+      </div>
+    </div>
     </div>
 
     <!-- Controls Panel -->
@@ -213,7 +229,6 @@
             </div>
           </div>  
 
-
   <div id="chartsContainer" class="charts-container fade-in" style="display: none;">
     <div class="chart-card">
       <h5 class="fw-bold mb-3 text-center">
@@ -244,19 +259,10 @@
             <canvas id="comparisonChart"></canvas>
         </div>
        </div>
-
-      <div class="chart-card" style="grid-column: 1 / -1;">
-        <h5 class="fw-bold mb-3 text-center">
-          <i class="fas fa-chart-line text-info me-2"></i>Work in Progress
-        </h5>
-          <div class="chart-wrapper" style="height: 300px;">
-            <canvas id="monthlyLineChart"></canvas>
-        </div>
-      </div>
     </div>
 
         <!-- Data Table -->
-        <div id="tableContainer" class="table-container fade-in" style="display: none; margin-top: 20px;">
+        <div id="tableContainer" class="table-container fade-in" style="display: none;">
             <div class="table-card">
               <div class="table-header">
                 <h2 class="table-title-left text-center" id="tableData">

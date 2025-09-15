@@ -35,14 +35,85 @@ const colors = [
     '#4BC0C0', '#d37c8fff', '#36A2EB', '#FFCE56'
 ];
 
-//* MONTHS FOR LINE CHART
-const monthlyLabels = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-];
+// --- Add this function to index.js ---
+async function updateLineChartFromSP2D() {
+  try {
+    // NOTE: column names with spaces must be quoted
+    const { data, error } = await supabaseClient
+      .from('tabel_SP2D')
+      .select('"Tanggal SP2D","Nilai SP2D"');
 
-const monthlyPagu = [150, 430, 270, 400, 600, 800, 500, 560, 700, 500, 800, 1000];
-const monthlyRealisasi = [500, 700, 800, 650, 900, 1200, 1000, 950, 1100, 1250, 1300, 1400];
+    if (error) {
+      console.error("Error fetching SP2D data:", error);
+      return;
+    }
+    if (!data || data.length === 0) {
+      console.warn("No SP2D rows returned.");
+      // zero out chart if you like:
+      const zero = Array(12).fill(0);
+      if (typeof monthlyLineChart !== 'undefined' && monthlyLineChart) {
+        monthlyLineChart.data.datasets[0].data = zero;
+        monthlyLineChart.update();
+      }
+      return;
+    }
+
+    // local monthlyTotals (fixes 'monthlyTotals is not defined' error)
+    const monthlyTotals = Array(12).fill(0);
+
+    // robust parsing for date strings like "11/09/2025" or ISO "2025-09-11"
+    data.forEach(row => {
+      const rawDate = row['Tanggal SP2D'] ?? row['TanggalSP2D'] ?? row.TanggalSP2D;
+      const rawValue = row['Nilai SP2D'] ?? row['NilaiSP2D'] ?? row.NilaiSP2D;
+
+      if (!rawDate) return;
+
+      let dateObj = null;
+
+      if (typeof rawDate === 'string') {
+        // try DD/MM/YYYY or D/M/YYYY
+        const dmy = rawDate.trim().match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+        if (dmy) {
+          const day = dmy[1].padStart(2, '0');
+          const month = dmy[2].padStart(2, '0');
+          const year = dmy[3];
+          dateObj = new Date(`${year}-${month}-${day}`); // ISO safe
+        } else {
+          // fallback: try Date constructor (handles ISO)
+          dateObj = new Date(rawDate);
+          if (isNaN(dateObj)) {
+            // try replace dots/spaces and reparse
+            const alt = rawDate.replace(/\./g, '-').replace(/\s+/g, '');
+            dateObj = new Date(alt);
+          }
+        }
+      } else if (rawDate instanceof Date) {
+        dateObj = rawDate;
+      }
+
+      if (!dateObj || isNaN(dateObj)) return;
+
+      const monthIndex = dateObj.getMonth(); // 0..11
+
+      // parse numeric value safely (strip currency symbols, dots, commas)
+      const numeric = Number(String(rawValue ?? 0).replace(/[^\d\-\.]/g, '')) || 0;
+      monthlyTotals[monthIndex] += numeric;
+    });
+
+    // Update the chart (monthlyLineChart is created earlier in your file)
+    if (typeof monthlyLineChart !== 'undefined' && monthlyLineChart) {
+      monthlyLineChart.data.datasets[0].data = monthlyTotals;
+      monthlyLineChart.update();
+    } else {
+      // Optional: create chart if not exist — but you already create it earlier
+      console.warn("monthlyLineChart is not defined yet.");
+    }
+
+  } catch (err) {
+    console.error("updateLineChartFromSP2D error:", err);
+  }
+}
+
 
 //* PIE + DOUGHNUT CHART CONFIG
 const chartConfig = {
@@ -94,15 +165,20 @@ const gradient = ctxMonthly.createLinearGradient(0, 0, 0, 400);
 gradient.addColorStop(0, "rgba(75, 192, 192, 0.4)");
 gradient.addColorStop(1, "rgba(75, 192, 192, 0)");
 
+const monthLabels = [
+  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+];
+
 //* LINE CHART BUILDER
 const monthlyLineChart = new Chart(ctxMonthly, {
   type: "line",
   data: {
-    labels: monthlyLabels,
+    labels: monthLabels,
     datasets: [
       {
-        label: "Dummy data",
-        data: monthlyRealisasi,
+        label: "Realisasi",
+        data:  Array(12).fill(0),
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: gradient,
         fill: false,
@@ -110,19 +186,6 @@ const monthlyLineChart = new Chart(ctxMonthly, {
         pointRadius: 5,
         pointHoverRadius: 7,
         pointBackgroundColor: "#fff",
-        pointBorderWidth: 2
-      },
-      {
-        label: "Dummy data",
-        data: monthlyPagu, // e.g. [1000, 1200, 1100, ...]
-        borderColor: "rgba(255, 99, 132, 1)", // different color
-        borderWidth: 2,
-        fill: false,
-        tension: 0.4,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        pointBackgroundColor: "#fff",
-        pointBorderColor: "rgba(255, 99, 132, 1)",
         pointBorderWidth: 2
       }
     ]
@@ -278,12 +341,14 @@ async function loadDataFromSupabase() {
         });
         
         populateRegionDropdown();
+        await updateLineChartFromSP2D();
+
         
         //* HIDE SKELETON AND SHOW CONTENT
         document.getElementById('skeletonLoader').style.display = 'none';
         
         //* FADE-IN DASHBOARD SECTIONS
-        const sections = ['statsContainer','mapContainer', 'chartsContainer', 'tableContainer', 'controlsPanel'];
+        const sections = ['statsContainer', 'chartsContainer', 'maplineContainer', 'tableContainer', 'controlsPanel'];
         sections.forEach(id => {
             const el = document.getElementById(id);
             el.style.display = '';                          //? remove display:none
@@ -478,8 +543,7 @@ function refreshDataHandler() {
     //* Hide content and show skeleton
     document.getElementById('statsContainer').style.display = 'none';
     document.getElementById('chartsContainer').style.display = 'none';
-    document.getElementById('papuaMap').style.display = 'none';
-    document.getElementById('mapContainer').style.display = 'none';
+    document.getElementById('maplineContainer').style.display = 'none';
     document.getElementById('tableContainer').style.display = 'none';
     document.getElementById('controlsPanel').style.display = 'none';
     document.getElementById('skeletonLoader').style.display = 'block';
@@ -523,10 +587,9 @@ function updateCharts(selectedRegion) {
 
     //* Show charts and table
     document.getElementById('chartsContainer').style.display = 'grid';
+    document.getElementById('maplineContainer').style.display = 'grid';
     document.getElementById('statsContainer').style.display = 'grid';
     document.getElementById('tableContainer').style.display = 'block';
-    document.getElementById('mapContainer').style.display = 'block';
-    document.getElementById('papuaMap').style.display = 'block';
     document.getElementById('controlsPanel').style.display = 'block';
 }
 
