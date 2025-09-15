@@ -38,7 +38,6 @@ const colors = [
 // --- Add this function to index.js ---
 async function updateLineChartFromSP2D() {
   try {
-    // NOTE: column names with spaces must be quoted
     const { data, error } = await supabaseClient
       .from('tabel_SP2D')
       .select('"Tanggal SP2D","Nilai SP2D"');
