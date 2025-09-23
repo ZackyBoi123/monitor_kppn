@@ -86,7 +86,7 @@ function loadState() {
     const state = JSON.parse(localStorage.getItem("tableState"));
     if (!state) return;
     if(state.filters) {
-      $("#filterJenisLokasi").val(state.filters.lokasii).trigger("change");
+      // $("#filterJenisLokasi").val(state.filters.lokasii).trigger("change");
       $("#filterJenisSekolah").val(state.filters.sekolahh).trigger("change");
       $("#filterJenisTahap").val(state.filters.tahapp).trigger("change");
       $("#filterJenisGelombang").val(state.filters.gemm).trigger("change");
@@ -227,14 +227,14 @@ function fillSelect(selector, values, placeholderText){
 
 // ---------- Apply filters + search + sorting ----------
 function applyFiltersSearchAndSort(){
-  const lokasii = $("#filterJenisLokasi").val();
+  // const lokasii = $("#filterJenisLokasi").val();
   const sekolahh = $("#filterJenisSekolah").val();
   const tahapp = $("#filterJenisTahap").val();
   // const gemm = $("#filterJenisGelombang").val();
   const searchTerm = (document.getElementById("searchInput").value || "").trim().toLowerCase();
 
   filteredData = allData.filter(row => {
-    if (lokasii && row["LOKASI SEKOLAH"] !== lokasii) return false;
+    // if (lokasii && row["LOKASI SEKOLAH"] !== lokasii) return false;
     if (sekolahh && row["NAMA SEKOLAH"] !== sekolahh) return false;
     if (tahapp && String(row["TAHAP"]) !== tahapp) return false;
     // if (gemm && row["GEL"] !== gemm) return false;
@@ -613,7 +613,7 @@ function renderPaginationControls(totalPages){
 
 // ---------- Reset handler ----------
 function resetAll(){
-  ["#filterJenisLokasi", "#filterJenisSekolah", "#filterJenisTahap"].forEach(sel => {
+  ["#filterJenisSekolah", "#filterJenisTahap"].forEach(sel => {
     $(sel).val("").trigger("change");
   });
   document.getElementById("searchInput").value = "";
@@ -687,7 +687,7 @@ document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
 document.getElementById("resetFilters").addEventListener("click", resetAll);
 
 // apply filters on change
-$("#filterJenisLokasi, #filterJenisSekolah, #filterJenisTahap").on("change", () => {
+$("#filterJenisSekolah, #filterJenisTahap").on("change", () => {
   currentPage = 1;
   applyFiltersSearchAndSort();
 });
@@ -771,12 +771,12 @@ const profileBtn = document.getElementById("profileBtn");
     filteredData = [...allData];
 
     // populate filter dropdowns
-    const lokasi = [...new Set(allData.map(r => r["LOKASI SEKOLAH"]).filter(Boolean))].sort();
+    // const lokasi = [...new Set(allData.map(r => r["LOKASI SEKOLAH"]).filter(Boolean))].sort();
     const sekolah = [...new Set(allData.map(r => r["NAMA SEKOLAH"]).filter(Boolean))].sort();
     const tahap = [...new Set(allData.map(r => r["TAHAP"]).filter(Boolean))].sort();
     // const gem = [...new Set(allData.map(r => r["GEL"]).filter(Boolean))].sort();
 
-    fillSelect("#filterJenisLokasi", lokasi, "[ Pilih Kab / Kota ]");
+    // fillSelect("#filterJenisLokasi", lokasi, "[ Pilih Kab / Kota ]");
     fillSelect("#filterJenisSekolah", sekolah, "[ Pilih Sekolah ]");
     fillSelect("#filterJenisTahap", tahap, "[ Pilih Tahap ]");
     // fillSelect("#filterJenisGelombang", gem, "[ Pilih Gelombang ]");

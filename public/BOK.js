@@ -85,7 +85,7 @@ function loadState() {
     const state = JSON.parse(localStorage.getItem("tableState"));
     if (!state) return;
     if(state.filters) {
-      $("#filterJenisPemda").val(state.filters.pemda).trigger("change");
+      // $("#filterJenisPemda").val(state.filters.pemda).trigger("change");
       $("#filterJenisTahap").val(state.filters.tahap).trigger("change");
       $("#filterJenisGelombang").val(state.filters.gelombang).trigger("change");
       $("#filterJenisPuskesmas").val(state.filters.puskesmas).trigger("change");
@@ -226,14 +226,14 @@ function fillSelect(selector, values, placeholderText){
 
 // ---------- Apply filters + search + sorting ----------
 function applyFiltersSearchAndSort(){
-  const pemda = $("#filterJenisPemda").val();
+  // const pemda = $("#filterJenisPemda").val();
   const tahap = $("#filterJenisTahap").val();
   const gelombang = $("#filterJenisGelombang").val();
   const pusk = $("#filterJenisPuskesmas").val();
   const searchTerm = (document.getElementById("searchInput").value || "").trim().toLowerCase();
 
   filteredData = allData.filter(row => {
-    if (pemda && row.PEMDA !== pemda) return false;
+    // if (pemda && row.PEMDA !== pemda) return false;
     if (tahap && row["NAMA TAHAP"] !== tahap) return false;
     if (gelombang && String(row.GELOMBANG) !== gelombang) return false;
     if (pusk && row.PUSKESMAS !== pusk) return false;
@@ -541,7 +541,7 @@ function renderPaginationControls(totalPages){
 
 // ---------- Reset handler ----------
 function resetAll(){
-  ["#filterJenisPemda", "#filterJenisTahap", "#filterJenisGelombang", "#filterJenisPuskesmas"].forEach(sel => {
+  ["#filterJenisTahap", "#filterJenisGelombang", "#filterJenisPuskesmas"].forEach(sel => {
     $(sel).val("").trigger("change");
   });
   document.getElementById("searchInput").value = "";
@@ -620,7 +620,7 @@ document.getElementById("mobileMenuButton").addEventListener("click", () => {
 document.getElementById("resetFilters").addEventListener("click", resetAll);
 
 // apply filters on change
-$("#filterJenisPemda, #filterJenisTahap, #filterJenisGelombang, #filterJenisPuskesmas").on("change", () => {
+$("#filterJenisTahap, #filterJenisGelombang, #filterJenisPuskesmas").on("change", () => {
   currentPage = 1;
   applyFiltersSearchAndSort();
 });
@@ -704,12 +704,12 @@ const profileBtn = document.getElementById("profileBtn");
     filteredData = [...allData];
 
     // populate filter dropdowns
-    const pemda = [...new Set(allData.map(r => r.PEMDA).filter(Boolean))].sort();
+    // const pemda = [...new Set(allData.map(r => r.PEMDA).filter(Boolean))].sort();
     const tah = [...new Set(allData.map(r => r["NAMA TAHAP"]).filter(Boolean))].sort();
     const gem = [...new Set(allData.map(r => r.GELOMBANG).filter(Boolean))].sort();
     const pus = [...new Set(allData.map(r => r.PUSKESMAS).filter(Boolean))].sort();
 
-    fillSelect("#filterJenisPemda", pemda, "[ Pilih Kab / Kota ]");
+    // fillSelect("#filterJenisPemda", pemda, "[ Pilih Kab / Kota ]");
     fillSelect("#filterJenisTahap", tah, "[ Pilih Tahap ]");
     fillSelect("#filterJenisGelombang", gem, "[ Pilih Gelombang ]");
     fillSelect("#filterJenisPuskesmas", pus, "[ Pilih Puskesmas ]");
