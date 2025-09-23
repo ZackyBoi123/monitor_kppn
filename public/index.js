@@ -356,8 +356,8 @@ async function getLastUpdated() {
     if (data.length > 0) {
       const lastUpdated = new Date(data[0].updated_at);
       document.getElementById("last-Updated").textContent = "© 2025 Efraim, KPPN Jayapura. All Rights Reserved";
-      document.getElementById("barTable").textContent = "Pagu & Realisasi (" + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'numeric', day: 'numeric'}) + ")";
-      document.getElementById("tableData").textContent = "Tabel Data Pagu & Realisasi (" + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'numeric', day: 'numeric'}) + ")";
+      // document.getElementById("barTable").textContent = "Pagu & Realisasi (" + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'numeric', day: 'numeric'}) + ")";
+      // document.getElementById("tableData").textContent = "Tabel Data Pagu & Realisasi (" + lastUpdated.toLocaleString("id-ID", {year: 'numeric',month: 'numeric', day: 'numeric'}) + ")";
     }
 }
 
