@@ -1,1 +1,1 @@
-Work in Progress, please wait patiently. Thanks!
+Just projects thing
