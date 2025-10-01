@@ -275,8 +275,6 @@
 
       if (authError) throw authError;
 
-      console.log("Login successful:", authData.user);
-
       // 🔹 Get region (or other custom data) from metadata
       const region = authData.user.user_metadata?.region || "Unknown";
 
@@ -288,7 +286,6 @@
       }, 1500);
 
     } catch (error) {
-      console.error("Login error:", error);
       let errorMessage = "An error occurred during login";
       
       if (error.message.includes("Invalid login credentials")) {
