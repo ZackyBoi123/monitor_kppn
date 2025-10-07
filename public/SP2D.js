@@ -69,10 +69,6 @@ scrollWrapper.addEventListener("scroll", () => {
 // Save/load state from localStorage for persistence
 function saveState() {
   const state = {
-    // filters: {
-    //   spm: $("#filterJenisSPM").val(),
-    //   sp2d: $("#filterJenisSP2D").val(),
-    // },
     searchTerm: document.getElementById("searchInput").value.trim(),
     sortColumn,
     sortDirection,

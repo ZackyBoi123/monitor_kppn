@@ -8,12 +8,12 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 // ---------- Column list (exact DB names; spaces quoted) ----------
 const COLUMNS = `
   ID,
-  "LOKASI SEKOLAH",
+  "LOKASI KEWENANGAN",
   "NAMA SEKOLAH",
+  "MACAM BOSP",
   "STS SEKOLAH",
   "TGL SP2D DETAIL",
   TAHAP,
-  GEL,
   NILAI,
   "JMLH SISWA"
    `;
@@ -67,12 +67,6 @@ scrollWrapper.addEventListener("scroll", () => {
 // Save/load state from localStorage for persistence
 function saveState() {
   const state = {
-    // filters: {
-    //   lokasii: $("#filterJenisLokasi").val(),
-    //   sekolahh: $("#filterJenisSekolah").val(),
-    //   tahapp: $("#filterJenisTahap").val(),
-    //   gemm: $("#filterJenisGelombang").val(),
-    // },
     searchTerm: document.getElementById("searchInput").value.trim(),
     sortColumn,
     sortDirection,
@@ -86,10 +80,9 @@ function loadState() {
     const state = JSON.parse(localStorage.getItem("tableState"));
     if (!state) return;
     if(state.filters) {
-      // $("#filterJenisLokasi").val(state.filters.lokasii).trigger("change");
+      $("#filterJenisBOSP").val(state.filters.jeniss).trigger("change");
       $("#filterJenisSekolah").val(state.filters.sekolahh).trigger("change");
       $("#filterJenisTahap").val(state.filters.tahapp).trigger("change");
-      $("#filterJenisGelombang").val(state.filters.gemm).trigger("change");
     }
     if(state.searchTerm) {
       document.getElementById("searchInput").value = state.searchTerm;
@@ -227,17 +220,16 @@ function fillSelect(selector, values, placeholderText){
 
 // ---------- Apply filters + search + sorting ----------
 function applyFiltersSearchAndSort(){
-  // const lokasii = $("#filterJenisLokasi").val();
   const sekolahh = $("#filterJenisSekolah").val();
+  const jeniss = $("#filterJenisBOSP").val();
   const tahapp = $("#filterJenisTahap").val();
-  // const gemm = $("#filterJenisGelombang").val();
   const searchTerm = (document.getElementById("searchInput").value || "").trim().toLowerCase();
 
   filteredData = allData.filter(row => {
-    // if (lokasii && row["LOKASI SEKOLAH"] !== lokasii) return false;
     if (sekolahh && row["NAMA SEKOLAH"] !== sekolahh) return false;
+    if (jeniss && row["MACAM BOSP"] !== jeniss) return false;
     if (tahapp && String(row["TAHAP"]) !== tahapp) return false;
-    // if (gemm && row["GEL"] !== gemm) return false;
+
 
     if (!searchTerm) return true;
 
@@ -357,52 +349,6 @@ function createProgressBar(percentage) {
   `;
 }
 
-// Format status desa with color coding
-// function formatStatusDesa(status, searchTerm = '') {
-//   if (!status || status === '' || status === '-') {
-//     return '<span class="status-other">-</span>';
-//   }
-
-//   // Clean and normalize the status text
-//   const statusLower = String(status).toLowerCase().trim();
-//   const formattedText = capitalizeWords(status);
-  
- // // Define status mapping with their corresponding CSS classes
-//   const statusMap = {
-//     'mandiri': 'status-mandiri',
-//     'berkembang': 'status-berkembang',
-//     'maju': 'status-maju',
-//     'tertinggal': 'status-tertinggal',
-//     'sangat tertinggal': 'status-sangat-tertinggal',
-
-//     Add more status mappings here as needed
-//     'your_status': 'status-your-css-class',
-//   };
-
-//   Find matching status or use default
-//   let cssClass = 'status-other'; // default fallback
-  
-//   // Check for exact match first
-//   if (statusMap[statusLower]) {
-//     cssClass = statusMap[statusLower];
-//   } else {
-//     // Check for partial matches (useful for variations)
-//     for (const [key, value] of Object.entries(statusMap)) {
-//       if (statusLower.includes(key) || key.includes(statusLower)) {
-//         cssClass = value;
-//         break;
-//       }
-//     }
-//   }
-  
-//   // Apply search highlighting if needed
-//   const highlightedText = searchTerm ? 
-//     highlightHTML(formattedText, searchTerm) : 
-//     escapeHTML(formattedText);
-
-//   return `<span class="${cssClass}">${highlightedText}</span>`;
-// }
-
 // ---------- Format Rupiah with search highlighting ----------
 function formatRupiahWithHighlight(number, searchTerm = '') {
   if (!number || number === '' || number === '-' || isNaN(number)) {
@@ -434,12 +380,12 @@ function renderTable(rows){
   // Headers with sortable columns
   const headers = [
     { key: "No", label: "#", sortable: false },
-    { key: "LOKASI SEKOLAH", label: "Kab / Kota", sortable: false },
+    { key: "LOKASI KEWENANGAN", label: "Kab / Kota", sortable: false },
     { key: "NAMA SEKOLAH", label: "Nama Sekolah", sortable: false },
+    { key: "MACAM BOSP", label: "Jenis BOSP", sortable: false },
     { key: "STS SEKOLAH", label: "Status Sekolah", sortable: false },
     { key: "TGL SP2D DETAIL", label: "Tanggal SP2D", sortable: false },
     { key: "TAHAP", label: "Tahap", sortable: false },
-    // { key: "GEL", label: "Gelombang", sortable: false },
     { key: "NILAI", label: "Nilai", sortable: false },
     { key: "JMLH SISWA", label: "Jumlah Siswa", sortable: false },
   ];
@@ -492,15 +438,15 @@ function renderTable(rows){
       
       tr.innerHTML = `
         <td class="numbers">${displayIndex}</td>
-        <td class="" data-fulltext="${escapeHTML(row["LOKASI SEKOLAH"])}">${highlightHTML(capitalizeWords(row["LOKASI SEKOLAH"]), searchTerm)}</td>
+        <td class="" data-fulltext="${escapeHTML(row["LOKASI KEWENANGAN"])}">${highlightHTML(capitalizeWords(row["LOKASI KEWENANGAN"]), searchTerm)}</td>
         <td class="" data-fulltext="${escapeHTML(row["NAMA SEKOLAH"])}">${highlightHTML(row["NAMA SEKOLAH"], searchTerm)}</td>
+        <td class="" data-fulltext="${escapeHTML(row["MACAM BOSP"])}">${highlightHTML(row["MACAM BOSP"], searchTerm)}</td>
         <td class="" data-fulltext="${escapeHTML(row["STS SEKOLAH"])}">${highlightHTML(capitalizeWords(row["STS SEKOLAH"]), searchTerm)}</td>
         <td class="" data-fulltext="${escapeHTML(row["TGL SP2D DETAIL"])}">${highlightHTML(row["TGL SP2D DETAIL"], searchTerm)}</td>
         <td class="" data-fulltext="${escapeHTML(row.TAHAP)}">${highlightHTML(row.TAHAP, searchTerm)}</td>
         <td class="currency" data-fulltext="${escapeHTML(row.NILAI)}">${formatRupiahWithHighlight(row.NILAI, searchTerm)}</td>
         <td class="" data-fulltext="${escapeHTML(row["JMLH SISWA"])}">${highlightHTML(row["JMLH SISWA"], searchTerm)}</td>
         `;
-        // <td class="" data-fulltext="${escapeHTML(row.GEL)}">${highlightHTML(row.GEL, searchTerm)}</td>
         
       tbody.appendChild(tr);
 
@@ -613,7 +559,7 @@ function renderPaginationControls(totalPages){
 
 // ---------- Reset handler ----------
 function resetAll(){
-  ["#filterJenisSekolah", "#filterJenisTahap"].forEach(sel => {
+  ["#filterJenisSekolah", "#filterJenisBOSP", "#filterJenisTahap"].forEach(sel => {
     $(sel).val("").trigger("change");
   });
   document.getElementById("searchInput").value = "";
@@ -687,7 +633,7 @@ document.getElementById("rowsPerPageSelect").addEventListener("change", (e) => {
 document.getElementById("resetFilters").addEventListener("click", resetAll);
 
 // apply filters on change
-$("#filterJenisSekolah, #filterJenisTahap").on("change", () => {
+$("#filterJenisSekolah, #filterJenisBOSP, #filterJenisTahap").on("change", () => {
   currentPage = 1;
   applyFiltersSearchAndSort();
 });
@@ -771,15 +717,13 @@ const profileBtn = document.getElementById("profileBtn");
     filteredData = [...allData];
 
     // populate filter dropdowns
-    // const lokasi = [...new Set(allData.map(r => r["LOKASI SEKOLAH"]).filter(Boolean))].sort();
+    const jenis = [...new Set(allData.map(r => r["MACAM BOSP"]).filter(Boolean))].sort();
     const sekolah = [...new Set(allData.map(r => r["NAMA SEKOLAH"]).filter(Boolean))].sort();
     const tahap = [...new Set(allData.map(r => r["TAHAP"]).filter(Boolean))].sort();
-    // const gem = [...new Set(allData.map(r => r["GEL"]).filter(Boolean))].sort();
 
-    // fillSelect("#filterJenisLokasi", lokasi, "[ Pilih Kab / Kota ]");
+    fillSelect("#filterJenisBOSP", jenis, "[ Pilih Jenis BOSP ]");
     fillSelect("#filterJenisSekolah", sekolah, "[ Pilih Sekolah ]");
     fillSelect("#filterJenisTahap", tahap, "[ Pilih Tahap ]");
-    // fillSelect("#filterJenisGelombang", gem, "[ Pilih Gelombang ]");
 
     // load persistent UI state
     loadState();

@@ -9,7 +9,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 async function debugAuthAndRLS() {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError) {
-    console.error("❌ Failed to get user:", userError.message);
+    console.error("Failed to get user:", userError.message);
     return;
   }
 }
@@ -356,9 +356,7 @@ function renderTable(rows){
     { key: "No", label: "#", sortable: false },
     { key: "NIP", label: "NIP", sortable: false },
     { key: "NAMA", label: "Nama", sortable: false },
-    // { key: "NO REKENING", label: "No. Rekening", sortable: false },
     { key: "SATDIK", label: "Nama Sekolah", sortable: false },
-    // { key: "JENIS TUNJANGAN", label: "Jenis Tunjangan", sortable: false },
     { key: "PEMDA", label: "Kab / Kota", sortable: false },
     { key: "SALUR BRUTO", label: "Salur Bruto", sortable: false },
     { key: "PPH", label: "PPH", sortable: false },

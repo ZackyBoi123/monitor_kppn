@@ -66,12 +66,6 @@ scrollWrapper.addEventListener("scroll", () => {
 // Save/load state from localStorage for persistence
 function saveState() {
   const state = {
-    // filters: {
-    //   pemda: $("#filterJenisPemda").val(),
-    //   tahap: $("#filterJenisTahap").val(),
-    //   gelombang: $("#filterJenisGelombang").val(),
-    //   pusk: $("#filterJenisPuskesmas").val(),
-    // },
     searchTerm: document.getElementById("searchInput").value.trim(),
     sortColumn,
     sortDirection,
@@ -85,7 +79,6 @@ function loadState() {
     const state = JSON.parse(localStorage.getItem("tableState"));
     if (!state) return;
     if(state.filters) {
-      // $("#filterJenisPemda").val(state.filters.pemda).trigger("change");
       $("#filterJenisTahap").val(state.filters.tahap).trigger("change");
       $("#filterJenisGelombang").val(state.filters.gelombang).trigger("change");
       $("#filterJenisPuskesmas").val(state.filters.puskesmas).trigger("change");
@@ -226,14 +219,12 @@ function fillSelect(selector, values, placeholderText){
 
 // ---------- Apply filters + search + sorting ----------
 function applyFiltersSearchAndSort(){
-  // const pemda = $("#filterJenisPemda").val();
   const tahap = $("#filterJenisTahap").val();
   const gelombang = $("#filterJenisGelombang").val();
   const pusk = $("#filterJenisPuskesmas").val();
   const searchTerm = (document.getElementById("searchInput").value || "").trim().toLowerCase();
 
   filteredData = allData.filter(row => {
-    // if (pemda && row.PEMDA !== pemda) return false;
     if (tahap && row["NAMA TAHAP"] !== tahap) return false;
     if (gelombang && String(row.GELOMBANG) !== gelombang) return false;
     if (pusk && row.PUSKESMAS !== pusk) return false;
@@ -704,12 +695,10 @@ const profileBtn = document.getElementById("profileBtn");
     filteredData = [...allData];
 
     // populate filter dropdowns
-    // const pemda = [...new Set(allData.map(r => r.PEMDA).filter(Boolean))].sort();
     const tah = [...new Set(allData.map(r => r["NAMA TAHAP"]).filter(Boolean))].sort();
     const gem = [...new Set(allData.map(r => r.GELOMBANG).filter(Boolean))].sort();
     const pus = [...new Set(allData.map(r => r.PUSKESMAS).filter(Boolean))].sort();
 
-    // fillSelect("#filterJenisPemda", pemda, "[ Pilih Kab / Kota ]");
     fillSelect("#filterJenisTahap", tah, "[ Pilih Tahap ]");
     fillSelect("#filterJenisGelombang", gem, "[ Pilih Gelombang ]");
     fillSelect("#filterJenisPuskesmas", pus, "[ Pilih Puskesmas ]");
