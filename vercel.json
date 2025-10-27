@@ -1,7 +1,14 @@
 {
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/login.html",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
-      "source": "/(.*)\\.(js|css|png|jpg|svg|woff2)",
+      "source": "/(.*)\\.(js|css|png|jpg|svg|woff2)$",
       "headers": [
         {
           "key": "Cache-Control",
